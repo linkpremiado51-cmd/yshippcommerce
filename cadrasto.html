@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acesso - YshippCommerce</title>
 
-  <!-- Fontes e Tailwind -->
   <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -21,9 +20,7 @@
       --text-primary: #1f2937;
       --text-secondary: #6b7280;
       --primary: #7c3aed;
-      --primary-hover: #6d28d9;
       --secondary: #10b981;
-      --secondary-hover: #059669;
       --border: #e5e7eb;
     }
     [data-theme="dark"] {
@@ -37,10 +34,10 @@
       font-family: 'Ubuntu', sans-serif;
       background: var(--background);
       color: var(--text-primary);
-      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
       transition: background 0.3s ease;
     }
     .card {
@@ -72,8 +69,6 @@
       margin-bottom: 1rem;
       border: 1px solid var(--border);
       border-radius: 0.5rem;
-      background: var(--background);
-      color: var(--text-primary);
     }
     button.action {
       width: 100%;
@@ -83,29 +78,13 @@
       font-weight: bold;
       border: none;
       border-radius: 0.5rem;
-      transition: background 0.3s;
     }
-    button.action:hover {
-      background: var(--secondary-hover);
-    }
-    .toggle-theme {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 2rem;
-      height: 2rem;
-      font-size: 1rem;
-      cursor: pointer;
-    }
+    button.action:hover { background: #059669; }
   </style>
 </head>
 
 <body data-theme="light">
-  <button class="toggle-theme" id="theme-toggle">🌙</button>
+  <button id="theme-toggle" class="absolute top-4 right-4 bg-purple-600 text-white p-2 rounded-full">🌙</button>
 
   <div class="card">
     <div class="tabs flex mb-4">
@@ -113,7 +92,6 @@
       <button id="signup-tab" onclick="showTab('signup')">Cadastrar</button>
     </div>
 
-    <!-- Login -->
     <div id="login-section">
       <h2 class="text-center text-xl font-bold mb-4">Acesse sua conta</h2>
       <input type="email" id="login-email" placeholder="E-mail">
@@ -121,7 +99,6 @@
       <button class="action" onclick="loginUsuario()">Entrar</button>
     </div>
 
-    <!-- Cadastro -->
     <div id="signup-section" class="hidden">
       <h2 class="text-center text-xl font-bold mb-4">Crie sua conta</h2>
       <input type="text" id="nome" placeholder="Nome completo">
@@ -134,100 +111,93 @@
   </div>
 
   <script>
-    const msg = document.getElementById("mensagem");
-    msg.textContent = "⏳ Inicializando sistema... aguarde um instante.";
+    window.onload = () => {
+      const msg = document.getElementById("mensagem");
+      msg.textContent = "⏳ Inicializando sistema...";
 
-    // Configuração Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
-      authDomain: "yshippcommerce.firebaseapp.com",
-      projectId: "yshippcommerce",
-      storageBucket: "yshippcommerce.firebasestorage.app",
-      messagingSenderId: "680576769517",
-      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+      // Configuração Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+        authDomain: "yshippcommerce.firebaseapp.com",
+        projectId: "yshippcommerce",
+        storageBucket: "yshippcommerce.firebasestorage.app",
+        messagingSenderId: "680576769517",
+        appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      msg.textContent = "";
+
+      // Alternar abas
+      window.showTab = function(tab) {
+        document.getElementById('login-section').classList.toggle('hidden', tab !== 'login');
+        document.getElementById('signup-section').classList.toggle('hidden', tab !== 'signup');
+        document.getElementById('login-tab').classList.toggle('active', tab === 'login');
+        document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
+        msg.textContent = '';
+      };
+
+      // Tema
+      const themeToggle = document.getElementById("theme-toggle");
+      themeToggle.addEventListener("click", () => {
+        const current = document.body.dataset.theme;
+        const newTheme = current === "light" ? "dark" : "light";
+        document.body.dataset.theme = newTheme;
+        themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙";
+        localStorage.setItem("theme", newTheme);
+      });
+
+      // Cadastro
+      window.cadastrarUsuario = async function() {
+        const nome = document.getElementById('nome').value;
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+
+        msg.textContent = "⏳ Criando conta...";
+        try {
+          const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+          const user = userCredential.user;
+
+          await db.collection('wallets').doc(user.uid).set({
+            userId: user.uid,
+            name: nome,
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date()
+          });
+
+          msg.textContent = "✅ Conta criada com sucesso! Redirecionando...";
+          msg.classList.replace("text-red-500", "text-green-500");
+
+          setTimeout(() => {
+            window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
+          }, 2000);
+        } catch (error) {
+          msg.textContent = "❌ " + error.message;
+        }
+      };
+
+      // Login
+      window.loginUsuario = async function() {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+
+        msg.textContent = "⏳ Fazendo login...";
+        try {
+          await auth.signInWithEmailAndPassword(email, senha);
+          msg.textContent = "✅ Login realizado! Redirecionando...";
+          msg.classList.replace("text-red-500", "text-green-500");
+          setTimeout(() => {
+            window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
+          }, 1500);
+        } catch (error) {
+          msg.textContent = "❌ " + error.message;
+        }
+      };
     };
-
-    // Inicialização Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    msg.textContent = "";
-
-    // Alternar abas
-    function showTab(tab) {
-      document.getElementById('login-section').classList.toggle('hidden', tab !== 'login');
-      document.getElementById('signup-section').classList.toggle('hidden', tab !== 'signup');
-      document.getElementById('login-tab').classList.toggle('active', tab === 'login');
-      document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
-      msg.textContent = '';
-    }
-
-    // Tema
-    const themeToggle = document.getElementById("theme-toggle");
-    themeToggle.addEventListener("click", () => {
-      const current = document.body.dataset.theme;
-      const newTheme = current === "light" ? "dark" : "light";
-      document.body.dataset.theme = newTheme;
-      themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙";
-      localStorage.setItem("theme", newTheme);
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const saved = localStorage.getItem("theme") || "light";
-      document.body.dataset.theme = saved;
-      themeToggle.textContent = saved === "dark" ? "☀️" : "🌙";
-    });
-
-    // Cadastro
-    async function cadastrarUsuario() {
-      const nome = document.getElementById('nome').value;
-      const email = document.getElementById('email').value;
-      const senha = document.getElementById('senha').value;
-
-      msg.textContent = "⏳ Criando conta...";
-
-      try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-        const user = userCredential.user;
-
-        await db.collection('wallets').doc(user.uid).set({
-          userId: user.uid,
-          name: nome,
-          goldsBalance: 0,
-          reaisBalance: 0,
-          transactions: [],
-          createdAt: new Date()
-        });
-
-        msg.textContent = "✅ Conta criada com sucesso! Redirecionando...";
-        msg.classList.replace("text-red-500", "text-green-500");
-
-        setTimeout(() => {
-          window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
-        }, 2000);
-      } catch (error) {
-        msg.textContent = "❌ " + error.message;
-      }
-    }
-
-    // Login
-    async function loginUsuario() {
-      const email = document.getElementById('login-email').value;
-      const senha = document.getElementById('login-senha').value;
-
-      msg.textContent = "⏳ Fazendo login...";
-
-      try {
-        await auth.signInWithEmailAndPassword(email, senha);
-        msg.textContent = "✅ Login realizado! Redirecionando...";
-        msg.classList.replace("text-red-500", "text-green-500");
-        setTimeout(() => {
-          window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
-        }, 1500);
-      } catch (error) {
-        msg.textContent = "❌ " + error.message;
-      }
-    }
   </script>
 </body>
 </html>
