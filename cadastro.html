@@ -219,5 +219,27 @@
       }
     });
   </script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const msg = document.getElementById("mensagem");
+  try {
+    if (firebase.apps && firebase.apps.length > 0) {
+      msg.textContent = "✅ Firebase conectado com sucesso!";
+      msg.classList.remove("text-red-500");
+      msg.classList.add("text-green-500");
+
+      // Testa leitura no Firestore (verifica permissão)
+      const testRef = firebase.firestore().collection("testConnection");
+      await testRef.add({ timestamp: new Date().toISOString() });
+      console.log("Firestore test OK 🔥");
+    } else {
+      msg.textContent = "❌ Firebase não está inicializado.";
+    }
+  } catch (error) {
+    console.error("Erro ao testar Firebase:", error);
+    msg.textContent = "⚠️ Erro de conexão com Firebase: " + error.message;
+  }
+});
+</script>
 </body>
 </html>
