@@ -688,6 +688,60 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=1"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=1"></script>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Inicializa o Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+        authDomain: "yshippcommerce.firebaseapp.com",
+        projectId: "yshippcommerce",
+        storageBucket: "yshippcommerce.appspot.com",
+        messagingSenderId: "680576769517",
+        appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      const auth = firebase.auth();
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          document.body.insertAdjacentHTML(
+            "afterbegin",
+            `<div style="background:black;color:lime;padding:8px;position:fixed;top:0;left:0;z-index:9999;font-size:12px">
+              UID ativo: ${user.uid}
+            </div>`
+          );
+          carregarDadosUsuario(user);
+        } else {
+          window.location.href = "cadastro.html";
+        }
+      });
+
+      function carregarDadosUsuario(user) {
+        const userId = user.uid;
+        db.collection("wallets").where("userId", "==", userId).limit(1).get()
+          .then(snapshot => {
+            if (!snapshot.empty) {
+              const data = snapshot.docs[0].data();
+              document.getElementById("profileName").textContent = `Bem-vindo, ${data.name || "Usuário"}!`;
+              document.getElementById("userIdDisplay").textContent = userId;
+              document.getElementById("registrationDate").textContent =
+                data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "N/D";
+              document.getElementById("userLevel").textContent = data.nivel || "Iniciante";
+            } else {
+              console.warn("⚠️ Documento do usuário não encontrado no Firestore.");
+            }
+          })
+          .catch(error => console.error("❌ Erro ao carregar dados:", error));
+      }
+
+      document.getElementById("logout-button").addEventListener("click", () => {
+        auth.signOut().then(() => window.location.href = "cadastro.html");
+      });
+    });
+  </script>
+
   <script type="text/javascript">
     var gk_isXlsx = false;
     var gk_xlsxFileLookup = {};
@@ -727,21 +781,6 @@
       }
       return gk_fileData[filename] || "";
     }
-
-    // Firebase configuration and initialization
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
-      authDomain: "yshippcommerce.firebaseapp.com",
-      projectId: "yshippcommerce",
-      storageBucket: "yshippcommerce.appspot.com",
-      messagingSenderId: "680576769517",
-      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
-    };
-    firebase.initializeApp(firebaseConfig);
-
-    // Firebase Authentication and Firestore Synchronization
-    const db = firebase.firestore();
-    const auth = firebase.auth();
 
     // Navigation function for wallet and navigation grid
     function navigateTo(page) {
@@ -814,74 +853,6 @@
 
     cookieDecline.addEventListener('click', () => {
       cookieBanner.classList.remove('active');
-    });
-
-    // Função que carrega os dados do usuário
-    function carregarDadosUsuario(user) {
-      const userId = user.uid;
-
-      db.collection("wallets")
-        .where("userId", "==", userId)
-        .limit(1)
-        .get()
-        .then((querySnapshot) => {
-          if (!querySnapshot.empty) {
-            const doc = querySnapshot.docs[0];
-            const data = doc.data();
-
-            // Atualiza nome
-            document.getElementById("profileName").textContent =
-              data.name && data.name.trim() !== ""
-                ? `Bem-vindo, ${data.name}!`
-                : "Bem-vindo, Usuário!";
-
-            // Atualiza ID
-            document.getElementById("userIdDisplay").textContent = userId;
-
-            // Data de cadastro
-            document.getElementById("registrationDate").textContent =
-              data.createdAt && data.createdAt.seconds
-                ? new Date(data.createdAt.seconds * 1000).toLocaleDateString()
-                : "N/D";
-
-            // Nível
-            document.getElementById("userLevel").textContent = data.nivel || "Iniciante";
-          } else {
-            console.warn("⚠️ Documento do usuário não encontrado no Firestore.");
-          }
-        })
-        .catch((error) => {
-          console.error("❌ Erro ao carregar dados do usuário:", error);
-        });
-    }
-
-    // Listener que observa se há um usuário autenticado
-    auth.onAuthStateChanged(user => {
-  if (user) {
-    // 🔍 Debug temporário: mostra o UID ativo no topo da tela
-    document.body.insertAdjacentHTML(
-      "afterbegin",
-      `<div style="background:black;color:lime;padding:8px;position:fixed;top:0;left:0;z-index:9999;font-size:12px">
-        UID ativo: ${user.uid}
-      </div>`
-    );
-
-    carregarDadosUsuario(user);
-  } else {
-    // Se não estiver autenticado, redireciona para o cadastro/login
-    window.location.href = "cadastro.html";
-  }
-});
-
-    // Função para deslogar o usuário
-    document.getElementById("logout-button").addEventListener("click", () => {
-      auth.signOut()
-        .then(() => {
-          window.location.href = "cadastro.html";
-        })
-        .catch((error) => {
-          console.error("Erro ao sair:", error);
-        });
     });
 
     // Show cookie banner on page load if not shown today
