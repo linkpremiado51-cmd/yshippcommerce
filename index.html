@@ -1,0 +1,986 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Centro de Comando - YshippCommerce">
+  <title>Centro de Comando - YshippCommerce</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f9fafb;
+      --surface: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --secondary: #10b981;
+      --secondary-hover: #059669;
+      --border: #e5e7eb;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --accent: #ff6b6b;
+      --nsfw-bg: #e74c3c;
+      --nsfw-hover: #c0392b;
+      --gold: #e67e22;
+      --progress-bg: #ecf0f1;
+      --tutorial-bg: #3498db;
+      --tutorial-hover: #2980b9;
+    }
+
+    [data-theme="dark"] {
+      --background: #1f2937;
+      --surface: #374151;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border: #4b5563;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --accent: #ff8787;
+      --nsfw-bg: #c0392b;
+      --nsfw-hover: #a5281a;
+      --progress-bg: #4b5563;
+      --tutorial-bg: #1e90ff;
+      --tutorial-hover: #1c86ee;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Ubuntu', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .header h1 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.8rem;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .menu-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-button svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--text-primary);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      transition: left 0.5s ease-in-out;
+      opacity: 0.8;
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar-content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .sidebar-content > div {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-button {
+      padding: 0.75rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      text-align: center;
+    }
+
+    .sidebar-button.theme-button {
+      background: var(--tutorial-bg);
+    }
+
+    .sidebar-button.theme-button:hover {
+      background: var(--tutorial-hover);
+    }
+
+    .sidebar-button:hover {
+      transform: scale(1.05);
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    .dashboard-section {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1.5rem 1rem;
+      background: var(--surface);
+      border-radius: 0.375rem;
+      box-shadow: var(--shadow);
+      margin: 1.47rem 0;
+    }
+
+    .dashboard-section h2 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .profile-section {
+      background: var(--background);
+      border-radius: 0.375rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .profile-section h3 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-section p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-item {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 0.375rem;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .stat-item h4 {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-item .stat-value {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .published-services-list,
+    .tasks-accepted-list {
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .published-services-list h4,
+    .tasks-accepted-list h4 {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .service-item,
+    .task-item {
+      background: var(--surface);
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+
+    .navigation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .nav-card {
+      background: var(--background);
+      border-radius: 0.375rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--border);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .nav-card h3 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .nav-card p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .nav-card .nav-button {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .nav-card .nav-button:hover {
+      background: var(--secondary-hover);
+      transform: scale(1.05);
+    }
+
+    .members-profiles-section {
+      margin-top: 2rem;
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .member-card {
+      background: var(--background);
+      border-radius: 0.375rem;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      text-align: center;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .member-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .member-card h4 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .member-card p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      color: var(--text-primary);
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      border-top: 1px solid var(--border);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      text-align: center;
+    }
+
+    .cookie-banner.active {
+      display: flex;
+    }
+
+    [data-theme="dark"] .cookie-banner {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+
+    .cookie-banner .content {
+      font-size: 0.875rem;
+    }
+
+    .cookie-banner .content a {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    .cookie-banner .content a:hover {
+      color: var(--primary-hover);
+    }
+
+    .cookie-banner .buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .cookie-banner button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.875rem;
+    }
+
+    .cookie-banner button.accept {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .cookie-banner button.accept:hover {
+      background: var(--secondary-hover);
+    }
+
+    .cookie-banner button.decline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .cookie-banner button.decline:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .wallet-card {
+      background: var(--background);
+      border-radius: 0.375rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--border);
+      text-align: center;
+      cursor: pointer;
+      margin: 1rem auto 0;
+      max-width: 250px;
+    }
+
+    .wallet-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .wallet-card h3 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .wallet-card p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .wallet-card .nav-button {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .wallet-card .nav-button:hover {
+      background: var(--secondary-hover);
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        padding: 0.75rem;
+        flex-direction: row;
+        gap: 0.5rem;
+      }
+
+      .header h1 {
+        font-size: 1.25rem;
+      }
+
+      .dashboard-section {
+        padding: 1rem 0.5rem;
+      }
+
+      .dashboard-section h2 {
+        font-size: 1.25rem;
+      }
+
+      .navigation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-card {
+        padding: 1rem;
+      }
+
+      .nav-card h3 {
+        font-size: 1rem;
+      }
+
+      .members-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .cookie-banner .buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .cookie-banner button {
+        width: 100%;
+      }
+
+      .wallet-card {
+        padding: 1rem;
+        max-width: 100%;
+      }
+
+      .sidebar {
+        width: 80%;
+        max-width: 200px;
+        height: 100%;
+      }
+    }
+
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .dashboard-section {
+        padding: 1rem;
+      }
+
+      .dashboard-section h2 {
+        font-size: 1.4rem;
+      }
+
+      .wallet-card {
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-content">
+      <div>
+        <button id="theme-toggle" class="sidebar-button theme-button">Alternar Tema</button>
+      </div>
+    </div>
+  </div>
+  <div id="overlay" class="overlay"></div>
+
+  <main class="flex-grow w-full">
+    <header id="header" class="header" role="banner">
+      <h1>Centro de Comando - YshippCommerce</h1>
+      <button id="menu-toggle" class="menu-button">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/>
+        </svg>
+      </button>
+    </header>
+
+    <div id="wallet-card" class="wallet-card">
+      <h3>Carteira</h3>
+      <p>Gerencie seus Golds, transações e histórico de saldo.</p>
+      <button class="nav-button" onclick="navigateTo('YshippCommerceWallet.html')">Acessar Carteira</button>
+    </div>
+
+    <section id="dashboard-section" class="dashboard-section">
+      <h2>Perfil de Membro</h2>
+      <div class="profile-section" id="profileSection">
+        <h3 id="profileName">Bem-vindo, Usuário!</h3>
+        <p>ID de Membro: <span id="userIdDisplay"></span></p>
+        <p>Data de Cadastro: <span id="registrationDate"></span></p>
+        <p>Nível: <span id="userLevel">Iniciante</span></p>
+
+        <div class="profile-stats">
+          <div class="stat-item">
+            <h4>Serviços Publicados</h4>
+            <div class="stat-value" id="servicesPublishedCount">0</div>
+          </div>
+          <div class="stat-item">
+            <h4>Tarefas Aceitas</h4>
+            <div class="stat-value" id="tasksAcceptedCount">0</div>
+          </div>
+          <div class="stat-item">
+            <h4>Golds Ganhos</h4>
+            <div class="stat-value" id="goldsEarned">0</div>
+          </div>
+          <div class="stat-item">
+            <h4>Bilhetes Ganhos</h4>
+            <div class="stat-value" id="ticketsEarned">0</div>
+          </div>
+        </div>
+
+        <div class="published-services-list" id="publishedServicesList">
+          <h4>Serviços Publicados Recentemente</h4>
+          <div id="servicesListContainer"></div>
+        </div>
+
+        <div class="tasks-accepted-list" id="tasksAcceptedList">
+          <h4>Tarefas Realizadas Recentemente</h4>
+          <div id="tasksListContainer"></div>
+        </div>
+      </div>
+
+      <div id="navigationSection">
+        <h2>Painel de Navegação</h2>
+        <p style="margin-bottom: 1rem; color: var(--text-secondary);">Acesse rapidamente as principais seções da YshippCommerce. Todas as ações serão vinculadas ao seu ID de usuário.</p>
+        <div class="navigation-grid">
+          <div class="nav-card">
+            <h3>Gerador de Bilhetes e Golds</h3>
+            <p>Crie bilhetes e ganhe Golds participando de sorteios.</p>
+            <button class="nav-button" onclick="navigateTo('YshippCommerceBilheteGenerator.html')">Acessar</button>
+          </div>
+          <div class="nav-card">
+            <h3>Loja</h3>
+            <p>Compre cartões presente, itens e catálogos com seus Golds.</p>
+            <button class="nav-button" onclick="navigateTo('YshippCommerceStore.html')">Acessar</button>
+          </div>
+          <div class="nav-card">
+            <h3>Mercado de Serviços</h3>
+            <p>Publique ou aceite tarefas pagas em Golds.</p>
+            <button class="nav-button" onclick="navigateTo('YshippCommerceServiceMarket.html')">Acessar</button>
+          </div>
+          <div class="nav-card">
+            <h3>Loja de Serviços</h3>
+            <p>Visualize e aceite serviços disponíveis para ganhar recompensas.</p>
+            <button class="nav-button" onclick="navigateTo('YshippCommerceServiceStore.html')">Acessar</button>
+          </div>
+          <div class="nav-card">
+            <h3>Sorteios e Leilões</h3>
+            <p>Participe de sorteios e leilões para ganhar prêmios.</p>
+            <button class="nav-button" onclick="navigateTo('YshippCommerceRaffles.html')">Acessar</button>
+          </div>
+        </div>
+
+        <div class="members-profiles-section">
+          <h2>Perfis de Membros Destacados</h2>
+          <p style="margin-bottom: 1rem; color: var(--text-secondary);">Veja outros membros ativos na comunidade.</p>
+          <div class="members-grid" id="membersGrid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer py-4 mt-auto w-full">
+    <div class="container text-center">
+      <p class="text-sm">© 2025 YshippCommerce. Todos os direitos reservados. Desenvolvido por xAI.</p>
+    </div>
+  </footer>
+
+  <div id="cookieBanner" class="cookie-banner">
+    <div class="content">
+      <p>Este site utiliza cookies para garantir o funcionamento do site, medir o tráfego e otimizar o conteúdo da página. Ao utilizar nosso site, você concorda com o uso de cookies para esses fins. <a href="#" target="_blank">Você pode ler mais sobre cookies, incluindo como desativá-los, em nossa política de privacidade e cookies.</a></p>
+    </div>
+    <div class="buttons">
+      <button id="cookie-accept" class="accept">Entendido</button>
+      <button id="cookie-decline" class="decline">Recusar</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+
+  <script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+      if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+          var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+          var firstSheetName = workbook.SheetNames[0];
+          var worksheet = workbook.Sheets[firstSheetName];
+
+          // Convert sheet to JSON to filter blank rows
+          var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+          // Filter out blank rows (rows where all cells are empty, null, or undefined)
+          var filteredData = jsonData.filter(row => row.some(filledCell));
+
+          // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+          var headerRowIndex = filteredData.findIndex((row, index) =>
+            row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+          );
+          // Fallback
+          if (headerRowIndex === -1 || headerRowIndex > 25) {
+            headerRowIndex = 0;
+          }
+
+          // Convert filtered JSON back to CSV
+          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+          csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+          return csv;
+        } catch (e) {
+          console.error(e);
+          return "";
+        }
+      }
+      return gk_fileData[filename] || "";
+    }
+
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+      authDomain: "yshippcommerce.firebaseapp.com",
+      projectId: "yshippcommerce",
+      storageBucket: "yshippcommerce.firebasestorage.app",
+      messagingSenderId: "680576769517",
+      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Navigation function for wallet and navigation grid
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+
+    // Hamburger menu functionality
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', currentTheme);
+      localStorage.setItem('theme', currentTheme);
+    });
+
+    // Apply saved theme on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      body.setAttribute('data-theme', savedTheme);
+    });
+
+    // Cookie banner functionality
+    const cookieBanner = document.getElementById('cookieBanner');
+    const cookieAccept = document.getElementById('cookie-accept');
+    const cookieDecline = document.getElementById('cookie-decline');
+
+    function showCookieBannerOncePerDay() {
+      const today = new Date().toISOString().split('T')[0];
+      const lastShown = localStorage.getItem('cookieBannerLastShown');
+
+      if (lastShown !== today) {
+        cookieBanner.classList.add('active');
+        localStorage.setItem('cookieBannerLastShown', today);
+      }
+    }
+
+    cookieAccept.addEventListener('click', () => {
+      cookieBanner.classList.remove('active');
+    });
+
+    cookieDecline.addEventListener('click', () => {
+      cookieBanner.classList.remove('active');
+    });
+
+    // Firebase Authentication and Firestore Synchronization
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is logged in, fetch and display user data
+        const userId = user.uid;
+        const displayName = user.displayName || 'Usuário';
+        const registrationDate = user.metadata.creationTime
+          ? new Date(user.metadata.creationTime).toLocaleDateString('pt-BR')
+          : 'Data não disponível';
+
+        // Fetch user profile data from Firestore (users collection)
+        db.collection('users').doc(userId).get()
+          .then((doc) => {
+            if (doc.exists) {
+              const userData = doc.data();
+              const userLevel = userData.level || 'Iniciante';
+
+              // Update profile section
+              document.getElementById('profileName').textContent = `Bem-vindo, ${displayName}!`;
+              document.getElementById('userIdDisplay').textContent = userId;
+              document.getElementById('registrationDate').textContent = registrationDate;
+              document.getElementById('userLevel').textContent = userLevel;
+
+              // Store user profile data in localStorage for synchronization
+              localStorage.setItem('userData', JSON.stringify({
+                displayName: displayName,
+                userId: userId,
+                registrationDate: registrationDate,
+                userLevel: userLevel
+              }));
+            } else {
+              console.error('No user data found in Firestore');
+              // Fallback to default values
+              document.getElementById('profileName').textContent = `Bem-vindo, ${displayName}!`;
+              document.getElementById('userIdDisplay').textContent = userId;
+              document.getElementById('registrationDate').textContent = registrationDate;
+              document.getElementById('userLevel').textContent = 'Iniciante';
+
+              localStorage.setItem('userData', JSON.stringify({
+                displayName: displayName,
+                userId: userId,
+                registrationDate: registrationDate,
+                userLevel: 'Iniciante'
+              }));
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching user data from Firestore:', error);
+          });
+
+        // Real-time listener for wallet data (wallets collection)
+        db.collection('wallets').doc(userId).onSnapshot((doc) => {
+          if (doc.exists) {
+            const walletData = doc.data();
+
+            // Update wallet-related UI elements
+            document.getElementById('goldsEarned').textContent = walletData.goldsBalance || 0;
+            // Placeholder for servicesPublishedCount and tasksAcceptedCount (not in wallet data)
+            document.getElementById('servicesPublishedCount').textContent = 0;
+            document.getElementById('tasksAcceptedCount').textContent = 0;
+            document.getElementById('ticketsEarned').textContent = 0;
+
+            // Update transactions in tasksListContainer
+            const tasksListContainer = document.getElementById('tasksListContainer');
+            tasksListContainer.innerHTML = ''; // Clear existing transactions
+            if (walletData.transactions && walletData.transactions.length > 0) {
+              walletData.transactions.forEach((transaction) => {
+                const transactionElement = document.createElement('div');
+                transactionElement.className = 'task-item';
+                transactionElement.textContent = `${transaction.date}: ${transaction.description} (+${transaction.amount} ${transaction.currency})`;
+                tasksListContainer.appendChild(transactionElement);
+              });
+            } else {
+              const noTransactions = document.createElement('div');
+              noTransactions.className = 'task-item';
+              noTransactions.textContent = 'Nenhuma transação recente';
+              tasksListContainer.appendChild(noTransactions);
+            }
+
+            // Store wallet data in localStorage for synchronization with other pages
+            localStorage.setItem('walletData', JSON.stringify({
+              userId: walletData.userId,
+              name: walletData.name,
+              goldsBalance: walletData.goldsBalance,
+              reaisBalance: walletData.reaisBalance,
+              transactions: walletData.transactions
+            }));
+          } else {
+            // Create default wallet document if it doesn't exist
+            db.collection('wallets').doc(userId).set({
+              userId: userId,
+              name: displayName,
+              goldsBalance: 0,
+              reaisBalance: 0,
+              transactions: []
+            }).then(() => {
+              console.log('Default wallet created for user:', userId);
+              // Update UI with default values
+              document.getElementById('goldsEarned').textContent = 0;
+              document.getElementById('servicesPublishedCount').textContent = 0;
+              document.getElementById('tasksAcceptedCount').textContent = 0;
+              document.getElementById('ticketsEarned').textContent = 0;
+
+              const tasksListContainer = document.getElementById('tasksListContainer');
+              tasksListContainer.innerHTML = '';
+              const noTransactions = document.createElement('div');
+              noTransactions.className = 'task-item';
+              noTransactions.textContent = 'Nenhuma transação recente';
+              tasksListContainer.appendChild(noTransactions);
+
+              localStorage.setItem('walletData', JSON.stringify({
+                userId: userId,
+                name: displayName,
+                goldsBalance: 0,
+                reaisBalance: 0,
+                transactions: []
+              }));
+            }).catch((error) => {
+              console.error('Error creating default wallet:', error);
+            });
+          }
+        }, (error) => {
+          console.error('Error listening to wallet data:', error);
+        });
+      } else {
+        // No user is logged in, redirect to login page
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Show cookie banner on page load if not shown today
+    window.addEventListener('DOMContentLoaded', () => {
+      showCookieBannerOncePerDay();
+    });
+
+    // TODO: Add synchronization with Wallet (carteiraAtualizada)
+    // Placeholder for future wallet data integration
+
+    // TODO: Add synchronization with Service Market
+    // Placeholder for future service market data integration
+
+    // TODO: Add global earnings history
+    // Placeholder for future earnings history integration
+  </script>
+</body>
+</html>
