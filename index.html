@@ -849,15 +849,7 @@ function carregarDadosUsuario(user) {
         console.warn("⚠ Documento do usuário não encontrado no Firestore.");
       }
     })
-    .catch((error) => {
-      console.error("❌ Erro ao carregar dados do usuário:", error);
-    });
-}
-    }
-  })
-  .catch((error) => {
-    console.error("❌ Erro ao carregar dados do usuário:", error);
-  });
+
             // Atualiza ID
             document.getElementById("userIdDisplay").textContent = userId;
 
