@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acesso - YshippCommerce</title>
+
+  <!-- Fontes e Tailwind -->
   <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
@@ -102,6 +106,7 @@
 
 <body data-theme="light">
   <button class="toggle-theme" id="theme-toggle">🌙</button>
+
   <div class="card">
     <div class="tabs flex mb-4">
       <button id="login-tab" class="active" onclick="showTab('login')">Entrar</button>
@@ -129,13 +134,32 @@
   </div>
 
   <script>
+    const msg = document.getElementById("mensagem");
+    msg.textContent = "⏳ Inicializando sistema... aguarde um instante.";
+
+    // Configuração Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+      authDomain: "yshippcommerce.firebaseapp.com",
+      projectId: "yshippcommerce",
+      storageBucket: "yshippcommerce.firebasestorage.app",
+      messagingSenderId: "680576769517",
+      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+    };
+
+    // Inicialização Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    msg.textContent = "";
+
     // Alternar abas
     function showTab(tab) {
       document.getElementById('login-section').classList.toggle('hidden', tab !== 'login');
       document.getElementById('signup-section').classList.toggle('hidden', tab !== 'signup');
       document.getElementById('login-tab').classList.toggle('active', tab === 'login');
       document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
-      document.getElementById('mensagem').textContent = '';
+      msg.textContent = '';
     }
 
     // Tema
@@ -148,49 +172,19 @@
       localStorage.setItem("theme", newTheme);
     });
 
-    document.addEventListener("DOMContentLoaded", async () => {
+    document.addEventListener("DOMContentLoaded", () => {
       const saved = localStorage.getItem("theme") || "light";
       document.body.dataset.theme = saved;
       themeToggle.textContent = saved === "dark" ? "☀️" : "🌙";
-
-      const msg = document.getElementById("mensagem");
-      msg.textContent = "⏳ Inicializando sistema... aguarde um instante.";
-
-      try {
-        const firebaseConfig = {
-          apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
-          authDomain: "yshippcommerce.firebaseapp.com",
-          projectId: "yshippcommerce",
-          storageBucket: "yshippcommerce.firebasestorage.app",
-          messagingSenderId: "680576769517",
-          appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
-        };
-
-        if (!firebase.apps.length) {
-          firebase.initializeApp(firebaseConfig);
-        }
-
-        window.auth = firebase.auth();
-        window.db = firebase.firestore();
-
-        msg.textContent = "";
-      } catch (err) {
-        console.error("Erro ao inicializar Firebase:", err);
-        msg.textContent = "❌ Falha ao inicializar o sistema.";
-      }
     });
 
     // Cadastro
     async function cadastrarUsuario() {
-      const nome = document.getElementById('nome').value.trim();
-      const email = document.getElementById('email').value.trim();
+      const nome = document.getElementById('nome').value;
+      const email = document.getElementById('email').value;
       const senha = document.getElementById('senha').value;
-      const msg = document.getElementById('mensagem');
 
-      if (!window.auth || !window.db) {
-        msg.textContent = "⚠️ Sistema ainda inicializando, tente novamente em 3 segundos.";
-        return;
-      }
+      msg.textContent = "⏳ Criando conta...";
 
       try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
@@ -202,7 +196,7 @@
           goldsBalance: 0,
           reaisBalance: 0,
           transactions: [],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: new Date()
         });
 
         msg.textContent = "✅ Conta criada com sucesso! Redirecionando...";
@@ -218,14 +212,10 @@
 
     // Login
     async function loginUsuario() {
-      const email = document.getElementById('login-email').value.trim();
+      const email = document.getElementById('login-email').value;
       const senha = document.getElementById('login-senha').value;
-      const msg = document.getElementById('mensagem');
 
-      if (!window.auth) {
-        msg.textContent = "⚠️ Sistema ainda inicializando.";
-        return;
-      }
+      msg.textContent = "⏳ Fazendo login...";
 
       try {
         await auth.signInWithEmailAndPassword(email, senha);
