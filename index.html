@@ -816,39 +816,24 @@
       cookieBanner.classList.remove('active');
     });
 
-// Função que carrega os dados do usuário
-function carregarDadosUsuario(user) {
-  const userId = user.uid;
+    // Função que carrega os dados do usuário
+    function carregarDadosUsuario(user) {
+      const userId = user.uid;
 
-  db.collection("wallets").where("userId", "==", userId).limit(1).get()
-    .then((querySnapshot) => {
-      if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const data = doc.data();
+      db.collection("wallets")
+        .where("userId", "==", userId)
+        .limit(1)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const data = doc.data();
 
-        // Atualiza nome
-        document.getElementById("profileName").textContent =
-          data.name && data.name.trim() !== ""
-            ? `Bem-vindo, ${data.name}!`
-            : "Bem-vindo, Usuário!";
-
-        // Atualiza ID
-        document.getElementById("userIdDisplay").textContent = userId;
-
-        // Data de cadastro
-        document.getElementById("registrationDate").textContent =
-          data.createdAt && data.createdAt.seconds
-            ? new Date(data.createdAt.seconds * 1000).toLocaleDateString()
-            : "N/D";
-
-        // Nível
-        document.getElementById("userLevel").textContent =
-          data.nivel || "Iniciante";
-
-      } else {
-        console.warn("⚠ Documento do usuário não encontrado no Firestore.");
-      }
-    })
+            // Atualiza nome
+            document.getElementById("profileName").textContent =
+              data.name && data.name.trim() !== ""
+                ? `Bem-vindo, ${data.name}!`
+                : "Bem-vindo, Usuário!";
 
             // Atualiza ID
             document.getElementById("userIdDisplay").textContent = userId;
@@ -862,11 +847,11 @@ function carregarDadosUsuario(user) {
             // Nível
             document.getElementById("userLevel").textContent = data.nivel || "Iniciante";
           } else {
-            console.warn("Documento de usuário não encontrado no Firestore.");
+            console.warn("⚠️ Documento do usuário não encontrado no Firestore.");
           }
         })
         .catch((error) => {
-          console.error("Erro ao carregar dados do usuário:", error);
+          console.error("❌ Erro ao carregar dados do usuário:", error);
         });
     }
 
