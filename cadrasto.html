@@ -6,9 +6,6 @@
   <title>Acesso - YshippCommerce</title>
   <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
 
   <style>
     :root {
@@ -128,8 +125,13 @@
     <p id="mensagem" class="text-center text-sm mt-3 text-red-500"></p>
   </div>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+
   <script>
-    // Configuração Firebase
+    // Inicialização do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
       authDomain: "yshippcommerce.firebaseapp.com",
@@ -169,9 +171,9 @@
 
     // Cadastro
     async function cadastrarUsuario() {
-      const nome = document.getElementById('nome').value;
-      const email = document.getElementById('email').value;
-      const senha = document.getElementById('senha').value;
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value.trim();
       const msg = document.getElementById('mensagem');
 
       try {
@@ -184,34 +186,34 @@
           goldsBalance: 0,
           reaisBalance: 0,
           transactions: [],
-          createdAt: new Date()
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        msg.textContent = "Conta criada com sucesso! Redirecionando...";
+        msg.textContent = "✅ Conta criada com sucesso! Redirecionando...";
         msg.classList.replace("text-red-500", "text-green-500");
         setTimeout(() => {
-          window.location.href = "https://seuusuario.github.io/YshippCommerce/index.html";
+          window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
         }, 2000);
       } catch (error) {
-        msg.textContent = error.message;
+        msg.textContent = "⚠️ " + error.message;
       }
     }
 
     // Login
     async function loginUsuario() {
-      const email = document.getElementById('login-email').value;
-      const senha = document.getElementById('login-senha').value;
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-senha').value.trim();
       const msg = document.getElementById('mensagem');
 
       try {
         await auth.signInWithEmailAndPassword(email, senha);
-        msg.textContent = "Login realizado! Redirecionando...";
+        msg.textContent = "✅ Login realizado! Redirecionando...";
         msg.classList.replace("text-red-500", "text-green-500");
         setTimeout(() => {
-          window.location.href = "https://seuusuario.github.io/YshippCommerce/index.html";
+          window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
         }, 1500);
       } catch (error) {
-        msg.textContent = error.message;
+        msg.textContent = "⚠️ " + error.message;
       }
     }
   </script>
