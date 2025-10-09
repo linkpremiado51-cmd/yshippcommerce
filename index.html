@@ -684,9 +684,25 @@
     </div>
   </div>
 
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"</script>
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"</script>
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"</script>
+  <footer id="userInfoFooter" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #0d1117;
+    color: #00ffaa;
+    text-align: center;
+    font-size: 13px;
+    padding: 6px;
+    border-top: 1px solid #00ffaa;
+    z-index: 9999;
+    font-family: 'Ubuntu', sans-serif;">
+    Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
+  </footer>
+
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -714,6 +730,8 @@
           );
           carregarDadosUsuario(user);
         } else {
+          document.getElementById("footerUserName").textContent = "Nenhum usuário ativo";
+          document.getElementById("footerUserId").textContent = "---";
           window.location.href = "cadastro.html";
         }
       });
@@ -726,14 +744,25 @@
               const data = snapshot.docs[0].data();
               document.getElementById("profileName").textContent = `Bem-vindo, ${data.name || "Usuário"}!`;
               document.getElementById("userIdDisplay").textContent = userId;
+              // Atualiza o rodapé
+              document.getElementById("footerUserName").textContent = data.name || "Usuário";
+              document.getElementById("footerUserId").textContent = userId;
               document.getElementById("registrationDate").textContent =
                 data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "N/D";
               document.getElementById("userLevel").textContent = data.nivel || "Iniciante";
             } else {
               console.warn("⚠️ Documento do usuário não encontrado no Firestore.");
+              // Atualiza o rodapé mesmo se o documento não for encontrado
+              document.getElementById("footerUserName").textContent = "Usuário";
+              document.getElementById("footerUserId").textContent = userId;
             }
           })
-          .catch(error => console.error("❌ Erro ao carregar dados:", error));
+          .catch(error => {
+            console.error("❌ Erro ao carregar dados:", error);
+            // Fallback para o rodapé em caso de erro
+            document.getElementById("footerUserName").textContent = "Usuário";
+            document.getElementById("footerUserId").textContent = userId;
+          });
       }
 
       document.getElementById("logout-button").addEventListener("click", () => {
