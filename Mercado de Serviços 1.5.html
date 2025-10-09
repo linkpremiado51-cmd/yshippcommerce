@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Publicar serviços no Mercado de Serviços YshippCommerce">
+  <title>Publicar Serviço - YshippCommerce</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f9fafb;
+      --surface: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --secondary: #10b981;
+      --secondary-hover: #059669;
+      --border: #e5e7eb;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --accent: #ff6b6b;
+      --nsfw-bg: #e74c3c;
+      --nsfw-hover: #c0392b;
+      --gold: #e67e22;
+      --reais: #10b981;
+      --progress-bg: #ecf0f1;
+      --tutorial-bg: #3498db;
+      --tutorial-hover: #2980b9;
+    }
+    [data-theme="dark"] {
+      --background: #1f2937;
+      --surface: #374151;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border: #4b5563;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --accent: #ff8787;
+      --nsfw-bg: #c0392b;
+      --nsfw-hover: #a5281a;
+      --gold: #e6a24b;
+      --reais: #059669;
+      --progress-bg: #4b5563;
+      --tutorial-bg: #1e90ff;
+      --tutorial-hover: #1c86ee;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Ubuntu', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      text-align: center;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h1 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.8rem;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .theme-button {
+      padding: 0.5rem 1rem;
+      background: var(--tutorial-bg);
+      border: none;
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .theme-button:hover {
+      background: var(--tutorial-hover);
+      transform: scale(1.05);
+    }
+    .status-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      padding: 1rem;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      gap: 0.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      width: 100%;
+      max-width: 1200px;
+      border-radius: 0.375rem;
+      margin: 1rem 0;
+    }
+    .status-bar div {
+      padding: 0.75rem;
+      background: var(--background);
+      border-radius: 0.375rem;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .status-bar div:hover {
+      background: var(--secondary);
+      color: white;
+      transform: translateY(-3px);
+    }
+    .status-bar span.golds-balance,
+    .status-bar span#golds-total {
+      color: var(--gold);
+      font-size: 1.125rem;
+      font-weight: bold;
+    }
+    .status-bar span.reais-balance {
+      color: var(--reais);
+      font-size: 1.125rem;
+      font-weight: bold;
+    }
+    .wallet-section {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1.5rem 1rem;
+      background: var(--surface);
+      border-radius: 0.375rem;
+      box-shadow: var(--shadow);
+      margin: 1rem 0;
+    }
+    .wallet-section h2 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+    .balances-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .balance-card {
+      background: var(--background);
+      border-radius: 0.375rem;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .balance-card.golds {
+      border-left: 4px solid var(--gold);
+    }
+    .balance-card.reais {
+      border-left: 4px solid var(--reais);
+    }
+    .balance-card h3 {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .balance-card .balance-amount {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .balance-card .balance-amount.golds {
+      color: var(--gold);
+    }
+    .balance-card .balance-amount.reais {
+      color: var(--reais);
+    }
+    .balance-card .user-info {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    .publish-section {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1.5rem 1rem;
+      background: var(--surface);
+      border-radius: 0.375rem;
+      box-shadow: var(--shadow);
+      margin: 1.5rem 0;
+      animation: fadeIn 0.5s ease forwards;
+    }
+    .publish-section h2 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .add-remove-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .add-remove-buttons button {
+      padding: 0.5rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .add-remove-buttons button:hover {
+      background: var(--secondary-hover);
+      transform: scale(1.05);
+    }
+    .add-remove-buttons button.remove {
+      background: var(--accent);
+    }
+    .add-remove-buttons button.remove:hover {
+      background: var(--nsfw-hover);
+    }
+    .publish-button {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin-top: 1rem;
+    }
+    .publish-button:hover {
+      background: var(--secondary-hover);
+      transform: scale(1.05);
+    }
+    .publish-button:disabled {
+      background: var(--accent);
+      cursor: not-allowed;
+      transform: none;
+    }
+    .services-store-section {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1.5rem 1rem;
+      background: var(--surface);
+      border-radius: 0.375rem;
+      box-shadow: var(--shadow);
+      margin: 1.5rem 0;
+      animation: fadeIn 0.5s ease forwards;
+    }
+    .services-store-section h2 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+    .carousel-container {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      display: flex;
+      gap: 1rem;
+      padding: 0 1rem 1rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      justify-content: center;
+    }
+    .carousel-container::-webkit-scrollbar {
+      display: none;
+    }
+    .carousel-container .service-card {
+      flex: 0 0 90%;
+      max-width: 400px;
+      scroll-snap-align: center;
+      position: relative;
+      min-height: 400px;
+    }
+    .services-list {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1.5rem 1rem;
+      background: var(--surface);
+      border-radius: 0.375rem;
+      box-shadow: var(--shadow);
+      margin: 1.5rem 0;
+    }
+    .service-card {
+      background: var(--background);
+      border-radius: 0.375rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .service-card.pending {
+      opacity: 0.7;
+      border-color: var(--accent);
+    }
+    .service-card.completed {
+      opacity: 0.7;
+      border-color: var(--secondary);
+    }
+    .service-card h3 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+    .service-card p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .service-card .golds-reward {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin: 0.5rem 0;
+    }
+    .service-card .steps-list,
+    .service-card .proofs-list {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .service-card .steps-list ul,
+    .service-card .proofs-list ul {
+      list-style-type: disc;
+      padding-left: 1.25rem;
+    }
+    .service-card .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .service-card .action-buttons button {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .service-card .edit-button {
+      background: var(--primary);
+      color: white;
+    }
+    .service-card .edit-button:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+    .service-card .delete-button {
+      background: var(--accent);
+      color: white;
+    }
+    .service-card .delete-button:hover {
+      background: var(--nsfw-hover);
+      transform: scale(1.05);
+    }
+    .service-card .claim-button {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      padding: 0.75rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .service-card .claim-button:hover {
+      background: var(--secondary-hover);
+      transform: scale(1.05);
+    }
+    .service-card .claim-button:disabled {
+      background: var(--accent);
+      cursor: not-allowed;
+      transform: none;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 0.375rem;
+      text-align: center;
+      animation: slideIn 0.5s ease forwards;
+      max-width: 90%;
+      width: 500px;
+      box-shadow: var(--shadow);
+    }
+    .modal-content h2 {
+      font-family: 'Jura', sans-serif;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+    }
+    .modal-content p {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+    }
+    .modal-content input,
+    .modal-content textarea,
+    .modal-content select {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+    .modal-content button {
+      padding: 0.5rem 1rem;
+      background: var(--secondary);
+      border: none;
+      color: white;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 0.25rem;
+      font-size: 0.875rem;
+    }
+    .modal-content button.cancel {
+      background: var(--accent);
+    }
+    .modal-content button.cancel:hover {
+      background: var(--nsfw-hover);
+      transform: scale(1.05);
+    }
+    .modal-content button:hover {
+      background: var(--secondary-hover);
+      transform: scale(1.05);
+    }
+    #successModal .modal-content {
+      border-left: 4px solid var(--secondary);
+    }
+    #errorModal .modal-content {
+      border-left: 4px solid var(--accent);
+    }
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      color: var(--text-primary);
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      border-top: 1px solid var(--border);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      text-align: center;
+    }
+    [data-theme="dark"] .cookie-banner {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+    .cookie-banner .content {
+      font-size: 0.875rem;
+    }
+    .cookie-banner .buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .cookie-banner button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.875rem;
+    }
+    .cookie-banner button.accept {
+      background: var(--secondary);
+      color: white;
+    }
+    .cookie-banner button.accept:hover {
+      background: var(--secondary-hover);
+    }
+    .cookie-banner button.decline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .cookie-banner button.decline:hover {
+      background: var(--accent);
+      color: white;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @media (max-width: 600px) {
+      .header {
+        padding: 0.75rem;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .header h1 {
+        font-size: 1.25rem;
+      }
+      .theme-button {
+        width: 100%;
+        max-width: none;
+      }
+      .status-bar {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+      .status-bar div {
+        padding: 0.5rem;
+      }
+      .wallet-section,
+      .publish-section,
+      .services-store-section,
+      .services-list {
+        padding: 1rem 0.5rem;
+      }
+      .wallet-section h2,
+      .publish-section h2,
+      .services-store-section h2,
+      .services-list h2 {
+        font-size: 1.25rem;
+      }
+      .balances-grid {
+        grid-template-columns: 1fr;
+      }
+      .carousel-container {
+        padding: 0 0.5rem 1rem;
+      }
+      .carousel-container .service-card {
+        flex: 0 0 95%;
+        max-width: 350px;
+      }
+      .modal-content {
+        padding: 1rem;
+        width: 90%;
+      }
+      .cookie-banner .buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+      .cookie-banner button {
+        width: 100%;
+      }
+    }
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+      .wallet-section,
+      .publish-section,
+      .services-store-section,
+      .services-list {
+        padding: 1rem;
+      }
+      .wallet-section h2,
+      .publish-section h2,
+      .services-store-section h2,
+      .services-list h2 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <header class="header" role="banner">
+    <h1>Publicar Serviço - YshippCommerce</h1>
+    <div>
+      <button class="theme-button" id="theme-toggle">Alternar Tema</button>
+    </div>
+  </header>
+  <main class="flex-grow w-full">
+    <div class="status-bar" role="region" aria-label="Resumo de Saldo">
+      <div>SALDO EM GOLDS <span class="golds-balance" id="golds-balance">0</span></div>
+      <div>SALDO EM REAIS <span class="reais-balance" id="reais-balance">R$ 0,00</span></div>
+      <div>GOLDS TOTAIS <span id="golds-total">900</span></div>
+    </div>
+    <section class="wallet-section">
+      <h2>Gerencie Sua Carteira</h2>
+      <div class="balances-grid">
+        <div class="balance-card golds">
+          <h3>Saldo em Golds</h3>
+          <div class="balance-amount golds" id="golds-balance-display">0</div>
+          <p>Ganhe Golds completando tarefas ou visualizando propagandas.</p>
+          <div class="user-info" id="user-info"></div>
+        </div>
+        <div class="balance-card reais">
+          <h3>Saldo em Reais</h3>
+          <div class="balance-amount reais" id="reais-balance-display">R$ 0,00</div>
+          <p>Converta Golds para reais e solicite saques.</p>
+        </div>
+      </div>
+    </section>
+    <section class="services-store-section">
+      <h2>Serviços Disponíveis</h2>
+      <p style="margin-bottom: 1rem; color: var(--text-secondary);">Aceite tarefas e ganhe Golds ao completá-las. Cada serviço mostra os passos, provas necessárias e recompensa.</p>
+      <div class="carousel-container" id="carousel"></div>
+    </section>
+    <section class="publish-section">
+      <h2>Publicar Novo Serviço</h2>
+      <p style="margin-bottom: 1rem; color: var(--text-secondary);">Preencha os detalhes para publicar um novo serviço no Mercado de Serviços.</p>
+      <form id="publishForm">
+        <div class="form-group">
+          <label for="serviceName">Nome do Serviço</label>
+          <input type="text" id="serviceName" placeholder="Ex.: Promoção Instagram" required>
+        </div>
+        <div class="form-group">
+          <label for="zone">Zona/País</label>
+          <select id="zone" required>
+            <option value="" disabled selected>Selecione uma zona</option>
+            <option value="Internacional">Internacional</option>
+            <option value="Brasil">Brasil</option>
+            <option value="Estados Unidos">Estados Unidos</option>
+            <option value="Europa">Europa</option>
+            <option value="Ásia">Ásia</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="serviceType">Tipo de Serviço</label>
+          <select id="serviceType" required>
+            <option value="" disabled selected>Selecione um tipo</option>
+            <option value="Redes Sociais">Redes Sociais</option>
+            <option value="Games">Games</option>
+            <option value="Tarefas">Tarefas</option>
+            <option value="Cripto">Cripto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="subcategory">Subcategoria</label>
+          <select id="subcategory" required>
+            <option value="" disabled selected>Selecione um tipo de serviço primeiro</option>
+          </select>
+        </div>
+        <div class="form-group" id="stepsContainer">
+          <label>Passos do Serviço</label>
+          <div class="step-input">
+            <textarea placeholder="Ex.: Acesse o link fornecido" required></textarea>
+            <div class="add-remove-buttons">
+              <button type="button" class="add-step">+ Adicionar Passo</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" id="proofsContainer">
+          <label>Provas Necessárias</label>
+          <div class="proof-input">
+            <select class="proof-type" required>
+              <option value="Texto">Texto</option>
+              <option value="Captura de Tela">Captura de Tela</option>
+            </select>
+            <textarea placeholder="Ex.: Screenshot da curtida" required></textarea>
+            <div class="add-remove-buttons">
+              <button type="button" class="add-proof">+ Adicionar Prova</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="freelancers">Freelancers Necessários</label>
+          <input type="number" id="freelancers" min="1" max="25" value="1" required>
+        </div>
+        <div class="form-group">
+          <label for="rewardGolds">Recompensa por Tarefa (Golds)</label>
+          <input type="number" id="rewardGolds" min="1" value="1" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Número de Celular (com DDD)</label>
+          <input type="tel" id="phone" placeholder="Ex.: +5535984072446" required>
+        </div>
+        <div class="form-group">
+          <label>Custo Total: <span id="totalCost">0</span> Golds</label>
+        </div>
+        <button type="submit" class="publish-button">Publicar Serviço</button>
+      </form>
+    </section>
+    <section class="services-list" id="userServices">
+      <h2>Seus Serviços Publicados</h2>
+      <p style="margin-bottom: 1rem; color: var(--text-secondary);">Visualize e gerencie os serviços que você publicou.</p>
+      <div class="services-list-content"></div>
+    </section>
+    <div id="editModal" class="modal" role="dialog" aria-labelledby="editMessage">
+      <div class="modal-content">
+        <h2 id="editMessage">Editar Serviço</h2>
+        <form id="editForm">
+          <div class="form-group">
+            <label for="editServiceName">Nome do Serviço</label>
+            <input type="text" id="editServiceName" required>
+          </div>
+          <div class="form-group">
+            <label for="editZone">Zona/País</label>
+            <select id="editZone" required>
+              <option value="Internacional">Internacional</option>
+              <option value="Brasil">Brasil</option>
+              <option value="Estados Unidos">Estados Unidos</option>
+              <option value="Europa">Europa</option>
+              <option value="Ásia">Ásia</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editServiceType">Tipo de Serviço</label>
+            <select id="editServiceType" required>
+              <option value="Redes Sociais">Redes Sociais</option>
+              <option value="Games">Games</option>
+              <option value="Tarefas">Tarefas</option>
+              <option value="Cripto">Cripto</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editSubcategory">Subcategoria</label>
+            <select id="editSubcategory" required></select>
+          </div>
+          <div class="form-group" id="editStepsContainer">
+            <label>Passos do Serviço</label>
+          </div>
+          <div class="form-group" id="editProofsContainer">
+            <label>Provas Necessárias</label>
+          </div>
+          <div class="form-group">
+            <label for="editFreelancers">Freelancers Necessários</label>
+            <input type="number" id="editFreelancers" min="1" max="25" required>
+          </div>
+          <div class="form-group">
+            <label for="editRewardGolds">Recompensa por Tarefa (Golds)</label>
+            <input type="number" id="editRewardGolds" min="1" required>
+          </div>
+          <div class="form-group">
+            <label for="editPhone">Número de Celular (com DDD)</label>
+            <input type="tel" id="editPhone" required>
+          </div>
+          <button type="submit" class="secondary-button">Salvar Alterações</button>
+          <button type="button" class="cancel" onclick="closeModal('editModal')">Cancelar</button>
+        </form>
+      </div>
+    </div>
+    <div id="claimModal" class="modal" role="dialog" aria-labelledby="claimMessage">
+      <div class="modal-content">
+        <h2 id="claimMessage">Aceitar Serviço</h2>
+        <p id="claimDetails"></p>
+        <button class="secondary-button" onclick="confirmClaim(currentServiceId, currentOwnerId, currentRewardGolds)">Aceitar e Pagar Golds</button>
+        <button class="cancel" onclick="closeModal('claimModal')">Cancelar</button>
+      </div>
+    </div>
+    <div id="proofModal" class="modal" role="dialog" aria-labelledby="proofMessage">
+      <div class="modal-content">
+        <h2 id="proofMessage">Enviar Provas</h2>
+        <p>Insira as provas para o serviço.</p>
+        <form id="proofForm">
+          <div id="proofInputs"></div>
+          <button type="submit" class="secondary-button">Enviar Prova</button>
+          <button type="button" class="cancel" onclick="closeModal('proofModal')">Cancelar</button>
+        </form>
+      </div>
+    </div>
+    <div id="welcomeModal" class="modal" role="dialog" aria-labelledby="welcomeMessage">
+      <div class="modal-content">
+        <h2 id="welcomeMessage">Aviso</h2>
+        <p></p>
+        <button class="secondary-button" onclick="closeModal('welcomeModal')">OK</button>
+      </div>
+    </div>
+    <div id="successModal" class="modal" role="dialog" aria-labelledby="successMessage">
+      <div class="modal-content">
+        <h2 id="successMessage">Sucesso</h2>
+        <p></p>
+        <button class="secondary-button" onclick="closeModal('successModal')">OK</button>
+      </div>
+    </div>
+    <div id="errorModal" class="modal" role="dialog" aria-labelledby="errorMessage">
+      <div class="modal-content">
+        <h2 id="errorMessage">Erro</h2>
+        <p></p>
+        <button class="secondary-button" onclick="closeModal('errorModal')">OK</button>
+      </div>
+    </div>
+    <div id="cookieBanner" class="cookie-banner">
+      <div class="content">
+        <p>Concordo que meu endereço IP seja coletado e enviado ao administrador para identificar tarefas publicadas.</p>
+      </div>
+      <div class="buttons">
+        <button class="accept" onclick="acceptIPConsent()">Aceitar</button>
+        <button class="decline" onclick="declineIPConsent()">Recusar</button>
+      </div>
+    </div>
+  </main>
+  <footer class="footer py-4 mt-auto w-full">
+    <div class="container text-center">
+      <p class="text-sm">© 2025 YshippCommerce. Todos os direitos reservados. Desenvolvido por xAI.</p>
+      <div class="flex justify-center space-x-4 mt-2">
+        <a href="#" class="text-primary text-sm hover:underline">WhatsApp</a>
+        <a href="#" class="text-primary text-sm hover:underline">Facebook</a>
+      </div>
+    </div>
+  </footer>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"></script>
+  <script>
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+      authDomain: "yshippcommerce.firebaseapp.com",
+      projectId: "yshippcommerce",
+      storageBucket: "yshippcommerce.firebasestorage.app",
+      messagingSenderId: "680576769517",
+      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Firebase Authentication and Firestore
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // IMPORTANT: Firestore Index Creation
+    // To support the query in carregarMercadoFirebase with .orderBy("createdAt", "desc"),
+    // ensure a Firestore index exists for the 'services' collection on the 'createdAt' field.
+    // If you see a console error with a link to create the index, follow it to the Firebase console
+    // and create the index for 'services' with 'createdAt' in descending order.
+
+    // Global variables to store claim details
+    let currentServiceId, currentOwnerId, currentRewardGolds;
+
+    // Theme toggle functionality
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.dataset.theme = savedTheme;
+    }
+
+    function saveTheme(theme) {
+      localStorage.setItem('theme', theme);
+    }
+
+    // Modal control
+    function showModal(modalId, message, autoClose = true) {
+      const modal = document.getElementById(modalId);
+      modal.querySelector('p').textContent = message;
+      modal.style.display = 'flex';
+      if (autoClose) {
+        setTimeout(() => modal.style.display = 'none', 4000);
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Update local balance display
+    function updateBalanceDisplay(goldsBalance) {
+      document.getElementById('golds-balance').textContent = goldsBalance || 0;
+      document.getElementById('golds-balance-display').textContent = goldsBalance || 0;
+    }
+
+    // Calculate total cost dynamically
+    function calculateCost() {
+      const freelancers = parseInt(document.getElementById('freelancers').value) || 0;
+      const rewardGolds = parseInt(document.getElementById('rewardGolds').value) || 0;
+      const total = freelancers * rewardGolds;
+      const totalCostElement = document.getElementById('totalCost');
+      if (totalCostElement) {
+        totalCostElement.textContent = `${total} Golds`;
+      }
+    }
+
+    // Update subcategories based on service type
+    function updateSubcategories() {
+      const category = document.getElementById('serviceType').value;
+      const subcategorySelect = document.getElementById('subcategory');
+      subcategorySelect.innerHTML = '';
+
+      const subcategories = {
+        'Redes Sociais': ['TikTok', 'Instagram', 'Facebook', 'YouTube', 'Kwai'],
+        'Games': ['Mobile Legends', 'Free Fire', 'Roblox', 'PUBG', 'Fortnite'],
+        'Tarefas': ['Pesquisas', 'Cliques', 'Comentários', 'Compartilhamentos'],
+        'Cripto': ['Wallet Connect', 'Tasks Faucet', 'NFTs', 'Airdrops']
+      };
+
+      if (subcategories[category]) {
+        subcategories[category].forEach(sub => {
+          const option = document.createElement('option');
+          option.value = sub;
+          option.textContent = sub;
+          subcategorySelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Selecione um tipo de serviço primeiro';
+        subcategorySelect.appendChild(option);
+      }
+    }
+
+    // Ensure wallet exists
+    async function ensureWalletExists(userId, displayName = 'Usuário') {
+      const ref = db.collection('wallets').doc(userId);
+      const doc = await ref.get();
+      if (!doc.exists) {
+        await ref.set({
+          userId,
+          name: displayName,
+          goldsBalance: 0,
+          reaisBalance: 0,
+          transactions: []
+        });
+      }
+    }
+
+    // Load market data from Firestore
+    function carregarMercadoFirebase(userId) {
+      console.log("🔗 Carregando dados do mercado para:", userId);
+
+      // Update user info
+      const user = auth.currentUser;
+      if (user) {
+        document.getElementById('user-info').textContent = `${user.displayName || 'Usuário'} (ID: ${user.uid})`;
+      }
+
+      // Load user's wallet balance
+      db.collection('wallets').doc(userId).onSnapshot((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          updateBalanceDisplay(data.goldsBalance || 0);
+        } else {
+          updateBalanceDisplay(0);
+        }
+      });
+
+      // Load user's services
+      db.collection("services")
+        .where("ownerId", "==", userId)
+        .onSnapshot((snapshot) => {
+          const userServices = [];
+          snapshot.forEach((doc) => {
+            userServices.push({ id: doc.id, ...doc.data() });
+          });
+          renderUserServices(userServices, userId);
+        });
+
+      // Load active public services, excluding owner's own services
+      db.collection("services")
+        .where("status", "==", "ativo")
+        .orderBy("createdAt", "desc")
+        .limit(10)
+        .onSnapshot((snapshot) => {
+          const publicServices = [];
+          snapshot.forEach((doc) => {
+            const service = { id: doc.id, ...doc.data() };
+            if (service.ownerId === userId) return; // Oculta serviços do próprio dono
+            publicServices.push(service);
+          });
+          renderPublicServices(publicServices, userId);
+        });
+    }
+
+    // Render user-specific services
+    function renderUserServices(services, userId) {
+      const container = document.querySelector("#userServices .services-list-content");
+      if (!container) return;
+      container.innerHTML = services.length
+        ? services.map(s => `
+          <div class="service-card ${s.status === 'pending' || s.status === 'pendente_aprovação' || s.status === 'aguardando_confirmação' ? 'pending' : s.status === 'concluído' || s.status === 'finalizado' ? 'completed' : ''}">
+            <h3>${s.title || 'Sem título'}</h3>
+            <p>Zona: ${s.zone || 'Não especificado'}</p>
+            <p>Tipo: ${s.serviceType || 'Não especificado'}</p>
+            <p>Subcategoria: ${s.subcategory || 'Não especificado'}</p>
+            <div class="golds-reward">Recompensa: ${s.rewardGolds || 0} Golds</div>
+            <div class="steps-list">
+              <p>Passos:</p>
+              <ul>
+                ${s.steps && s.steps.length ? s.steps.map(step => `<li>${step}</li>`).join('') : '<li>Sem passos</li>'}
+              </ul>
+            </div>
+            <div class="proofs-list">
+              <p>Provas Necessárias:</p>
+              <ul>
+                ${s.proofs && s.proofs.length ? s.proofs.map(proof => `<li>${proof.type}: ${proof.description}</li>`).join('') : '<li>Sem provas</li>'}
+              </ul>
+            </div>
+            ${s.proof ? `
+              <div class="proofs-list">
+                <p>Prova Enviada:</p>
+                <p>${s.proof.proofText}</p>
+              </div>
+            ` : ''}
+            <p>Freelancers: ${s.freelancers || 1}</p>
+            <p>Status: ${s.status || 'Disponível'}</p>
+            <div class="action-buttons">
+              <button class="edit-button" onclick="editService('${s.id}')">Editar</button>
+              <button class="delete-button" onclick="deleteService('${s.id}')">Excluir</button>
+              ${s.status === 'aguardando_confirmação' && s.ownerId === userId ? `<button class="claim-button" onclick="confirmarProvaFirebase('${s.id}', '${s.claimedBy}')">Confirmar Prova</button>` : ''}
+            </div>
+          </div>`).join("")
+        : "<p>Nenhum serviço publicado ainda.</p>";
+    }
+
+    // Render public services in carousel
+    function renderPublicServices(services, userId) {
+      const container = document.querySelector("#carousel");
+      if (!container) return;
+      container.innerHTML = services.length
+        ? services.map(s => `
+          <div class="service-card ${s.status === 'pending' || s.status === 'pendente_aprovação' || s.status === 'aguardando_confirmação' ? 'pending' : s.status === 'concluído' || s.status === 'finalizado' ? 'completed' : ''}">
+            <h3>${s.title || 'Sem título'}</h3>
+            <p>Zona: ${s.zone || 'Não especificado'}</p>
+            <p>Tipo: ${s.serviceType || 'Não especificado'}</p>
+            <p>Subcategoria: ${s.subcategory || 'Não especificado'}</p>
+            <div class="golds-reward">Recompensa: ${s.rewardGolds || 0} Golds</div>
+            <div class="steps-list">
+              <p>Passos:</p>
+              <ul>
+                ${s.steps && s.steps.length ? s.steps.map(step => `<li>${step}</li>`).join('') : '<li>Sem passos</li>'}
+              </ul>
+            </div>
+            <div class="proofs-list">
+              <p>Provas Necessárias:</p>
+              <ul>
+                ${s.proofs && s.proofs.length ? s.proofs.map(proof => `<li>${proof.type}: ${proof.description}</li>`).join('') : '<li>Sem provas</li>'}
+              </ul>
+            </div>
+            <p>Freelancers: ${s.freelancers || 1}</p>
+            <p>Status: ${s.status || 'Disponível'}</p>
+            ${s.ownerId !== userId && s.status === 'ativo' ? `<button class="claim-button" onclick="openClaimModal('${s.id}', '${s.ownerId}', ${s.rewardGolds || 0})">Reivindicar</button>` : ''}
+            ${s.claimedBy === userId && s.status === 'concluído' ? `<button class="claim-button" onclick="openProofModal('${s.id}')">Enviar Prova</button>` : ''}
+          </div>`).join("")
+        : "<p>Nenhum serviço disponível.</p>";
+    }
+
+    // Open claim modal with service details
+    function openClaimModal(serviceId, ownerId, rewardGolds) {
+      currentServiceId = serviceId;
+      currentOwnerId = ownerId;
+      currentRewardGolds = rewardGolds;
+      document.getElementById('claimDetails').textContent = `Você está prestes a reivindicar este serviço por ${rewardGolds} Golds.`;
+      document.getElementById('claimModal').style.display = 'flex';
+    }
+
+    // Open proof submission modal
+    function openProofModal(serviceId) {
+      currentServiceId = serviceId;
+      const proofInputs = document.getElementById('proofInputs');
+      proofInputs.innerHTML = `
+        <div class="form-group">
+          <label for="proofText">Descrição da Prova</label>
+          <textarea id="proofText" placeholder="Insira a descrição ou evidência do serviço" required></textarea>
+        </div>
+      `;
+      document.getElementById('proofModal').style.display = 'flex';
+    }
+
+    // Publish service to Firestore
+    async function publicarServicoFirebase(userId) {
+      const form = document.getElementById('publishForm');
+      const title = form.querySelector('#serviceName').value.trim();
+      const zone = form.querySelector('#zone').value.trim();
+      const serviceType = form.querySelector('#serviceType').value.trim();
+      const subcategory = form.querySelector('#subcategory').value.trim();
+      const freelancers = parseInt(form.querySelector('#freelancers').value) || 1;
+      const rewardGolds = parseInt(form.querySelector('#rewardGolds').value) || 0;
+      const phone = form.querySelector('#phone').value.trim();
+      const price = parseInt(form.querySelector('#totalCost').textContent) || 0;
+      const steps = Array.from(form.querySelectorAll('#stepsContainer textarea'))
+        .map(textarea => textarea.value.trim())
+        .filter(step => step);
+      const proofs = Array.from(form.querySelectorAll('#proofsContainer .proof-input')).map(proofInput => ({
+        type: proofInput.querySelector('.proof-type').value.trim(),
+        description: proofInput.querySelector('textarea').value.trim()
+      })).filter(proof => proof.description);
+
+      if (!title || !zone || !serviceType || !subcategory || freelancers <= 0 || rewardGolds <= 0 || !phone || price <= 0 || steps.length === 0 || proofs.length === 0) {
+        showModal('errorModal', '⚠️ Por favor, preencha todos os campos corretamente, incluindo pelo menos um passo e uma prova.');
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        showModal('errorModal', '⚠️ É necessário estar logado para publicar um serviço.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const publicationFee = 20;
+      try {
+        await ensureWalletExists(userId, user.displayName || 'Usuário');
+        await db.runTransaction(async (transaction) => {
+          const walletRef = db.collection('wallets').doc(userId);
+          const walletDoc = await transaction.get(walletRef);
+          const currentBalance = walletDoc.exists ? walletDoc.data().goldsBalance || 0 : 0;
+
+          if (currentBalance < price + publicationFee) {
+            throw new Error('Saldo insuficiente para a taxa de publicação e custo do serviço.');
+          }
+
+          const newService = {
+            ownerId: user.uid,
+            ownerName: user.displayName || 'Usuário',
+            title,
+            zone,
+            serviceType,
+            subcategory,
+            steps,
+            proofs,
+            freelancers,
+            phone,
+            price,
+            rewardGolds,
+            status: 'ativo',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+
+          const serviceRef = db.collection('services').doc();
+          transaction.set(serviceRef, newService);
+
+          transaction.update(walletRef, {
+            goldsBalance: currentBalance - (price + publicationFee),
+            transactions: firebase.firestore.FieldValue.arrayUnion({
+              type: 'service_publication',
+              amount: -(price + publicationFee),
+              currency: 'golds',
+              description: `Publicação do serviço: ${title}`,
+              date: firebase.firestore.FieldValue.serverTimestamp()
+            })
+          });
+
+          showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
+          form.reset();
+          calculateCost(); // Reset total cost display
+          updateSubcategories(); // Reset subcategory dropdown
+        });
+      } catch (error) {
+        console.error('Erro ao publicar serviço:', error);
+        showModal('errorModal', `❌ Ocorreu um erro: ${error.message}`);
+      }
+    }
+
+    // Claim a service
+    async function claimServiceFirebase(serviceId, ownerId, rewardGolds) {
+      const user = auth.currentUser;
+      if (!user) {
+        showModal('errorModal', '⚠️ É necessário estar logado para reivindicar um serviço.');
+        window.location.href = 'login.html';
+        return;
+      }
+      if (user.uid === ownerId) {
+        showModal('errorModal', '⚠️ Você não pode reivindicar seu próprio serviço.');
+        return;
+      }
+
+      try {
+        await ensureWalletExists(user.uid, user.displayName || 'Usuário');
+        await ensureWalletExists(ownerId);
+        await sincronizarMercadoFirebase(user.uid, serviceId, {
+          rewardGolds,
+          type: 'service_claim',
+          description: `Reivindicou serviço ID: ${serviceId}`
+        });
+        showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
+      } catch (error) {
+        console.error('Erro ao reivindicar serviço:', error);
+        let errorMessage = '❌ Ocorreu um erro ao reivindicar o serviço.';
+        if (error.message.includes('Saldo do dono insuficiente')) {
+          errorMessage = '❌ O dono do serviço não possui saldo suficiente para pagar a recompensa.';
+        } else if (error.message.includes('não está disponível')) {
+          errorMessage = '❌ Este serviço não está mais disponível para reivindicação.';
+        }
+        showModal('errorModal', errorMessage);
+      }
+    }
+
+    // Confirm claim
+    async function confirmClaim(serviceId, ownerId, rewardGolds) {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          showModal('errorModal', 'Você precisa estar logado para reivindicar um serviço.');
+          return;
+        }
+
+        const userId = user.uid;
+
+        await sincronizarMercadoFirebase(userId, serviceId, {
+          rewardGolds,
+          type: 'service_claim',
+          description: `Reivindicou serviço ID: ${serviceId}`
+        });
+
+        showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
+        closeModal('claimModal');
+        carregarMercadoFirebase(userId);
+      } catch (error) {
+        console.error("Erro ao reivindicar serviço:", error);
+        showModal('errorModal', '❌ Ocorreu um erro ao concluir o serviço. Tente novamente.');
+      }
+    }
+
+    // Edit a service
+    async function editService(serviceId) {
+      const user = auth.currentUser;
+      if (!user) {
+        showModal('errorModal', '⚠️ É necessário estar logado para editar um serviço.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const serviceRef = db.collection('services').doc(serviceId);
+        const serviceDoc = await serviceRef.get();
+        if (!serviceDoc.exists) {
+          showModal('errorModal', '⚠️ Serviço não encontrado.');
+          return;
+        }
+        const service = serviceDoc.data();
+        if (service.ownerId !== user.uid) {
+          showModal('errorModal', '⚠️ Você não tem permissão para editar este serviço.');
+          return;
+        }
+
+        // Populate edit form
+        const editForm = document.getElementById('editForm');
+        document.getElementById('editServiceName').value = service.title || '';
+        document.getElementById('editZone').value = service.zone || '';
+        document.getElementById('editServiceType').value = service.serviceType || '';
+        document.getElementById('editSubcategory').innerHTML = '';
+        updateSubcategories(); // Populate subcategories based on serviceType
+        document.getElementById('editSubcategory').value = service.subcategory || '';
+        document.getElementById('editFreelancers').value = service.freelancers || 1;
+        document.getElementById('editRewardGolds').value = service.rewardGolds || 1;
+        document.getElementById('editPhone').value = service.phone || '';
+
+        const editStepsContainer = document.getElementById('editStepsContainer');
+        editStepsContainer.innerHTML = '<label>Passos do Serviço</label>';
+        service.steps.forEach(step => {
+          const stepInput = document.createElement('div');
+          stepInput.className = 'step-input';
+          stepInput.innerHTML = `<textarea required>${step}</textarea>`;
+          editStepsContainer.appendChild(stepInput);
+        });
+
+        const editProofsContainer = document.getElementById('editProofsContainer');
+        editProofsContainer.innerHTML = '<label>Provas Necessárias</label>';
+        service.proofs.forEach(proof => {
+          const proofInput = document.createElement('div');
+          proofInput.className = 'proof-input';
+          proofInput.innerHTML = `
+            <select class="proof-type" required>
+              <option value="Texto" ${proof.type === 'Texto' ? 'selected' : ''}>Texto</option>
+              <option value="Captura de Tela" ${proof.type === 'Captura de Tela' ? 'selected' : ''}>Captura de Tela</option>
+            </select>
+            <textarea required>${proof.description}</textarea>
+          `;
+          editProofsContainer.appendChild(proofInput);
+        });
+
+        // Show edit modal
+        document.getElementById('editModal').style.display = 'flex';
+
+        // Handle edit form submission
+        editForm.onsubmit = async (e) => {
+          e.preventDefault();
+          await editarServicoFirebase(serviceId);
+        };
+      } catch (error) {
+        console.error('Erro ao carregar serviço para edição:', error);
+        showModal('errorModal', '❌ Ocorreu um erro ao carregar o serviço.');
+      }
+    }
+
+    // Submit edited service
+    async function editarServicoFirebase(serviceId) {
+      const user = auth.currentUser;
+      if (!user) {
+        showModal('errorModal', '⚠️ É necessário estar logado para editar um serviço.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const editForm = document.getElementById('editForm');
+      const title = editForm.querySelector('#editServiceName').value.trim();
+      const zone = editForm.querySelector('#editZone').value.trim();
+      const serviceType = editForm.querySelector('#editServiceType').value.trim();
+      const subcategory = editForm.querySelector('#editSubcategory').value.trim();
+      const freelancers = parseInt(editForm.querySelector('#editFreelancers').value) || 1;
+      const rewardGolds = parseInt(editForm.querySelector('#editRewardGolds').value) || 0;
+      const phone = editForm.querySelector('#editPhone').value.trim();
+      const price = freelancers * rewardGolds;
+      const steps = Array.from(editForm.querySelectorAll('#editStepsContainer textarea'))
+        .map(textarea => textarea.value.trim())
+        .filter(step => step);
+      const proofs = Array.from(editForm.querySelectorAll('#editProofsContainer .proof-input')).map(proofInput => ({
+        type: proofInput.querySelector('.proof-type').value.trim(),
+        description: proofInput.querySelector('textarea').value.trim()
+      })).filter(proof => proof.description);
+
+      if (!title || !zone || !serviceType || !subcategory || freelancers <= 0 || rewardGolds <= 0 || !phone || price <= 0 || steps.length === 0 || proofs.length === 0) {
+        showModal('errorModal', '⚠️ Por favor, preencha todos os campos corretamente, incluindo pelo menos um passo e uma prova.');
+        return;
+      }
+
+      try {
+        await sincronizarMercadoFirebase(user.uid, serviceId, {
+          title,
+          zone,
+          serviceType,
+          subcategory,
+          steps,
+          proofs,
+          freelancers,
+          phone,
+          price,
+          rewardGolds,
+          type: 'service_edit',
+          description: `Editou serviço: ${title}`
+        });
+        showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
+        closeModal('editModal');
+        carregarMercadoFirebase(user.uid);
+      } catch (error) {
+        console.error('Erro ao editar serviço:', error);
+        showModal('errorModal', `❌ Ocorreu um erro: ${error.message}`);
+      }
+    }
+
+    // Delete a service
+    async function deleteService(serviceId) {
+      const user = auth.currentUser;
+      if (!user) {
+        showModal('errorModal', '⚠️ É necessário estar logado para excluir um serviço.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const serviceRef = db.collection('services').doc(serviceId);
+        const serviceDoc = await serviceRef.get();
+        if (!serviceDoc.exists) {
+          showModal('errorModal', '⚠️ Serviço não encontrado.');
+          return;
+        }
+        if (serviceDoc.data().ownerId !== user.uid) {
+          showModal('errorModal', '⚠️ Você não tem permissão para excluir este serviço.');
+          return;
+        }
+
+        await serviceRef.delete();
+        showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
+        carregarMercadoFirebase(user.uid);
+      } catch (error) {
+        console.error('Erro ao excluir serviço:', error);
+        showModal('errorModal', `❌ Ocorreu um erro: ${error.message}`);
+      }
+    }
+
+    // Synchronize market data with Firestore
+    async function sincronizarMercadoFirebase(userId, serviceId, data) {
+      await db.runTransaction(async (transaction) => {
+        const serviceRef = db.collection('services').doc(serviceId);
+        const serviceDoc = await transaction.get(serviceRef);
+
+        if (!serviceDoc.exists) {
+          throw new Error('Serviço não encontrado.');
+        }
+
+        const serviceData = serviceDoc.data();
+
+        // Padroniza formato de transações
+        const makeTransactionObj = (type, amount, description) => ({
+          type,
+          amount,
+          currency: 'golds',
+          description,
+          date: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // CLAIM: pagar recompensas — debitar dono e creditar claimant
+        if (data.type === 'service_claim') {
+          if (serviceData.status !== 'ativo') {
+            throw new Error('Este serviço não está disponível para reivindicação.');
+          }
+          if (!serviceData.ownerId) {
+            throw new Error('Serviço sem dono definido.');
+          }
+
+          const ownerRef = db.collection('wallets').doc(serviceData.ownerId);
+          const claimantRef = db.collection('wallets').doc(userId);
+
+          const ownerDoc = await transaction.get(ownerRef);
+          const claimantDoc = await transaction.get(claimantRef);
+
+          const ownerBalance = ownerDoc.exists ? (ownerDoc.data().goldsBalance || 0) : 0;
+          const claimantBalance = claimantDoc.exists ? (claimantDoc.data().goldsBalance || 0) : 0;
+          const reward = Number(data.rewardGolds || 0);
+
+          if (ownerBalance < reward) {
+            throw new Error('Saldo do dono insuficiente para pagar a recompensa.');
+          }
+
+          // Atualiza serviço
+          transaction.update(serviceRef, {
+            status: 'concluído',
+            claimedBy: userId,
+            claimedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          // Debita dono
+          transaction.update(ownerRef, {
+            goldsBalance: ownerBalance - reward,
+            transactions: firebase.firestore.FieldValue.arrayUnion(
+              makeTransactionObj('service_payout', -reward, `Pagamento por serviço ID: ${serviceId}`)
+            )
+          });
+
+          // Credita claimant
+          transaction.update(claimantRef, {
+            goldsBalance: claimantBalance + reward,
+            transactions: firebase.firestore.FieldValue.arrayUnion(
+              makeTransactionObj('service_claim', reward, data.description || `Reivindicou serviço ID: ${serviceId}`)
+            )
+          });
+
+          return; // fim do fluxo claim
+        }
+
+        // EDIT: atualização de campos (apenas proprietario)
+        if (data.type === 'service_edit') {
+          if (serviceData.ownerId !== userId) {
+            throw new Error('Você não tem permissão para editar este serviço.');
+          }
+          const updateData = {
+            title: data.title,
+            zone: data.zone,
+            serviceType: data.serviceType,
+            subcategory: data.subcategory,
+            steps: data.steps,
+            proofs: data.proofs,
+            freelancers: data.freelancers,
+            phone: data.phone,
+            price: data.price,
+            rewardGolds: data.rewardGolds,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          transaction.update(serviceRef, updateData);
+
+          // (Opcional) registrar uma transação de edição se quiser cobrar algo
+          return;
+        }
+
+        // outros tipos...
+        throw new Error('Tipo de sincronização não tratado.');
+      });
+    }
+
+    // Submit proofs
+    function submitProofs(serviceId) {
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        showModal('errorModal', 'Usuário não autenticado. Faça login novamente.');
+        return;
+      }
+
+      enviarProvasFirebase(serviceId, userId);
+    }
+
+    // Handle IP consent
+    async function acceptIPConsent() {
+      localStorage.setItem('ipConsent', 'true');
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await db.collection('users').doc(user.uid).set({
+            ipConsent: true,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+          showModal('successModal', '✅ Consentimento de IP aceito com sucesso!', false);
+        } catch (error) {
+          console.error('Erro ao salvar consentimento de IP:', error);
+          showModal('errorModal', `❌ Erro ao salvar consentimento de IP: ${error.message}`);
+        }
+      }
+      document.getElementById('cookieBanner').style.display = 'none';
+    }
+
+    async function declineIPConsent() {
+      localStorage.setItem('ipConsent', 'false');
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await db.collection('users').doc(user.uid).set({
+            ipConsent: false,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+          showModal('successModal', '✅ Consentimento de IP recusado com sucesso!', false);
+        } catch (error) {
+          console.error('Erro ao salvar recusa de consentimento de IP:', error);
+          showModal('errorModal', `❌ Erro ao salvar recusa de consentimento: ${error.message}`);
+        }
+      }
+      document.getElementById('cookieBanner').style.display = 'none';
+    }
+
+    // === ENVIAR PROVAS DE EXECUÇÃO ===
+    async function enviarProvasFirebase(serviceId, userId) {
+      const proofText = document.getElementById('proofText')?.value.trim();
+      if (!proofText) {
+        showModal('errorModal', 'Por favor, envie uma descrição ou evidência válida.');
+        return;
+      }
+
+      const serviceRef = db.collection('services').doc(serviceId);
+      const walletRef = db.collection('wallets').doc(userId);
+
+      try {
+        const serviceDoc = await serviceRef.get();
+        if (!serviceDoc.exists) throw new Error('Serviço não encontrado.');
+
+        const serviceData = serviceDoc.data();
+        if (serviceData.claimedBy !== userId) {
+          throw new Error('Você não é o responsável por este serviço.');
+        }
+        if (serviceData.status !== 'concluído') {
+          throw new Error('O serviço ainda não foi concluído.');
+        }
+
+        // Atualiza serviço com prova
+        await serviceRef.update({
+          proof: {
+            proofText,
+            userId,
+            date: new Date().toISOString()
+          },
+          status: 'aguardando_confirmação',
+          proofDate: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Adiciona transação temporária na carteira
+        const walletDoc = await walletRef.get();
+        const walletData = walletDoc.data() || { transactions: [] };
+        const transactions = walletData.transactions || [];
+
+        transactions.push({
+          type: 'aguardando_confirmação',
+          description: `Prova enviada para serviço: ${serviceData.title}`,
+          amount: serviceData.rewardGolds,
+          date: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await walletRef.update({ transactions });
+
+        showModal('successModal', '✅ Prova enviada com sucesso! Aguardando confirmação do anunciante.', false);
+        closeModal('proofModal');
+        carregarMercadoFirebase(userId);
+      } catch (error) {
+        console.error('Erro ao enviar prova:', error);
+        showModal('errorModal', `❌ Erro ao enviar prova: ${error.message}`);
+      }
+    }
+
+    // === CONFIRMAR PROVA ===
+    async function confirmarProvaFirebase(serviceId, claimantId) {
+      const serviceRef = db.collection('services').doc(serviceId);
+      const walletRef = db.collection('wallets').doc(claimantId);
+      const ownerId = auth.currentUser?.uid;
+
+      try {
+        if (!ownerId) throw new Error('Usuário não autenticado.');
+
+        const serviceDoc = await serviceRef.get();
+        if (!serviceDoc.exists) throw new Error('Serviço não encontrado.');
+
+        const serviceData = serviceDoc.data();
+        if (serviceData.ownerId !== ownerId) {
+          throw new Error('Você não tem permissão para confirmar este serviço.');
+        }
+        if (serviceData.status !== 'aguardando_confirmação') {
+          throw new Error('A prova já foi confirmada ou o serviço está inativo.');
+        }
+        if (serviceData.claimedBy !== claimantId) {
+          throw new Error('Reivindicador inválido.');
+        }
+
+        // Atualiza serviço
+        await serviceRef.update({
+          status: 'finalizado',
+          confirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          finalizedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Atualiza carteira do usuário
+        const walletDoc = await walletRef.get();
+        const walletData = walletDoc.data() || { goldsBalance: 0, transactions: [] };
+        const transactions = walletData.transactions || [];
+        transactions.push({
+          type: 'entrada',
+          description: `Serviço concluído: ${serviceData.title}`,
+          amount: serviceData.rewardGolds,
+          date: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        await walletRef.update({ transactions });
+
+        showModal('successModal', '✅ Prova confirmada! Transação registrada.', false);
+        carregarMercadoFirebase(ownerId);
+      } catch (error) {
+        console.error('Erro ao confirmar prova:', error);
+        showModal('errorModal', `❌ Falha ao confirmar prova: ${error.message}`);
+      }
+    }
+
+    // Firebase Authentication
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        await ensureWalletExists(user.uid, user.displayName || 'Usuário');
+        carregarMercadoFirebase(user.uid);
+      } else {
+        showModal('errorModal', '⚠️ É necessário estar logado para acessar o mercado.');
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Theme toggle event listener
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      const body = document.body;
+      const newTheme = body.dataset.theme === 'light' ? 'dark' : 'light';
+      body.dataset.theme = newTheme;
+      saveTheme(newTheme);
+    });
+
+    // Publish form submit listener
+    document.getElementById('publishForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+      if (user) {
+        publicarServicoFirebase(user.uid);
+      } else {
+        showModal('errorModal', '⚠️ É necessário estar logado para publicar um serviço.');
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Proof form submit listener
+    document.getElementById('proofForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitProofs(currentServiceId);
+    });
+
+    // Load theme and initialize dynamic fields
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTheme();
+      // Check IP consent
+      if (localStorage.getItem('ipConsent')) {
+        document.getElementById('cookieBanner').style.display = 'none';
+      }
+      // Initialize dynamic cost calculation
+      document.getElementById('freelancers')?.addEventListener('input', calculateCost);
+      document.getElementById('rewardGolds')?.addEventListener('input', calculateCost);
+      // Initialize dynamic subcategories
+      document.getElementById('serviceType')?.addEventListener('change', updateSubcategories);
+      updateSubcategories(); // Initial call to set default state
+    });
+  </script>
+</body>
+</html>
