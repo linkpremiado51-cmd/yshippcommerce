@@ -4,18 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acesso - YshippCommerce</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     :root {
-      --background: #f5f7fa;
+      --background: #f9fafb;
       --surface: #ffffff;
-      --text-primary: #333333;
-      --text-secondary: #777777;
-      --primary: #007bff;
-      --primary-hover: #0056b3;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --secondary: #10b981;
+      --secondary-hover: #059669;
       --border: #e5e7eb;
     }
     [data-theme="dark"] {
@@ -26,8 +27,8 @@
       --border: #4b5563;
     }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      font-family: 'Ubuntu', sans-serif;
+      background: var(--background);
       color: var(--text-primary);
       min-height: 100vh;
       display: flex;
@@ -37,131 +38,48 @@
     }
     .card {
       background: var(--surface);
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 380px;
+      max-width: 400px;
     }
-    .login-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    .login-header img.logo {
-      width: 80px;
-      margin-bottom: 10px;
-    }
-    .login-header h2 {
-      font-size: 1.5rem;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    .login-header p {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-    .input-group {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
-    .input-group i {
-      position: absolute;
-      top: 50%;
-      left: 12px;
-      transform: translateY(-50%);
-      color: var(--text-secondary);
-    }
-    .input-group input {
-      width: 100%;
-      padding: 12px 12px 12px 40px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--background);
-      color: var(--text-primary);
-      font-size: 0.9rem;
-    }
-    .input-group input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 4px rgba(0,123,255,0.4);
-      outline: none;
-    }
-    .input-group .toggle-password {
-      right: 12px;
-      left: auto;
+    .tabs button {
+      width: 50%;
+      padding: 0.75rem;
+      font-weight: bold;
+      border: none;
       cursor: pointer;
+      transition: 0.3s;
+      background: var(--background);
+      color: var(--text-secondary);
     }
-    .btn-login {
-      width: 100%;
-      padding: 12px;
+    .tabs button.active {
       background: var(--primary);
       color: white;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      transition: background 0.3s;
+      border-radius: 0.5rem 0.5rem 0 0;
     }
-    .btn-login:hover {
-      background: var(--primary-hover);
-    }
-    .social-login {
-      margin: 1.5rem 0;
-      text-align: center;
-    }
-    .social-login p {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-    .social-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .social-buttons button {
-      flex: 1;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: white;
-      padding: 8px 0;
-      font-weight: 500;
-      font-size: 0.85rem;
-      transition: background 0.3s;
-    }
-    .social-buttons button:hover {
-      background: #f5f5f5;
-    }
-    .google i { color: #DB4437; }
-    .microsoft i { color: #00A4EF; }
-    .facebook i { color: #1877F2; }
-    .links {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1rem;
-    }
-    .links a {
-      color: #555;
-      font-size: 0.9rem;
-      text-decoration: none;
-    }
-    .links a:hover {
-      text-decoration: underline;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 1.5rem;
-    }
-    .language-select {
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px;
-      font-size: 0.85rem;
-      color: var(--text-primary);
+      border-radius: 0.5rem;
       background: var(--background);
-      margin-bottom: 0.5rem;
+      color: var(--text-primary);
     }
-    .footer p {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
+    button.action {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--secondary);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+    button.action:hover {
+      background: var(--secondary-hover);
     }
     .toggle-theme {
       position: absolute;
@@ -182,58 +100,31 @@
 <body data-theme="light">
   <button class="toggle-theme" id="theme-toggle">🌙</button>
   <div class="card">
-    <div class="login-header">
-      <img src="logo.png" alt="Logo" class="logo">
-      <h2>Yshipp Systems</h2>
-      <p>Bem-vindo de volta</p>
-    </div>
-    <div class="login-fields">
-      <div class="input-group">
-        <i class="fa-solid fa-user"></i>
-        <input type="email" id="login-email" placeholder="Digite seu e-mail">
-      </div>
-      <div class="input-group">
-        <i class="fa-solid fa-lock"></i>
-        <input type="password" id="login-senha" placeholder="Digite sua senha">
-        <i class="fa-regular fa-eye toggle-password"></i>
-      </div>
-    </div>
-    <button class="btn-login" id="login-btn">Entrar</button>
-    <div class="social-login">
-      <p>Ou entre com</p>
-      <div class="social-buttons">
-        <button class="google"><i class="fa-brands fa-google"></i> Google</button>
-        <button class="microsoft"><i class="fa-brands fa-microsoft"></i> Microsoft</button>
-        <button class="facebook"><i class="fa-brands fa-facebook-f"></i> Facebook</button>
-      </div>
-    </div>
-    <div class="links">
-      <a href="#">Esqueceu a senha?</a>
-      <a href="#" onclick="showTab('signup')">Criar nova conta</a>
-    </div>
-    <p id="mensagem" class="text-center text-sm mt-3 text-red-500"></p>
-    <div class="footer">
-      <select class="language-select">
-        <option>Português (BR)</option>
-        <option>English (US)</option>
-        <option>Español</option>
-      </select>
-      <p>© 2025 Yshipp Systems — Todos os direitos reservados. v1.4.3</p>
-    </div>
-  </div>
-  <div class="card hidden" id="signup-section">
     <div class="tabs flex mb-4">
-      <button id="login-tab" onclick="showTab('login')">Entrar</button>
-      <button id="signup-tab" class="active" onclick="showTab('signup')">Cadastrar</button>
+      <button id="login-tab" class="active" onclick="showTab('login')">Entrar</button>
+      <button id="signup-tab" onclick="showTab('signup')">Cadastrar</button>
     </div>
-    <h2 class="text-center text-xl font-bold mb-4">Crie sua conta</h2>
-    <input type="text" id="nome" placeholder="Nome completo">
-    <input type="email" id="email" placeholder="E-mail">
-    <input type="password" id="senha" placeholder="Senha">
-    <button class="action" id="signup-btn">Cadastrar</button>
+
+    <!-- Login -->
+    <div id="login-section">
+      <h2 class="text-center text-xl font-bold mb-4">Acesse sua conta</h2>
+      <input type="email" id="login-email" placeholder="E-mail">
+      <input type="password" id="login-senha" placeholder="Senha">
+      <button class="action" id="login-btn">Entrar</button>
+    </div>
+
+    <!-- Cadastro -->
+    <div id="signup-section" class="hidden">
+      <h2 class="text-center text-xl font-bold mb-4">Crie sua conta</h2>
+      <input type="text" id="nome" placeholder="Nome completo">
+      <input type="email" id="email" placeholder="E-mail">
+      <input type="password" id="senha" placeholder="Senha">
+      <button class="action" id="signup-btn">Cadastrar</button>
+    </div>
+
     <p id="mensagem" class="text-center text-sm mt-3 text-red-500"></p>
   </div>
-
+<p id="mensagem" class="text-center text-sm mt-3 text-red-500"></p>
   <!-- SCRIPT MODULAR FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -257,7 +148,7 @@
 
     // Alternar abas
     window.showTab = function(tab) {
-      document.querySelector('.card:not(#signup-section)').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('login-section').classList.toggle('hidden', tab !== 'login');
       document.getElementById('signup-section').classList.toggle('hidden', tab !== 'signup');
       document.getElementById('login-tab').classList.toggle('active', tab === 'login');
       document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
@@ -328,5 +219,27 @@
       }
     });
   </script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const msg = document.getElementById("mensagem");
+  try {
+    if (firebase.apps && firebase.apps.length > 0) {
+      msg.textContent = "✅ Firebase conectado com sucesso!";
+      msg.classList.remove("text-red-500");
+      msg.classList.add("text-green-500");
+
+      // Testa leitura no Firestore (verifica permissão)
+      const testRef = firebase.firestore().collection("testConnection");
+      await testRef.add({ timestamp: new Date().toISOString() });
+      console.log("Firestore test OK 🔥");
+    } else {
+      msg.textContent = "❌ Firebase não está inicializado.";
+    }
+  } catch (error) {
+    console.error("Erro ao testar Firebase:", error);
+    msg.textContent = "⚠️ Erro de conexão com Firebase: " + error.message;
+  }
+});
+</script>
 </body>
 </html>
