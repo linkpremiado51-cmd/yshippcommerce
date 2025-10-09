@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -274,7 +235,7 @@
     .stat-item .stat-value {
       font-size: 1.125rem;
       font-weight: 600;
-      color: var(--primary);
+      color: var(--text-primary);
     }
 
     .published-services-list,
@@ -606,6 +567,8 @@
     <div class="sidebar-content">
       <div>
         <button id="theme-toggle" class="sidebar-button theme-button">Alternar Tema</button>
+        <!-- ✅ Botão de logout -->
+        <button id="logout-button" class="sidebar-button">Sair</button>
       </div>
     </div>
   </div>
@@ -624,7 +587,7 @@
     <div id="wallet-card" class="wallet-card">
       <h3>Carteira</h3>
       <p>Gerencie seus Golds, transações e histórico de saldo.</p>
-      <button class="nav-button" onclick="navigateTo('YshippCommerceWallet.html')">Acessar Carteira</button>
+      <button class="nav-button" onclick="navigateTo('wallet')">Acessar Carteira</button>
     </div>
 
     <section id="dashboard-section" class="dashboard-section">
@@ -672,27 +635,27 @@
           <div class="nav-card">
             <h3>Gerador de Bilhetes e Golds</h3>
             <p>Crie bilhetes e ganhe Golds participando de sorteios.</p>
-            <button class="nav-button" onclick="navigateTo('YshippCommerceBilheteGenerator.html')">Acessar</button>
+            <button class="nav-button" onclick="navigateTo('generator')">Acessar</button>
           </div>
           <div class="nav-card">
             <h3>Loja</h3>
             <p>Compre cartões presente, itens e catálogos com seus Golds.</p>
-            <button class="nav-button" onclick="navigateTo('YshippCommerceStore.html')">Acessar</button>
+            <button class="nav-button" onclick="navigateTo('store')">Acessar</button>
           </div>
           <div class="nav-card">
             <h3>Mercado de Serviços</h3>
             <p>Publique ou aceite tarefas pagas em Golds.</p>
-            <button class="nav-button" onclick="navigateTo('YshippCommerceServiceMarket.html')">Acessar</button>
+            <button class="nav-button" onclick="navigateTo('market')">Acessar</button>
           </div>
           <div class="nav-card">
             <h3>Loja de Serviços</h3>
             <p>Visualize e aceite serviços disponíveis para ganhar recompensas.</p>
-            <button class="nav-button" onclick="navigateTo('YshippCommerceServiceStore.html')">Acessar</button>
+            <button class="nav-button" onclick="navigateTo('service')">Acessar</button>
           </div>
           <div class="nav-card">
             <h3>Sorteios e Leilões</h3>
             <p>Participe de sorteios e leilões para ganhar prêmios.</p>
-            <button class="nav-button" onclick="navigateTo('YshippCommerceRaffles.html')">Acessar</button>
+            <button class="nav-button" onclick="navigateTo('raffles')">Acessar</button>
           </div>
         </div>
 
@@ -721,9 +684,9 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js?v=1"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=1"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=1"></script>
 
   <script type="text/javascript">
     var gk_isXlsx = false;
@@ -754,7 +717,7 @@
           }
 
           // Convert filtered JSON back to CSV
-          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
           csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
           return csv;
         } catch (e) {
@@ -770,15 +733,33 @@
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
       authDomain: "yshippcommerce.firebaseapp.com",
       projectId: "yshippcommerce",
-      storageBucket: "yshippcommerce.firebasestorage.app",
+      storageBucket: "yshippcommerce.appspot.com",
       messagingSenderId: "680576769517",
       appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
     };
     firebase.initializeApp(firebaseConfig);
 
+    // Firebase Authentication and Firestore Synchronization
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
     // Navigation function for wallet and navigation grid
     function navigateTo(page) {
-      window.location.href = page;
+      switch(page) {
+        case 'wallet':
+          window.location.href = "carteira.html";
+          break;
+        case 'generator':
+          window.location.href = "gerador.html";
+          break;
+        case 'market':
+          window.location.href = "mercado.html";
+          break;
+        case 'home':
+        default:
+          window.location.href = "index.html";
+          break;
+      }
     }
 
     // Hamburger menu functionality
@@ -835,137 +816,39 @@
       cookieBanner.classList.remove('active');
     });
 
-    // Firebase Authentication and Firestore Synchronization
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+    // Função que carrega os dados do usuário
+    function carregarDadosUsuario(user) {
+      const userId = user.uid;
 
-    auth.onAuthStateChanged((user) => {
+      db.collection("wallets").doc(userId).get().then((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById("profileName").textContent = data.name || "Usuário";
+          document.getElementById("userIdDisplay").textContent = userId;
+          document.getElementById("registrationDate").textContent = 
+            data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "N/D";
+          document.getElementById("userLevel").textContent = data.nivel || "Padrão";
+        }
+      }).catch((error) => {
+        console.error("Erro ao carregar dados do usuário:", error);
+      });
+    }
+
+    // Listener que observa se há um usuário autenticado
+    auth.onAuthStateChanged(user => {
       if (user) {
-        // User is logged in, fetch and display user data
-        const userId = user.uid;
-        const displayName = user.displayName || 'Usuário';
-        const registrationDate = user.metadata.creationTime
-          ? new Date(user.metadata.creationTime).toLocaleDateString('pt-BR')
-          : 'Data não disponível';
-
-        // Fetch user profile data from Firestore (users collection)
-        db.collection('users').doc(userId).get()
-          .then((doc) => {
-            if (doc.exists) {
-              const userData = doc.data();
-              const userLevel = userData.level || 'Iniciante';
-
-              // Update profile section
-              document.getElementById('profileName').textContent = `Bem-vindo, ${displayName}!`;
-              document.getElementById('userIdDisplay').textContent = userId;
-              document.getElementById('registrationDate').textContent = registrationDate;
-              document.getElementById('userLevel').textContent = userLevel;
-
-              // Store user profile data in localStorage for synchronization
-              localStorage.setItem('userData', JSON.stringify({
-                displayName: displayName,
-                userId: userId,
-                registrationDate: registrationDate,
-                userLevel: userLevel
-              }));
-            } else {
-              console.error('No user data found in Firestore');
-              // Fallback to default values
-              document.getElementById('profileName').textContent = `Bem-vindo, ${displayName}!`;
-              document.getElementById('userIdDisplay').textContent = userId;
-              document.getElementById('registrationDate').textContent = registrationDate;
-              document.getElementById('userLevel').textContent = 'Iniciante';
-
-              localStorage.setItem('userData', JSON.stringify({
-                displayName: displayName,
-                userId: userId,
-                registrationDate: registrationDate,
-                userLevel: 'Iniciante'
-              }));
-            }
-          })
-          .catch((error) => {
-            console.error('Error fetching user data from Firestore:', error);
-          });
-
-        // Real-time listener for wallet data (wallets collection)
-        db.collection('wallets').doc(userId).onSnapshot((doc) => {
-          if (doc.exists) {
-            const walletData = doc.data();
-
-            // Update wallet-related UI elements
-            document.getElementById('goldsEarned').textContent = walletData.goldsBalance || 0;
-            // Placeholder for servicesPublishedCount and tasksAcceptedCount (not in wallet data)
-            document.getElementById('servicesPublishedCount').textContent = 0;
-            document.getElementById('tasksAcceptedCount').textContent = 0;
-            document.getElementById('ticketsEarned').textContent = 0;
-
-            // Update transactions in tasksListContainer
-            const tasksListContainer = document.getElementById('tasksListContainer');
-            tasksListContainer.innerHTML = ''; // Clear existing transactions
-            if (walletData.transactions && walletData.transactions.length > 0) {
-              walletData.transactions.forEach((transaction) => {
-                const transactionElement = document.createElement('div');
-                transactionElement.className = 'task-item';
-                transactionElement.textContent = `${transaction.date}: ${transaction.description} (+${transaction.amount} ${transaction.currency})`;
-                tasksListContainer.appendChild(transactionElement);
-              });
-            } else {
-              const noTransactions = document.createElement('div');
-              noTransactions.className = 'task-item';
-              noTransactions.textContent = 'Nenhuma transação recente';
-              tasksListContainer.appendChild(noTransactions);
-            }
-
-            // Store wallet data in localStorage for synchronization with other pages
-            localStorage.setItem('walletData', JSON.stringify({
-              userId: walletData.userId,
-              name: walletData.name,
-              goldsBalance: walletData.goldsBalance,
-              reaisBalance: walletData.reaisBalance,
-              transactions: walletData.transactions
-            }));
-          } else {
-            // Create default wallet document if it doesn't exist
-            db.collection('wallets').doc(userId).set({
-              userId: userId,
-              name: displayName,
-              goldsBalance: 0,
-              reaisBalance: 0,
-              transactions: []
-            }).then(() => {
-              console.log('Default wallet created for user:', userId);
-              // Update UI with default values
-              document.getElementById('goldsEarned').textContent = 0;
-              document.getElementById('servicesPublishedCount').textContent = 0;
-              document.getElementById('tasksAcceptedCount').textContent = 0;
-              document.getElementById('ticketsEarned').textContent = 0;
-
-              const tasksListContainer = document.getElementById('tasksListContainer');
-              tasksListContainer.innerHTML = '';
-              const noTransactions = document.createElement('div');
-              noTransactions.className = 'task-item';
-              noTransactions.textContent = 'Nenhuma transação recente';
-              tasksListContainer.appendChild(noTransactions);
-
-              localStorage.setItem('walletData', JSON.stringify({
-                userId: userId,
-                name: displayName,
-                goldsBalance: 0,
-                reaisBalance: 0,
-                transactions: []
-              }));
-            }).catch((error) => {
-              console.error('Error creating default wallet:', error);
-            });
-          }
-        }, (error) => {
-          console.error('Error listening to wallet data:', error);
-        });
+        carregarDadosUsuario(user);
       } else {
-        // No user is logged in, redirect to login page
-        window.location.href = 'login.html';
+        // se não estiver autenticado, redireciona para login
+        window.location.href = "cadrasto.html";
       }
+    });
+
+    // Função para deslogar o usuário
+    document.getElementById("logout-button").addEventListener("click", () => {
+      auth.signOut().then(() => {
+        window.location.href = "cadrasto.html";
+      });
     });
 
     // Show cookie banner on page load if not shown today
