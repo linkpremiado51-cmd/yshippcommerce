@@ -857,12 +857,21 @@
 
     // Listener que observa se há um usuário autenticado
     auth.onAuthStateChanged(user => {
-      if (user) {
-        carregarDadosUsuario(user);
-      } else {
-        // se não estiver autenticado, redireciona para login
-        window.location.href = "cadastro.html";
-      }
+  if (user) {
+    // 🔍 Debug temporário: mostra o UID ativo no topo da tela
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      `<div style="background:black;color:lime;padding:8px;position:fixed;top:0;left:0;z-index:9999;font-size:12px">
+        UID ativo: ${user.uid}
+      </div>`
+    );
+
+    carregarDadosUsuario(user);
+  } else {
+    // Se não estiver autenticado, redireciona para o cadastro/login
+    window.location.href = "cadastro.html";
+  }
+});
     });
 
     // Função para deslogar o usuário
