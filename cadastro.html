@@ -6,9 +6,11 @@
   <title>Acesso - YshippCommerce</title>
   <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js?v=1"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=1"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=1"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
 
   <style>
     :root {
@@ -129,6 +131,90 @@
   </div>
 
   <script>
-    // Configuração Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxygCeFLD
+    // Espera o DOM carregar antes de inicializar o Firebase
+    document.addEventListener("DOMContentLoaded", () => {
+      // Configuração Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+        authDomain: "yshippcommerce.firebaseapp.com",
+        projectId: "yshippcommerce",
+        storageBucket: "yshippcommerce.firebasestorage.app",
+        messagingSenderId: "680576769517",
+        appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+      };
+
+      // Inicializa o Firebase
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      // Alternar abas
+      window.showTab = function(tab) {
+        document.getElementById('login-section').classList.toggle('hidden', tab !== 'login');
+        document.getElementById('signup-section').classList.toggle('hidden', tab !== 'signup');
+        document.getElementById('login-tab').classList.toggle('active', tab === 'login');
+        document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
+        document.getElementById('mensagem').textContent = '';
+      };
+
+      // Tema
+      const themeToggle = document.getElementById("theme-toggle");
+      themeToggle.addEventListener("click", () => {
+        const current = document.body.dataset.theme;
+        const newTheme = current === "light" ? "dark" : "light";
+        document.body.dataset.theme = newTheme;
+        themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙";
+        localStorage.setItem("theme", newTheme);
+      });
+
+      // Cadastro
+      window.cadastrarUsuario = async function() {
+        const nome = document.getElementById('nome').value;
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const msg = document.getElementById('mensagem');
+
+        try {
+          const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
+          const user = userCredential.user;
+
+          await db.collection('wallets').doc(user.uid).set({
+            userId: user.uid,
+            name: nome,
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date()
+          });
+
+          msg.textContent = "Conta criada com sucesso! Redirecionando...";
+          msg.classList.replace("text-red-500", "text-green-500");
+          setTimeout(() => {
+            window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
+          }, 2000);
+        } catch (error) {
+          msg.textContent = error.message;
+        }
+      };
+
+      // Login
+      window.loginUsuario = async function() {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        const msg = document.getElementById('mensagem');
+
+        try {
+          await auth.signInWithEmailAndPassword(email, senha);
+          msg.textContent = "Login realizado! Redirecionando...";
+          msg.classList.replace("text-red-500", "text-green-500");
+          setTimeout(() => {
+            window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
+          }, 1500);
+        } catch (error) {
+          msg.textContent = error.message;
+        }
+      };
+    });
+  </script>
+</body>
+</html>
