@@ -6,92 +6,197 @@
   <title>Acesso - YshippCommerce</title>
   <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+
+  <style>
+    :root {
+      --background: #f9fafb;
+      --surface: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --secondary: #10b981;
+      --secondary-hover: #059669;
+      --border: #e5e7eb;
+    }
+    [data-theme="dark"] {
+      --background: #1f2937;
+      --surface: #374151;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border: #4b5563;
+    }
+    body {
+      font-family: 'Ubuntu', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+    .card {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .tabs button {
+      width: 50%;
+      padding: 0.75rem;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+      background: var(--background);
+      color: var(--text-secondary);
+    }
+    .tabs button.active {
+      background: var(--primary);
+      color: white;
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--background);
+      color: var(--text-primary);
+    }
+    button.action {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--secondary);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+    button.action:hover {
+      background: var(--secondary-hover);
+    }
+    .toggle-theme {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
-<body class="flex justify-center items-center min-h-screen bg-gray-100">
-  <div class="bg-white p-6 rounded-2xl shadow-lg w-80">
-    <div class="flex mb-4">
-      <button id="login-tab" class="flex-1 py-2 font-bold bg-purple-600 text-white rounded-l" onclick="showTab('login')">Entrar</button>
-      <button id="signup-tab" class="flex-1 py-2 font-bold bg-gray-200 text-gray-700 rounded-r" onclick="showTab('signup')">Cadastrar</button>
+<body data-theme="light">
+  <button class="toggle-theme" id="theme-toggle">🌙</button>
+  <div class="card">
+    <div class="tabs flex mb-4">
+      <button id="login-tab" class="active" onclick="showTab('login')">Entrar</button>
+      <button id="signup-tab" onclick="showTab('signup')">Cadastrar</button>
     </div>
 
+    <!-- Login -->
     <div id="login-section">
       <h2 class="text-center text-xl font-bold mb-4">Acesse sua conta</h2>
-      <input id="login-email" type="email" placeholder="E-mail" class="w-full mb-2 p-2 border rounded">
-      <input id="login-senha" type="password" placeholder="Senha" class="w-full mb-2 p-2 border rounded">
-      <button onclick="loginUsuario()" class="w-full bg-green-600 text-white py-2 rounded">Entrar</button>
+      <input type="email" id="login-email" placeholder="E-mail">
+      <input type="password" id="login-senha" placeholder="Senha">
+      <button class="action" onclick="loginUsuario()">Entrar</button>
     </div>
 
+    <!-- Cadastro -->
     <div id="signup-section" class="hidden">
       <h2 class="text-center text-xl font-bold mb-4">Crie sua conta</h2>
-      <input id="nome" type="text" placeholder="Nome completo" class="w-full mb-2 p-2 border rounded">
-      <input id="email" type="email" placeholder="E-mail" class="w-full mb-2 p-2 border rounded">
-      <input id="senha" type="password" placeholder="Senha" class="w-full mb-2 p-2 border rounded">
-      <button onclick="cadastrarUsuario()" class="w-full bg-green-600 text-white py-2 rounded">Cadastrar</button>
+      <input type="text" id="nome" placeholder="Nome completo">
+      <input type="email" id="email" placeholder="E-mail">
+      <input type="password" id="senha" placeholder="Senha">
+      <button class="action" onclick="cadastrarUsuario()">Cadastrar</button>
     </div>
 
     <p id="mensagem" class="text-center text-sm mt-3 text-red-500"></p>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
-
   <script>
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
-      authDomain: "yshippcommerce.firebaseapp.com",
-      projectId: "yshippcommerce",
-      storageBucket: "yshippcommerce.firebasestorage.app",
-      messagingSenderId: "680576769517",
-      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
-    };
-
-    let auth, db, firebaseReady = false;
-
-    // Inicialização segura (garante que Firebase carregue antes de usar)
-    function onFirebaseReady() {
-      if (!firebaseReady) {
-        firebase.initializeApp(firebaseConfig);
-        auth = firebase.auth();
-        db = firebase.firestore();
-        firebaseReady = true;
-        console.log("✅ Firebase inicializado com sucesso");
-      }
-    }
-
-    // Verifica automaticamente se o Firebase carregou
-    document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(onFirebaseReady, 500);
-    });
-
     // Alternar abas
     function showTab(tab) {
       document.getElementById('login-section').classList.toggle('hidden', tab !== 'login');
       document.getElementById('signup-section').classList.toggle('hidden', tab !== 'signup');
-      document.getElementById('login-tab').classList.toggle('bg-purple-600', tab === 'login');
-      document.getElementById('login-tab').classList.toggle('bg-gray-200', tab !== 'login');
-      document.getElementById('signup-tab').classList.toggle('bg-purple-600', tab === 'signup');
-      document.getElementById('signup-tab').classList.toggle('bg-gray-200', tab !== 'signup');
+      document.getElementById('login-tab').classList.toggle('active', tab === 'login');
+      document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
       document.getElementById('mensagem').textContent = '';
     }
 
+    // Tema
+    const themeToggle = document.getElementById("theme-toggle");
+    themeToggle.addEventListener("click", () => {
+      const current = document.body.dataset.theme;
+      const newTheme = current === "light" ? "dark" : "light";
+      document.body.dataset.theme = newTheme;
+      themeToggle.textContent = newTheme === "dark" ? "☀️" : "🌙";
+      localStorage.setItem("theme", newTheme);
+    });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const saved = localStorage.getItem("theme") || "light";
+      document.body.dataset.theme = saved;
+      themeToggle.textContent = saved === "dark" ? "☀️" : "🌙";
+
+      const msg = document.getElementById("mensagem");
+      msg.textContent = "⏳ Inicializando sistema... aguarde um instante.";
+
+      try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+          authDomain: "yshippcommerce.firebaseapp.com",
+          projectId: "yshippcommerce",
+          storageBucket: "yshippcommerce.firebasestorage.app",
+          messagingSenderId: "680576769517",
+          appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+        };
+
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+
+        window.auth = firebase.auth();
+        window.db = firebase.firestore();
+
+        msg.textContent = "";
+      } catch (err) {
+        console.error("Erro ao inicializar Firebase:", err);
+        msg.textContent = "❌ Falha ao inicializar o sistema.";
+      }
+    });
+
     // Cadastro
     async function cadastrarUsuario() {
-      const msg = document.getElementById("mensagem");
-      if (!firebaseReady) return msg.textContent = "⏳ Inicializando sistema... aguarde um instante.";
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value;
+      const msg = document.getElementById('mensagem');
 
-      const nome = document.getElementById("nome").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const senha = document.getElementById("senha").value.trim();
+      if (!window.auth || !window.db) {
+        msg.textContent = "⚠️ Sistema ainda inicializando, tente novamente em 3 segundos.";
+        return;
+      }
 
       try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
         const user = userCredential.user;
 
-        await db.collection("wallets").doc(user.uid).set({
+        await db.collection('wallets').doc(user.uid).set({
           userId: user.uid,
           name: nome,
           goldsBalance: 0,
@@ -102,21 +207,25 @@
 
         msg.textContent = "✅ Conta criada com sucesso! Redirecionando...";
         msg.classList.replace("text-red-500", "text-green-500");
+
         setTimeout(() => {
           window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
         }, 2000);
       } catch (error) {
-        msg.textContent = "⚠️ " + error.message;
+        msg.textContent = "❌ " + error.message;
       }
     }
 
     // Login
     async function loginUsuario() {
-      const msg = document.getElementById("mensagem");
-      if (!firebaseReady) return msg.textContent = "⏳ Inicializando sistema... aguarde um instante.";
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-senha').value;
+      const msg = document.getElementById('mensagem');
 
-      const email = document.getElementById("login-email").value.trim();
-      const senha = document.getElementById("login-senha").value.trim();
+      if (!window.auth) {
+        msg.textContent = "⚠️ Sistema ainda inicializando.";
+        return;
+      }
 
       try {
         await auth.signInWithEmailAndPassword(email, senha);
@@ -126,7 +235,7 @@
           window.location.href = "https://linkpremiado51-cmd.github.io/yshippcommerce/index.html";
         }, 1500);
       } catch (error) {
-        msg.textContent = "⚠️ " + error.message;
+        msg.textContent = "❌ " + error.message;
       }
     }
   </script>
