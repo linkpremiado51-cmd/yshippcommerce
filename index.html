@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Centro de Comando - YshippCommerce">
   <title>Centro de Comando - YshippCommerce</title>
-  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=PT+Sans&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -48,6 +48,8 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     body {
@@ -56,49 +58,28 @@
       color: var(--text-primary);
       line-height: 1.6;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding-top: 72px;
       overflow-x: hidden;
     }
 
+    .header-menu {
+      font-family: 'PT Sans', sans-serif;
+    }
+
     .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      padding: 1rem;
-      width: 100%;
-      position: sticky;
-      top: 0;
-      z-index: 10;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: opacity 0.3s ease;
-    }
-
-    .header h1 {
-      font-family: 'Jura', sans-serif;
-      font-size: 1.8rem;
-      color: var(--text-primary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .menu-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .menu-button svg {
-      width: 24px;
-      height: 24px;
-      fill: var(--text-primary);
+      padding: 0 24px;
+      z-index: 1001;
+      box-shadow: var(--shadow);
     }
 
     .top-bar__section {
@@ -113,20 +94,19 @@
       background: none;
       border: none;
       padding: 12px;
-      border-radius: 0.375rem;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
     }
 
-    .top-bar__icon:hover {
-      background: var(--secondary);
-      transform: scale(1.1);
+    .top-bar__icon i {
+      position: relative;
+      font-size: 1.25rem;
     }
 
-    .top-bar__icon i {
-      font-size: 1.25rem;
-      color: var(--text-primary);
+    .top-bar__icon:hover {
+      transform: scale(1.1);
     }
 
     .menu {
@@ -138,11 +118,10 @@
       background: var(--surface);
       border-right: 1px solid var(--border);
       transform: translateX(-100%);
-      transition: transform 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
       overflow-y: auto;
       box-shadow: var(--shadow);
-      opacity: 0.95;
     }
 
     .menu.open {
@@ -164,16 +143,11 @@
       padding: 12px 16px;
       display: flex;
       align-items: center;
-      border-radius: 0.375rem;
-      transition: background 0.3s ease;
+      border-radius: 12px;
+      transition: none;
       position: relative;
       overflow: hidden;
       background: transparent;
-    }
-
-    .menu__link:hover {
-      background: var(--secondary);
-      color: white;
     }
 
     .menu__link i {
@@ -182,50 +156,101 @@
       color: var(--text-secondary);
     }
 
-    .menu__link:hover i {
-      color: white;
+    .submenu {
+      margin-top: 4px;
+      padding-left: 48px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
     }
 
-    .sidebar-button {
-      padding: 0.75rem;
+    .submenu.open {
+      max-height: 300px;
+    }
+
+    .submenu__link {
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      font-size: 0.9375rem;
+      display: block;
+      text-decoration: none;
+      transition: none;
+    }
+
+    .premium-button {
       background: var(--secondary);
-      color: white;
+      color: var(--text-primary);
       border: none;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      text-align: center;
       width: calc(100% - 32px);
       margin: 16px;
+      font-weight: 500;
+      transition: none;
     }
 
-    .sidebar-button.theme-button {
-      background: var(--tutorial-bg);
-    }
-
-    .sidebar-button.theme-button:hover {
-      background: var(--tutorial-hover);
-    }
-
-    .sidebar-button:hover {
-      transform: scale(1.05);
-    }
-
-    .overlay {
-      display: none;
+    .notification {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      background: var(--surface);
+      color: var(--text-primary);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 2000;
     }
 
-    .overlay.active {
-      display: block;
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .menu {
+        width: min(80vw, 280px);
+      }
+
+      .header {
+        padding: 0 12px;
+      }
+
+      .top-bar__icon {
+        padding: 8px;
+      }
+
+      .top-bar__icon i {
+        font-size: 1.2rem;
+      }
+
+      .menu__link {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .menu__link i {
+        font-size: 1.1rem;
+      }
+
+      .submenu__link {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+      }
+
+      .premium-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+
+      .notification {
+        right: 10px;
+        bottom: 10px;
+        padding: 10px 20px;
+      }
     }
 
     .dashboard-section {
@@ -549,32 +574,6 @@
         font-size: 1.25rem;
       }
 
-      .menu {
-        width: min(80vw, 280px);
-      }
-
-      .top-bar__icon {
-        padding: 8px;
-      }
-
-      .top-bar__icon i {
-        font-size: 1.2rem;
-      }
-
-      .menu__link {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-      }
-
-      .menu__link i {
-        font-size: 1.1rem;
-      }
-
-      .sidebar-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-      }
-
       .dashboard-section {
         padding: 1rem 0.5rem;
       }
@@ -640,10 +639,15 @@
 <body data-theme="light">
   <div class="header-menu">
     <nav aria-label="Navegação principal" class="header" role="navigation">
-      <h1>Centro de Comando - YshippCommerce</h1>
       <div class="top-bar__section">
-        <button aria-label="Alternar menu" class="top-bar__icon" id="menu-toggle">
+        <h1>Centro de Comando - YshippCommerce</h1>
+      </div>
+      <div class="top-bar__section">
+        <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
           <i class="fas fa-bars"></i>
+        </button>
+        <button aria-label="Alternar tema claro/escuro" class="top-bar__icon" id="theme-toggle" title="Alternar tema">
+          <i class="fas fa-adjust"></i>
         </button>
       </div>
     </nav>
@@ -652,42 +656,43 @@
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('home')">
             <i class="fas fa-home"></i>
-            <span>Página Principal</span>
+            <span class="bold-text">Página Principal</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('market')">
             <i class="fas fa-briefcase"></i>
-            <span>Mercado de Serviços</span>
+            <span class="bold-text">Mercado de Serviços</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('store')">
             <i class="fas fa-shopping-cart"></i>
-            <span>Loja</span>
+            <span class="bold-text">Loja</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('generator')">
             <i class="fas fa-ticket-alt"></i>
-            <span>Gerador de Bilhetes</span>
+            <span class="bold-text">Gerador de Bilhetes</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('wallet')">
             <i class="fas fa-wallet"></i>
-            <span>Carteira</span>
+            <span class="bold-text">Carteira</span>
           </button>
         </li>
         <li class="menu__item">
-          <button id="theme-toggle" class="sidebar-button theme-button">Alternar Tema</button>
-        </li>
-        <li class="menu__item">
-          <button id="logout-button" class="sidebar-button">Sair</button>
+          <button class="menu__link" id="logout-button">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="bold-text">Sair</span>
+          </button>
         </li>
       </ul>
     </nav>
   </div>
+  <div class="notification" id="notification"></div>
   <div id="overlay" class="overlay"></div>
 
   <main class="flex-grow w-full">
@@ -744,26 +749,6 @@
             <p>Crie bilhetes e ganhe Golds participando de sorteios.</p>
             <button class="nav-button" onclick="navigateTo('generator')">Acessar</button>
           </div>
-          <div class="nav-card">
-            <h3>Loja</h3>
-            <p>Compre cartões presente, itens e catálogos com seus Golds.</p>
-            <button class="nav-button" onclick="navigateTo('store')">Acessar</button>
-          </div>
-          <div class="nav-card">
-            <h3>Mercado de Serviços</h3>
-            <p>Publique ou aceite tarefas pagas em Golds.</p>
-            <button class="nav-button" onclick="navigateTo('market')">Acessar</button>
-          </div>
-          <div class="nav-card">
-            <h3>Loja de Serviços</h3>
-            <p>Visualize e aceite serviços disponíveis para ganhar recompensas.</p>
-            <button class="nav-button" onclick="navigateTo('service')">Acessar</button>
-          </div>
-          <div class="nav-card">
-            <h3>Sorteios e Leilões</h3>
-            <p>Participe de sorteios e leilões para ganhar prêmios.</p>
-            <button class="nav-button" onclick="navigateTo('raffles')">Acessar</button>
-          </div>
         </div>
 
         <div class="members-profiles-section">
@@ -812,7 +797,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener('DOMContentLoaded', function() {
       // Inicializa o Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
@@ -851,7 +836,6 @@
               const data = snapshot.docs[0].data();
               document.getElementById("profileName").textContent = `Bem-vindo, ${data.name || "Usuário"}!`;
               document.getElementById("userIdDisplay").textContent = userId;
-              // Atualiza o rodapé
               document.getElementById("footerUserName").textContent = data.name || "Usuário";
               document.getElementById("footerUserId").textContent = userId;
               document.getElementById("registrationDate").textContent =
@@ -859,45 +843,24 @@
               document.getElementById("userLevel").textContent = data.nivel || "Iniciante";
             } else {
               console.warn("⚠️ Documento do usuário não encontrado no Firestore.");
-              // Atualiza o rodapé mesmo se o documento não for encontrado
               document.getElementById("footerUserName").textContent = "Usuário";
               document.getElementById("footerUserId").textContent = userId;
             }
           })
           .catch(error => {
             console.error("❌ Erro ao carregar dados:", error);
-            // Fallback para o rodapé em caso de erro
             document.getElementById("footerUserName").textContent = "Usuário";
             document.getElementById("footerUserId").textContent = userId;
           });
       }
 
-      // Hamburger menu functionality
-      const menuToggle = document.getElementById('menu-toggle');
-      const menu = document.getElementById('main-menu');
-      const overlay = document.getElementById('overlay');
-
-      menuToggle.addEventListener('click', () => {
-        menu.classList.toggle('open');
-        overlay.classList.toggle('active');
-      });
-
-      overlay.addEventListener('click', () => {
-        menu.classList.remove('open');
-        overlay.classList.remove('active');
-      });
-
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          menu.classList.remove('open');
-          overlay.classList.remove('active');
-        }
-      });
-
-      // Theme toggle functionality
+      const menuToggles = {
+        'menu-icon': 'main-menu'
+      };
       const themeToggle = document.getElementById('theme-toggle');
       const body = document.body;
 
+      // Theme toggle functionality from original index.html
       themeToggle.addEventListener('click', () => {
         const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         body.setAttribute('data-theme', currentTheme);
@@ -910,10 +873,56 @@
         body.setAttribute('data-theme', savedTheme);
       });
 
-      // Logout functionality
+      Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
+        const toggle = document.getElementById(toggleId);
+        const menu = document.getElementById(menuId);
+        if (!toggle || !menu) {
+          console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`);
+          return;
+        }
+        toggle.addEventListener('click', e => {
+          e.stopPropagation();
+          menu.classList.toggle('open');
+          toggle.classList.toggle('active');
+        });
+      });
+
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+
       document.getElementById("logout-button").addEventListener("click", () => {
         auth.signOut().then(() => window.location.href = "cadastro.html");
       });
+
+      function showNotification(message) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.classList.add('show');
+        setTimeout(() => {
+          notification.classList.remove('show');
+        }, 3000);
+      }
     });
 
     var gk_isXlsx = false;
@@ -947,7 +956,6 @@
       return gk_fileData[filename] || "";
     }
 
-    // Navigation function for wallet and navigation grid
     function navigateTo(page) {
       switch(page) {
         case 'wallet':
@@ -975,7 +983,6 @@
       }
     }
 
-    // Cookie banner functionality
     const cookieBanner = document.getElementById('cookieBanner');
     const cookieAccept = document.getElementById('cookie-accept');
     const cookieDecline = document.getElementById('cookie-decline');
