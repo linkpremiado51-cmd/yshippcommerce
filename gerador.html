@@ -412,6 +412,9 @@
   </style>
 </head>
 <body data-theme="light">
+  <div id="userStatus" style="background:black;color:lime;padding:6px;position:fixed;top:0;left:0;z-index:9999;font-size:12px">
+    Usuário ativo: Carregando...
+  </div>
   <header class="header" role="banner">
     <h1>YshippCommerce</h1>
     <div>
@@ -474,9 +477,9 @@
       </div>
     </div>
   </footer>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const firebaseConfig = {
@@ -573,14 +576,13 @@
           const card = document.createElement('div');
           card.classList.add('ad-card');
           card.innerHTML = `
-            <h3>${ad.name}</h3>
-            <p><strong>Região:</strong> ${ad.region || '-'} | <strong>Tipo:</strong> ${ad.type || '-'} | <strong>Subcategoria:</strong> ${ad.subcategory || '-'}</p>
-            <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
+            <h3>${ad.title}</h3>
             <div class="steps-list">
               <strong>Passos:</strong>
               <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
             </div>
-            <button class="view-button" onclick="viewAd('${ad.id}', ${golds})">Visualizar Propaganda</button>
+            <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
+            <button class="view-button" onclick="window.open('${ad.url || '#'}', '_blank'); viewAd('${ad.id}', ${golds})">${ad.buttonText || 'Visualizar Propaganda'}</button>
           `;
           carousel.appendChild(card);
         });
@@ -597,14 +599,13 @@
           const card = document.createElement('div');
           card.classList.add('ad-card');
           card.innerHTML = `
-            <h3>${ad.name}</h3>
-            <p><strong>Região:</strong> ${ad.region || '-'} | <strong>Tipo:</strong> ${ad.type || '-'} | <strong>Subcategoria:</strong> ${ad.subcategory || '-'}</p>
-            <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
+            <h3>${ad.title}</h3>
             <div class="steps-list">
               <strong>Passos:</strong>
               <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
             </div>
-            <button class="view-button" onclick="showCryptoModal('${ad.id}', ${golds}, '${ad.code}')">Insira o Código</button>
+            <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
+            <button class="view-button" onclick="showCryptoModal('${ad.id}', ${golds}, '${ad.code}')">${ad.buttonText || 'Insira o Código'}</button>
           `;
           carousel.appendChild(card);
         });
@@ -624,13 +625,12 @@
           const card = document.createElement('div');
           card.classList.add('ad-card');
           card.innerHTML = `
-            <h3>${ad.name}</h3>
-            <p><strong>Região:</strong> ${ad.region || '-'} | <strong>Tipo:</strong> ${ad.type || '-'} | <strong>Subcategoria:</strong> ${ad.subcategory || '-'}</p>
-            <div class="golds-reward"><strong>Recompensa:</strong> ${reward} Golds${vagasText}</div>
+            <h3>${ad.title}</h3>
             <div class="steps-list">
               <strong>Passos:</strong>
               <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
             </div>
+            <div class="golds-reward"><strong>Recompensa:</strong> ${reward} Golds${vagasText}</div>
             <button class="view-button" onclick="acceptTask('${ad.id}', ${reward})">${ad.buttonText || 'Aceitar Tarefa'}</button>
           `;
           carousel.appendChild(card);
@@ -719,7 +719,7 @@
           return;
         }
 
-        const adRef = db.collection('ads').doc('tasks').collection('items').doc(adId);
+        const adRef = db.collection('offers').doc(adId);
         const walletRef = db.collection('wallets').doc(userId);
 
         try {
@@ -728,31 +728,24 @@
             if (!adDoc.exists) throw new Error('Tarefa não encontrada.');
             const ad = adDoc.data();
 
-            // suporte a campos que limitam vagas
             const required = ad.freelancersNeeded ?? ad.slots ?? null;
             const acceptedBy = Array.isArray(ad.acceptedBy) ? ad.acceptedBy.slice() : [];
 
-            // já aceitou?
             if (acceptedBy.includes(userId)) {
               throw new Error('Você já aceitou esta tarefa.');
             }
 
-            // vagas verificacao
             if (required !== null && acceptedBy.length >= required) {
               throw new Error('Vagas para esta tarefa esgotadas.');
             }
 
-            // adiciona o usuário à lista
             acceptedBy.push(userId);
             const newAdUpdate = { acceptedBy: acceptedBy };
-            // se lotou, marca como não disponível (compat com status/active)
             if (required !== null && acceptedBy.length >= required) {
-              if ('status' in ad) newAdUpdate.status = 'unavailable';
-              if ('active' in ad) newAdUpdate.active = false;
+              newAdUpdate.active = false;
             }
             t.update(adRef, newAdUpdate);
 
-            // atualiza carteira do usuário (cria se não existir)
             const walletDoc = await t.get(walletRef);
             const newTransaction = {
               type: 'receive',
@@ -782,7 +775,6 @@
             }
           });
 
-          // atualizar UI local
           const walletData = JSON.parse(localStorage.getItem('walletData') || '{}');
           walletData.goldsBalance = (walletData.goldsBalance || 0) + reward;
           walletData.transactions = walletData.transactions || [];
@@ -797,12 +789,48 @@
           updateInterface({ goldsBalance: walletData.goldsBalance, reaisBalance: walletData.reaisBalance || 0, transactions: walletData.transactions });
 
           showModal('welcomeModal', `Você ganhou ${reward} Golds por aceitar a tarefa!`);
-          // recarregar tasks para atualizar vagas
-          carregarGeradorFirebase(userId);
         } catch (err) {
           console.error('Erro ao aceitar task:', err);
           showModal('welcomeModal', err.message || 'Erro ao aceitar tarefa. Tente novamente.');
         }
+      }
+
+      // Synchronize generator data with Firestore
+      function sincronizarGeradorFirebase(userId, adId, golds, description, type) {
+        db.collection('wallets').doc(userId).get()
+          .then((doc) => {
+            if (doc.exists) {
+              const walletData = doc.data();
+              const newTransaction = {
+                type: type,
+                amount: golds,
+                currency: 'golds',
+                date: new Date().toLocaleString('pt-BR'),
+                description: description
+              };
+              db.collection('wallets').doc(userId).update({
+                goldsBalance: walletData.goldsBalance + golds,
+                transactions: [newTransaction, ...(walletData.transactions || [])]
+              }).then(() => {
+                localStorage.setItem('walletData', JSON.stringify({
+                  userId: walletData.userId,
+                  name: walletData.name,
+                  goldsBalance: walletData.goldsBalance + golds,
+                  reaisBalance: walletData.reaisBalance,
+                  transactions: [newTransaction, ...(walletData.transactions || [])]
+                }));
+              }).catch((error) => {
+                console.error('Erro ao sincronizar ganhos:', error);
+                showModal('welcomeModal', 'Erro ao registrar ganhos. Tente novamente.');
+              });
+            } else {
+              showModal('welcomeModal', 'Carteira não encontrada. Tente novamente.');
+            }
+          })
+          .catch((error) => {
+            console.error('Erro ao verificar carteira:', error);
+            showModal('welcomeModal', 'Erro ao verificar carteira. Tente novamente.');
+          });
       }
 
       // Load generator data from Firestore
@@ -823,7 +851,6 @@
               transactions: walletData.transactions
             }));
           } else {
-            // Create default wallet document
             const defaultWallet = {
               userId: userId,
               name: auth.currentUser?.displayName || 'Usuário',
@@ -847,106 +874,34 @@
           showModal('welcomeModal', 'Erro ao carregar dados da carteira. Tente novamente.');
         });
 
-        // Load short links
-        db.collection('ads').doc('links').collection('items').get()
-          .then((querySnapshot) => {
-            console.log('Snapshot links recebido:', querySnapshot.size, 'itens');
-            const links = [];
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              const available = (data.status && data.status === 'available') || data.active === true;
-              if (available) {
-                links.push({ id: doc.id, ...data });
-              }
-            });
-            loadLinksCarousel(links);
-          })
-          .catch((error) => {
-            console.error('Erro ao carregar links:', error);
-            showModal('welcomeModal', 'Erro ao carregar links. Tente novamente.');
+        // Load offers
+        db.collection('offers').where('active', '==', true).onSnapshot((querySnapshot) => {
+          console.log('Snapshot offers recebido:', querySnapshot.size, 'itens');
+          const links = [];
+          const cryptoAds = [];
+          const tasks = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const offer = { id: doc.id, ...data };
+            if (data.type === 'Link curto') {
+              links.push(offer);
+            } else if (data.type === 'Cripto') {
+              cryptoAds.push(offer);
+            } else if (data.type === 'Task') {
+              tasks.push(offer);
+            }
           });
+          loadLinksCarousel(links);
+          loadCryptoCarousel(cryptoAds);
+          loadTasksCarousel(tasks);
+        }, (error) => {
+          console.error('Erro ao carregar offers:', error);
+          showModal('welcomeModal', 'Erro ao carregar tarefas. Tente novamente.');
+        });
 
-        // Load crypto tasks
-        db.collection('ads').doc('crypto').collection('items').get()
-          .then((querySnapshot) => {
-            console.log('Snapshot crypto recebido:', querySnapshot.size, 'itens');
-            const cryptoAds = [];
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              const available = (data.status && data.status === 'available') || data.active === true;
-              if (available) {
-                cryptoAds.push({ id: doc.id, ...data });
-              }
-            });
-            loadCryptoCarousel(cryptoAds);
-          })
-          .catch((error) => {
-            console.error('Erro ao carregar tarefas de cripto:', error);
-            showModal('welcomeModal', 'Erro ao carregar tarefas de cripto. Tente novamente.');
-          });
-
-        // Load tasks
-        db.collection('ads').doc('tasks').collection('items').get()
-          .then((querySnapshot) => {
-            console.log('Snapshot tasks recebido:', querySnapshot.size, 'itens');
-            const tasks = [];
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              const isAvailable = (data.status && data.status === 'available') || (data.active === true) || (data.status === undefined && data.active === undefined);
-              if (isAvailable) {
-                tasks.push({ id: doc.id, ...data });
-              }
-            });
-            loadTasksCarousel(tasks);
-          })
-          .catch((error) => {
-            console.error('Erro ao carregar tasks:', error);
-            showModal('welcomeModal', 'Erro ao carregar tasks. Tente novamente.');
-          });
-
-        // Show cookie banner if no IP consent
         if (localStorage.getItem('ipConsent') !== 'true') {
           document.getElementById('cookieBanner').style.display = 'flex';
         }
-      }
-
-      // Synchronize generator data with Firestore
-      function sincronizarGeradorFirebase(userId, adId, golds, description, type) {
-        db.collection('wallets').doc(userId).get()
-          .then((doc) => {
-            if (doc.exists) {
-              const walletData = doc.data();
-              const newTransaction = {
-                type: type,
-                amount: golds,
-                currency: 'golds',
-                date: new Date().toLocaleString('pt-BR'),
-                description: description
-              };
-              db.collection('wallets').doc(userId).update({
-                goldsBalance: walletData.goldsBalance + golds,
-                transactions: [newTransaction, ...(walletData.transactions || [])]
-              }).then(() => {
-                // Update localStorage for cross-page synchronization
-                localStorage.setItem('walletData', JSON.stringify({
-                  userId: walletData.userId,
-                  name: walletData.name,
-                  goldsBalance: walletData.goldsBalance + golds,
-                  reaisBalance: walletData.reaisBalance,
-                  transactions: [newTransaction, ...(walletData.transactions || [])]
-                }));
-              }).catch((error) => {
-                console.error('Erro ao sincronizar ganhos:', error);
-                showModal('welcomeModal', 'Erro ao registrar ganhos. Tente novamente.');
-              });
-            } else {
-              showModal('welcomeModal', 'Carteira não encontrada. Tente novamente.');
-            }
-          })
-          .catch((error) => {
-            console.error('Erro ao verificar carteira:', error);
-            showModal('welcomeModal', 'Erro ao verificar carteira. Tente novamente.');
-          });
       }
 
       // Theme toggle event listener
@@ -961,38 +916,13 @@
       // Load theme on page load
       loadTheme();
 
-      // Authentication and footer update
+      // Authentication
       auth.onAuthStateChanged(user => {
         if (user) {
           console.log('Auth OK. UID:', user.uid);
+          document.getElementById('userStatus').textContent = `Usuário ativo: ${user.uid}`;
           carregarGeradorFirebase(user.uid);
-
-          // Exibir UID no topo para debug
-          document.body.insertAdjacentHTML(
-            'afterbegin',
-            `<div style="background:black;color:lime;padding:6px;position:fixed;top:0;left:0;z-index:9999;font-size:12px">
-              UID ativo: ${user.uid}
-            </div>`
-          );
-
-          // Atualizar footer com nome e UID
-          document.getElementById('footerUserId').textContent = user.uid;
-          db.collection('wallets').doc(user.uid).get()
-            .then(doc => {
-              if (doc.exists) {
-                const data = doc.data();
-                document.getElementById('footerUserName').textContent = data.name || 'Usuário';
-              } else {
-                document.getElementById('footerUserName').textContent = 'Usuário';
-              }
-            })
-            .catch(err => {
-              console.error('Erro ao buscar dados do usuário:', err);
-              document.getElementById('footerUserName').textContent = 'Erro ao carregar';
-            });
         } else {
-          document.getElementById('footerUserName').textContent = 'Não logado';
-          document.getElementById('footerUserId').textContent = '---';
           window.location.href = 'cadastro.html';
         }
       });
