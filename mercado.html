@@ -645,7 +645,8 @@
     <div class="status-bar" role="region" aria-label="Resumo de Saldo">
       <div>SALDO EM GOLDS <span class="golds-balance" id="golds-balance">0</span></div>
       <div>SALDO EM REAIS <span class="reais-balance" id="reais-balance">R$ 0,00</span></div>
-      <div>GOLDS TOTAIS <span id="golds-total">900</span></div>
+      <!-- [GROCK EDIT]: Campo "Golds Totais" desativado por redundância -->
+      <!-- <div>GOLDS TOTAIS <span id="golds-total">900</span></div> -->
     </div>
     <section class="wallet-section">
       <h2>Gerencie Sua Carteira</h2>
@@ -911,9 +912,16 @@
     }
 
     // Update local balance display
-    function updateBalanceDisplay(goldsBalance) {
-      document.getElementById('golds-balance').textContent = goldsBalance || 0;
-      document.getElementById('golds-balance-display').textContent = goldsBalance || 0;
+    function updateBalanceDisplay(goldsBalance, reaisBalance) {
+      // [GROCK EDIT]: Sincronização direta com Firestore implementada — valores agora refletem em tempo real
+      const goldsBalanceElement = document.getElementById('golds-balance');
+      const goldsBalanceDisplayElement = document.getElementById('golds-balance-display');
+      const reaisBalanceElement = document.getElementById('reais-balance');
+      const reaisBalanceDisplayElement = document.getElementById('reais-balance-display');
+      goldsBalanceElement.textContent = goldsBalance || 0;
+      goldsBalanceDisplayElement.textContent = goldsBalance || 0;
+      reaisBalanceElement.textContent = `R$ ${reaisBalance?.toFixed(2) || '0,00'}`;
+      reaisBalanceDisplayElement.textContent = `R$ ${reaisBalance?.toFixed(2) || '0,00'}`;
     }
 
     // Calculate total cost dynamically
@@ -981,12 +989,13 @@
       }
 
       // Load user's wallet balance
+      // [GROCK EDIT]: Sincronização direta com Firestore implementada — valores agora refletem em tempo real
       db.collection('wallets').doc(userId).onSnapshot((doc) => {
         if (doc.exists) {
           const data = doc.data();
-          updateBalanceDisplay(data.goldsBalance || 0);
+          updateBalanceDisplay(data.goldsBalance || 0, data.reaisBalance || 0);
         } else {
-          updateBalanceDisplay(0);
+          updateBalanceDisplay(0, 0);
         }
       });
 
@@ -1175,6 +1184,7 @@
           const serviceRef = db.collection('services').doc();
           transaction.set(serviceRef, newService);
 
+          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           transaction.update(walletRef, {
             goldsBalance: currentBalance - (price + publicationFee),
             transactions: firebase.firestore.FieldValue.arrayUnion({
@@ -1182,8 +1192,9 @@
               amount: -(price + publicationFee),
               currency: 'golds',
               description: `Publicação do serviço: ${title}`,
-              date: firebase.firestore.FieldValue.serverTimestamp()
-            })
+              date: new Date()
+            }),
+            ultimaPublicacao: firebase.firestore.FieldValue.serverTimestamp()
           });
 
           showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
@@ -1432,7 +1443,8 @@
           amount,
           currency: 'golds',
           description,
-          date: firebase.firestore.FieldValue.serverTimestamp()
+          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
+          date: new Date()
         });
 
         // CLAIM: pagar recompensas — debitar dono e creditar claimant
@@ -1514,14 +1526,14 @@
     }
 
     // Submit proofs
-    function submitProofs(serviceId) {
+    async function submitProofs(serviceId) {
       const userId = auth.currentUser?.uid;
       if (!userId) {
         showModal('errorModal', 'Usuário não autenticado. Faça login novamente.');
         return;
       }
 
-      enviarProvasFirebase(serviceId, userId);
+      await enviarProvasFirebase(serviceId, userId);
     }
 
     // Handle IP consent
@@ -1589,7 +1601,8 @@
           proof: {
             proofText,
             userId,
-            date: new Date().toISOString()
+            // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
+            date: new Date()
           },
           status: 'aguardando_confirmação',
           proofDate: firebase.firestore.FieldValue.serverTimestamp()
@@ -1604,7 +1617,8 @@
           type: 'aguardando_confirmação',
           description: `Prova enviada para serviço: ${serviceData.title}`,
           amount: serviceData.rewardGolds,
-          date: firebase.firestore.FieldValue.serverTimestamp()
+          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
+          date: new Date()
         });
 
         await walletRef.update({ transactions });
@@ -1656,7 +1670,8 @@
           type: 'entrada',
           description: `Serviço concluído: ${serviceData.title}`,
           amount: serviceData.rewardGolds,
-          date: firebase.firestore.FieldValue.serverTimestamp()
+          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
+          date: new Date()
         });
 
         await walletRef.update({ transactions });
@@ -1722,7 +1737,7 @@
       updateSubcategories(); // Initial call to set default state
     });
 
-    // [GROCK EDIT CONFIRMADO]: Firebase compat importado e bucket corrigido.
+    // [GROCK EDIT CONFIRMADO]: Correções aplicadas para arrayUnion, sincronização de saldos e remoção de Golds Totais
   </script>
 </body>
 </html>
