@@ -134,4 +134,383 @@
   <div id="transferModal" class="modal"><div class="modal-content">
     <h3>💸 Transferir</h3>
     <div class="form-group"><label>ID do destinatário</label><input id="recipient-id" type="text"></div>
-    <div class="form-group"><label>Moeda</label><
+    <div class="form-group"><label>Moeda</label><select id="transfer-currency"><option value="golds">Golds</option><option value="reais">Reais</option></select></div>
+    <div class="form-group"><label>Valor</label><input id="transfer-amount" type="number" min="1" step="0.01"></div>
+    <div style="display:flex;gap:.6rem"><button class="action-btn transfer" onclick="processTransfer()">Enviar</button><button class="action-btn" onclick="closeModal('transferModal')" style="background:#fff;color:#000;border:1px solid var(--border)">Cancelar</button></div>
+  </div></div>
+
+  <div id="convertModal" class="modal"><div class="modal-content">
+    <h3>🔄 Converter</h3>
+    <div class="form-group"><label>Converter</label><select id="convert-from"><option value="golds">Golds</option><option value="reais">Reais</option></select></div>
+    <div class="form-group"><label>Valor</label><input id="convert-amount" type="number" min="1" step="1"></div>
+    <div class="form-group"><label>Para</label><select id="convert-to"><option value="reais">Reais</option><option value="golds">Golds</option></select></div>
+    <div style="display:flex;gap:.6rem"><button class="action-btn default" onclick="processConversion()">Confirmar Conversão</button><button class="action-btn" onclick="closeModal('convertModal')" style="background:#fff;color:#000;border:1px solid var(--border)">Cancelar</button></div>
+  </div></div>
+
+  <!-- Notification -->
+  <div id="notificationModal" class="modal"><div class="modal-content">
+    <h3 id="notification-title">Notificação</h3>
+    <p id="notification-message" style="color:var(--text-secondary)"></p>
+    <div style="display:flex;gap:.6rem"><button class="action-btn default" onclick="closeModal('notificationModal')">OK</button></div>
+  </div></div>
+
+  <footer id="userInfoFooter">Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span></footer>
+
+  <script>
+    // -------------------------
+    // Configuração Firebase
+    // -------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+      authDomain: "yshippcommerce.firebaseapp.com",
+      projectId: "yshippcommerce",
+      storageBucket: "yshippcommerce.firebasestorage.app",
+      messagingSenderId: "680576769517",
+      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+    };
+
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase carregado.');
+      } else {
+        console.log('Firebase já inicializado.');
+      }
+    } catch (e) {
+      console.error('Erro inicializando Firebase:', e);
+      alert('Erro ao inicializar Firebase. Verifique as credenciais.');
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let walletData = null;
+    const GOLD_TO_REAL_RATE = 1000; // 1000 Golds = R$1
+
+    // -------------------------
+    // UI helpers
+    // -------------------------
+    function openModal(id){document.getElementById(id).style.display='flex'}
+    function closeModal(id){document.getElementById(id).style.display='none'}
+    function showNotification(title,message){document.getElementById('notification-title').textContent=title;document.getElementById('notification-message').textContent=message;openModal('notificationModal')}
+
+    // Theme
+    function loadTheme(){
+      const saved = localStorage.getItem('theme') || 'light';
+      document.body.dataset.theme = saved;
+    }
+    document.getElementById('theme-toggle').addEventListener('click',()=>{
+      const newTheme = document.body.dataset.theme==='light' ? 'dark' : 'light';
+      document.body.dataset.theme = newTheme; localStorage.setItem('theme', newTheme);
+    });
+    loadTheme();
+
+    // -------------------------
+    // Autenticação e carregamento de carteira
+    // -------------------------
+    async function ensureAnonymousSignIn(){
+      // Tentativa de login anônimo se não houver usuário
+      try {
+        console.warn('Nenhum usuário logado. Tentando login anônimo...');
+        const res = await auth.signInAnonymously();
+        console.log('Login anônimo realizado. UID:', res.user.uid);
+      } catch (error) {
+        // Erros comuns: admin-restricted-operation quando tentativa de signInAnonymously em ambiente Admin
+        console.error('Erro ao autenticar anonimamente:', error);
+        showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`);
+        // Não rethrow — mostra erro e para (o usuário precisa estar logado)
+      }
+    }
+
+    // Observador de estado de autenticação
+    auth.onAuthStateChanged(async user => {
+      console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário');
+      if (!user) {
+        // tenta signInAnonymously (se permitido no console do Firebase)
+        await ensureAnonymousSignIn();
+        // depois de tentar, espera nova chamada onAuthStateChanged
+        return;
+      }
+      currentUser = user;
+      document.getElementById('footerUserId').textContent = user.uid;
+      document.getElementById('footerUserName').textContent = user.displayName || (user.isAnonymous ? 'Anônimo' : (user.email || 'Usuário'));
+      console.log('Usuário ativo:', user.uid);
+      // Carrega a carteira
+      await loadWalletData(user.uid);
+      document.getElementById('loadingOverlay').style.display = 'none';
+    });
+
+    // Carregar/ Inicializar carteira no Firestore
+    async function loadWalletData(uid){
+      try {
+        const ref = db.collection('wallets').doc(uid);
+        const snap = await ref.get();
+        if (!snap.exists) {
+          // cria padrão
+          const initial = {
+            userId: uid,
+            name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'),
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date().toISOString()
+          };
+          await ref.set(initial);
+          walletData = initial;
+          renderWallet();
+          console.log('Carteira criada para', uid);
+          return;
+        }
+        walletData = snap.data();
+        renderWallet();
+        console.log('Carteira carregada para', uid, walletData);
+      } catch (err) {
+        console.error('Erro ao carregar carteira:', err);
+        showNotification('Erro', 'Não foi possível carregar os dados da carteira. Veja console.');
+      }
+    }
+
+    // Atualiza a UI com dados da carteira local (walletData)
+    function renderWallet(){
+      if (!walletData) return;
+      // saldos
+      document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
+      document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.',',')}`;
+
+      const txs = walletData.transactions || [];
+      document.getElementById('total-transactions').textContent = txs.length;
+      let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
+      txs.forEach(tx=>{
+        if (tx.type === 'receive') totalReceived += (tx.amount || 0);
+        if (tx.type === 'send' || tx.type === 'withdraw') totalSent += (tx.amount || 0);
+        if (tx.type === 'withdraw') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
+      });
+      document.getElementById('total-received').textContent = totalReceived.toLocaleString();
+      document.getElementById('total-sent').textContent = totalSent.toLocaleString();
+      document.getElementById('last-withdrawal').textContent = lastWithdrawal;
+
+      renderTransactions();
+    }
+
+    function renderTransactions(){
+      const listEl = document.getElementById('transaction-list');
+      const txs = (walletData && walletData.transactions) ? walletData.transactions.slice().reverse() : [];
+      if (!txs.length) {
+        listEl.innerHTML = `<div style="text-align:center;padding:1.2rem;color:var(--text-secondary)"><svg viewBox="0 0 24 24" width="48" height="48" style="opacity:.6"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg><div>Nenhuma transação ainda</div></div>`;
+        return;
+      }
+      listEl.innerHTML = txs.map(tx => {
+        const typeMap = { receive: 'Recebido', send: 'Enviado', withdraw: 'Saque', deposit: 'Depósito', conversion: 'Conversão' };
+        const amountLabel = tx.currency === 'golds' ? `${tx.amount} Golds` : `R$ ${Number(tx.amount).toFixed(2).replace('.',',')}`;
+        const sign = (tx.type === 'receive' ? '+' : '-') ;
+        const amountClass = tx.type === 'receive' ? 'transaction-amount receive' : 'transaction-amount send';
+        const when = new Date(tx.date).toLocaleString('pt-BR');
+        const desc = tx.description || '';
+        return `
+          <div class="transaction-item">
+            <div style="flex:1;min-width:0">
+              <div class="transaction-type">${typeMap[tx.type] || tx.type}</div>
+              <div class="transaction-desc">${desc}</div>
+              <div class="transaction-date">${when}</div>
+            </div>
+            <div style="margin-left:1rem;text-align:right">
+              <div class="${amountClass}">${sign} ${amountLabel}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // -------------------------
+    // Helpers para atualizar Firestore
+    // -------------------------
+    async function saveWallet(updated){
+      if (!currentUser || !currentUser.uid) throw new Error('Usuário não autenticado');
+      try {
+        await db.collection('wallets').doc(currentUser.uid).set(updated, { merge: true });
+        walletData = {...walletData, ...updated};
+        renderWallet();
+      } catch(err){
+        console.error('Erro salvando wallet:', err);
+        throw err;
+      }
+    }
+
+    async function pushTransaction(tx){
+      // tx: { type, amount, currency, description, date, to?, from? }
+      if (!walletData) walletData = {};
+      const arr = Array.isArray(walletData.transactions) ? walletData.transactions : [];
+      arr.push(tx);
+      await saveWallet({ transactions: arr });
+    }
+
+    // -------------------------
+    // Ações (Deposit / Withdraw / Transfer / Convert)
+    // -------------------------
+    async function processDeposit(){
+      const amount = Number(document.getElementById('deposit-amount').value);
+      if (!amount || amount <= 0) { showNotification('Erro', 'Informe um valor válido para depósito.'); return; }
+      // Simulação: adiciona reais ao saldo
+      try {
+        const newReais = (walletData.reaisBalance || 0) + amount;
+        await saveWallet({ reaisBalance: newReais });
+        await pushTransaction({ type:'deposit', amount, currency:'reais', description:'Depósito via método selecionado', date: new Date().toISOString() });
+        closeModal('depositModal');
+        showNotification('Sucesso', `Depósito de R$ ${amount.toFixed(2)} registrado.`);
+      } catch(err){
+        console.error('Erro depositar:', err);
+        showNotification('Erro', 'Erro ao processar depósito. Veja console.');
+      }
+    }
+
+    async function processWithdrawal(){
+      const currency = document.getElementById('withdraw-currency').value;
+      const amount = Number(document.getElementById('withdraw-amount').value);
+      if (!amount || amount <= 0) { showNotification('Erro', 'Valor inválido para saque.'); return; }
+      if (currency === 'reais') {
+        if ((walletData.reaisBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Reais.'); return; }
+        const newReais = (walletData.reaisBalance || 0) - amount;
+        try {
+          await saveWallet({ reaisBalance: newReais });
+          await pushTransaction({ type:'withdraw', amount, currency:'reais', description:'Saque para conta (PIX)', date:new Date().toISOString() });
+          closeModal('withdrawModal');
+          showNotification('Solicitação enviada', `Saque de R$ ${amount.toFixed(2)} solicitado.`);
+        } catch(err){
+          console.error('Erro saque:', err);
+          showNotification('Erro', 'Não foi possível solicitar saque.');
+        }
+      } else {
+        // Saque em Golds -> converte para reais antes de processar
+        if ((walletData.goldsBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Golds.'); return; }
+        const goldsToRemove = amount;
+        const reaisEquivalent = amount / GOLD_TO_REAL_RATE;
+        try {
+          await saveWallet({ goldsBalance: (walletData.goldsBalance || 0) - goldsToRemove, reaisBalance: (walletData.reaisBalance||0) + 0 }); // apenas retirar golds; normalmente conversão antes de sacar
+          await pushTransaction({ type:'withdraw', amount:amount, currency:'golds', description:`Saque de ${amount} Golds (equiv. R$ ${reaisEquivalent.toFixed(2)})`, date:new Date().toISOString() });
+          closeModal('withdrawModal');
+          showNotification('Solicitação enviada', `Saque de ${amount} Golds solicitado.`);
+        } catch(err){
+          console.error('Erro saque golds:', err);
+          showNotification('Erro', 'Não foi possível solicitar saque em Golds.');
+        }
+      }
+    }
+
+    async function processTransfer(){
+      const recipientId = document.getElementById('recipient-id').value.trim();
+      const currency = document.getElementById('transfer-currency').value;
+      const amount = Number(document.getElementById('transfer-amount').value);
+      if (!recipientId) { showNotification('Erro', 'Informe o ID do destinatário.'); return; }
+      if (!amount || amount <= 0) { showNotification('Erro', 'Valor inválido.'); return; }
+      if (recipientId === (currentUser && currentUser.uid)) { showNotification('Erro', 'Não é possível transferir para si mesmo.'); return; }
+
+      try {
+        const recipientRef = db.collection('wallets').doc(recipientId);
+        const recipientSnap = await recipientRef.get();
+        if (!recipientSnap.exists) {
+          showNotification('Erro', 'Destinatário não encontrado.');
+          return;
+        }
+
+        // Verifica saldo
+        if (currency === 'reais') {
+          if ((walletData.reaisBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Reais.'); return; }
+          // atualizar ambos documentos em uma batch
+          const batch = db.batch();
+          const senderRef = db.collection('wallets').doc(currentUser.uid);
+          batch.update(senderRef, {
+            reaisBalance: (walletData.reaisBalance || 0) - amount,
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'send', amount, currency:'reais', description:`Transferência para ${recipientId}`, date:new Date().toISOString(), to:recipientId })
+          });
+          batch.update(recipientRef, {
+            reaisBalance: (recipientSnap.data().reaisBalance || 0) + amount,
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'receive', amount, currency:'reais', description:`Recebido de ${currentUser.uid}`, date:new Date().toISOString(), from:currentUser.uid })
+          });
+          await batch.commit();
+          // recarrega local
+          await loadWalletData(currentUser.uid);
+          closeModal('transferModal');
+          showNotification('Sucesso', `Transferência de R$ ${amount.toFixed(2)} enviada.`);
+        } else {
+          // transfer Golds
+          if ((walletData.goldsBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Golds.'); return; }
+          const batch = db.batch();
+          const senderRef = db.collection('wallets').doc(currentUser.uid);
+          batch.update(senderRef, {
+            goldsBalance: (walletData.goldsBalance || 0) - amount,
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'send', amount, currency:'golds', description:`Transferência para ${recipientId}`, date:new Date().toISOString(), to:recipientId })
+          });
+          batch.update(recipientRef, {
+            goldsBalance: (recipientSnap.data().goldsBalance || 0) + amount,
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'receive', amount, currency:'golds', description:`Recebido de ${currentUser.uid}`, date:new Date().toISOString(), from:currentUser.uid })
+          });
+          await batch.commit();
+          await loadWalletData(currentUser.uid);
+          closeModal('transferModal');
+          showNotification('Sucesso', `Transferência de ${amount} Golds enviada.`);
+        }
+      } catch(err){
+        console.error('Erro transferir:', err);
+        showNotification('Erro', 'Falha ao processar transferência. Veja console.');
+      }
+    }
+
+    async function processConversion(){
+      const from = document.getElementById('convert-from').value;
+      const to = document.getElementById('convert-to').value;
+      const amount = Number(document.getElementById('convert-amount').value);
+      if (!amount || amount <= 0) { showNotification('Erro', 'Valor inválido.'); return; }
+      if (from === to) { showNotification('Erro', 'Escolha moedas diferentes.'); return; }
+
+      try {
+        if (from === 'golds' && to === 'reais') {
+          if ((walletData.goldsBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Golds.'); return; }
+          const reais = amount / GOLD_TO_REAL_RATE;
+          const newGolds = (walletData.goldsBalance || 0) - amount;
+          const newReais = (walletData.reaisBalance || 0) + reais;
+          await saveWallet({ goldsBalance: newGolds, reaisBalance: newReais });
+          await pushTransaction({ type:'conversion', amount, currency:'golds', description:`Conversão ${amount} Golds → R$ ${reais.toFixed(2)}`, date:new Date().toISOString() });
+          closeModal('convertModal');
+          showNotification('Conversão', `Convertido ${amount} Golds para R$ ${reais.toFixed(2)}`);
+        } else if (from === 'reais' && to === 'golds') {
+          if ((walletData.reaisBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Reais.'); return; }
+          const golds = Math.floor(amount * GOLD_TO_REAL_RATE);
+          const newReais = (walletData.reaisBalance || 0) - amount;
+          const newGolds = (walletData.goldsBalance || 0) + golds;
+          await saveWallet({ reaisBalance: newReais, goldsBalance: newGolds });
+          await pushTransaction({ type:'conversion', amount: golds, currency:'golds', description:`Conversão R$ ${amount.toFixed(2)} → ${golds} Golds`, date:new Date().toISOString() });
+          closeModal('convertModal');
+          showNotification('Conversão', `Convertido R$ ${amount.toFixed(2)} para ${golds} Golds`);
+        }
+      } catch(err){
+        console.error('Erro conversão:', err);
+        showNotification('Erro', 'Falha ao converter. Veja console.');
+      }
+    }
+
+    // -------------------------
+    // Inicialização (caso já logado será tratado pelo onAuthStateChanged)
+    // -------------------------
+    (function init(){
+      document.getElementById('loadingOverlay').style.display = 'flex';
+      console.log('Aguardando autenticação...');
+      // Se quiser forçar tentativa de login anônimo imediata quando não houver usuário, pode descomentar:
+      // ensureAnonymousSignIn();
+    })();
+
+    // Expor funções para botões inline
+    window.openDepositModal = ()=>openModal('depositModal');
+    window.openWithdrawModal = ()=>openModal('withdrawModal');
+    window.openTransferModal = ()=>openModal('transferModal');
+    window.openConvertModal = ()=>openModal('convertModal');
+    window.processDeposit = processDeposit;
+    window.processWithdrawal = processWithdrawal;
+    window.processTransfer = processTransfer;
+    window.processConversion = processConversion;
+    window.closeModal = closeModal;
+    window.showNotification = showNotification;
+
+  </script>
+</body>
+</html>
