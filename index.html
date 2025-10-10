@@ -6,6 +6,7 @@
   <meta name="description" content="Centro de Comando - YshippCommerce">
   <title>Centro de Comando - YshippCommerce</title>
   <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -100,37 +101,89 @@
       fill: var(--text-primary);
     }
 
-    .sidebar {
+    .top-bar__section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .top-bar__icon {
+      position: relative;
+      color: var(--text-primary);
+      background: none;
+      border: none;
+      padding: 12px;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      overflow: hidden;
+    }
+
+    .top-bar__icon:hover {
+      background: var(--secondary);
+      transform: scale(1.1);
+    }
+
+    .top-bar__icon i {
+      font-size: 1.25rem;
+      color: var(--text-primary);
+    }
+
+    .menu {
       position: fixed;
-      top: 0;
-      left: -250px;
-      width: 250px;
-      height: 100%;
+      top: 72px;
+      left: 0;
+      width: 280px;
+      height: calc(100vh - 72px);
       background: var(--surface);
       border-right: 1px solid var(--border);
-      box-shadow: var(--shadow);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
       z-index: 1000;
-      transition: left 0.5s ease-in-out;
-      opacity: 0.8;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      opacity: 0.95;
     }
 
-    .sidebar.open {
-      left: 0;
+    .menu.open {
+      transform: translateX(0);
     }
 
-    .sidebar-content {
-      padding: 1rem;
+    .menu__list {
+      list-style: none;
+      padding: 16px 0;
+    }
+
+    .menu__item {
+      margin: 8px 16px;
+    }
+
+    .menu__link {
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 12px 16px;
       display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      height: 100%;
-      justify-content: space-between;
+      align-items: center;
+      border-radius: 0.375rem;
+      transition: background 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      background: transparent;
     }
 
-    .sidebar-content > div {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+    .menu__link:hover {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .menu__link i {
+      margin-right: 12px;
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+    }
+
+    .menu__link:hover i {
+      color: white;
     }
 
     .sidebar-button {
@@ -144,6 +197,8 @@
       cursor: pointer;
       transition: background 0.3s ease, transform 0.2s ease;
       text-align: center;
+      width: calc(100% - 32px);
+      margin: 16px;
     }
 
     .sidebar-button.theme-button {
@@ -494,6 +549,32 @@
         font-size: 1.25rem;
       }
 
+      .menu {
+        width: min(80vw, 280px);
+      }
+
+      .top-bar__icon {
+        padding: 8px;
+      }
+
+      .top-bar__icon i {
+        font-size: 1.2rem;
+      }
+
+      .menu__link {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .menu__link i {
+        font-size: 1.1rem;
+      }
+
+      .sidebar-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+
       .dashboard-section {
         padding: 1rem 0.5rem;
       }
@@ -535,12 +616,6 @@
         padding: 1rem;
         max-width: 100%;
       }
-
-      .sidebar {
-        width: 80%;
-        max-width: 200px;
-        height: 100%;
-      }
     }
 
     @media (min-width: 601px) and (max-width: 1024px) {
@@ -563,27 +638,59 @@
   </style>
 </head>
 <body data-theme="light">
-  <div id="sidebar" class="sidebar">
-    <div class="sidebar-content">
-      <div>
-        <button id="theme-toggle" class="sidebar-button theme-button">Alternar Tema</button>
-        <!-- Botão de logout -->
-        <button id="logout-button" class="sidebar-button">Sair</button>
+  <div class="header-menu">
+    <nav aria-label="Navegação principal" class="header" role="navigation">
+      <h1>Centro de Comando - YshippCommerce</h1>
+      <div class="top-bar__section">
+        <button aria-label="Alternar menu" class="top-bar__icon" id="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
       </div>
-    </div>
+    </nav>
+    <nav aria-label="Menu principal" class="menu" id="main-menu">
+      <ul class="menu__list">
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('home')">
+            <i class="fas fa-home"></i>
+            <span>Página Principal</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('market')">
+            <i class="fas fa-briefcase"></i>
+            <span>Mercado de Serviços</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('store')">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Loja</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('generator')">
+            <i class="fas fa-ticket-alt"></i>
+            <span>Gerador de Bilhetes</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Carteira</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button id="theme-toggle" class="sidebar-button theme-button">Alternar Tema</button>
+        </li>
+        <li class="menu__item">
+          <button id="logout-button" class="sidebar-button">Sair</button>
+        </li>
+      </ul>
+    </nav>
   </div>
   <div id="overlay" class="overlay"></div>
 
   <main class="flex-grow w-full">
-    <header id="header" class="header" role="banner">
-      <h1>Centro de Comando - YshippCommerce</h1>
-      <button id="menu-toggle" class="menu-button">
-        <svg viewBox="0 0 24 24">
-          <path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/>
-        </svg>
-      </button>
-    </header>
-
     <div id="wallet-card" class="wallet-card">
       <h3>Carteira</h3>
       <p>Gerencie seus Golds, transações e histórico de saldo.</p>
@@ -765,13 +872,50 @@
           });
       }
 
+      // Hamburger menu functionality
+      const menuToggle = document.getElementById('menu-toggle');
+      const menu = document.getElementById('main-menu');
+      const overlay = document.getElementById('overlay');
+
+      menuToggle.addEventListener('click', () => {
+        menu.classList.toggle('open');
+        overlay.classList.toggle('active');
+      });
+
+      overlay.addEventListener('click', () => {
+        menu.classList.remove('open');
+        overlay.classList.remove('active');
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          menu.classList.remove('open');
+          overlay.classList.remove('active');
+        }
+      });
+
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', currentTheme);
+        localStorage.setItem('theme', currentTheme);
+      });
+
+      // Apply saved theme on page load
+      window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+      });
+
+      // Logout functionality
       document.getElementById("logout-button").addEventListener("click", () => {
         auth.signOut().then(() => window.location.href = "cadastro.html");
       });
     });
-  </script>
 
-  <script type="text/javascript">
     var gk_isXlsx = false;
     var gk_xlsxFileLookup = {};
     var gk_fileData = {};
@@ -784,22 +928,14 @@
           var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
           var firstSheetName = workbook.SheetNames[0];
           var worksheet = workbook.Sheets[firstSheetName];
-
-          // Convert sheet to JSON to filter blank rows
           var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-          // Filter out blank rows (rows where all cells are empty, null, or undefined)
           var filteredData = jsonData.filter(row => row.some(filledCell));
-
-          // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
           var headerRowIndex = filteredData.findIndex((row, index) =>
             row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
           );
-          // Fallback
           if (headerRowIndex === -1 || headerRowIndex > 25) {
             headerRowIndex = 0;
           }
-
-          // Convert filtered JSON back to CSV
           var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
           csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
           return csv;
@@ -823,43 +959,21 @@
         case 'market':
           window.location.href = "mercado.html";
           break;
+        case 'store':
+          window.location.href = "loja.html";
+          break;
+        case 'service':
+          window.location.href = "servicos.html";
+          break;
+        case 'raffles':
+          window.location.href = "sorteios.html";
+          break;
         case 'home':
         default:
           window.location.href = "index.html";
           break;
       }
     }
-
-    // Hamburger menu functionality
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('active');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('active');
-    });
-
-    // Theme toggle functionality
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      body.setAttribute('data-theme', currentTheme);
-      localStorage.setItem('theme', currentTheme);
-    });
-
-    // Apply saved theme on page load
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      body.setAttribute('data-theme', savedTheme);
-    });
 
     // Cookie banner functionality
     const cookieBanner = document.getElementById('cookieBanner');
@@ -884,19 +998,9 @@
       cookieBanner.classList.remove('active');
     });
 
-    // Show cookie banner on page load if not shown today
     window.addEventListener('DOMContentLoaded', () => {
       showCookieBannerOncePerDay();
     });
-
-    // TODO: Add synchronization with Wallet (carteiraAtualizada)
-    // Placeholder for future wallet data integration
-
-    // TODO: Add synchronization with Service Market
-    // Placeholder for future service market data integration
-
-    // TODO: Add global earnings history
-    // Placeholder for future earnings history integration
   </script>
 </body>
 </html>
