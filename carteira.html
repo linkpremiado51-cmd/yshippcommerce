@@ -518,6 +518,9 @@
     </div>
     <section class="wallet-section">
       <h2>Gerencie Sua Carteira</h2>
+      <p id="userStatus" class="text-center text-sm text-gray-400">Carregando usuário...</p>
+      <p><strong>Golds:</strong> <span id="goldsSaldo">0</span></p>
+      <p><strong>Saldo em Reais:</strong> <span id="brlSaldo">R$0,00</span></p>
       <div class="balances-grid">
         <div class="balance-card golds">
           <h3>Saldo em Golds</h3>
@@ -613,10 +616,9 @@
     Usuário: <span id="footerUserName">Carregando...</span> | 
     ID: <span id="footerUserId">---</span>
   </footer>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-  <script src="firebase-init.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
   <script>
     var gk_isXlsx = false;
     var gk_xlsxFileLookup = {};
@@ -673,6 +675,8 @@
       document.getElementById('golds-balance-display').textContent = goldsBalance.toLocaleString();
       document.getElementById('reais-balance-display').textContent = `R$ ${reaisBalance.toFixed(2).replace('.', ',')}`;
       document.getElementById('user-info').textContent = `Usuário: ${walletData.name} (ID: ${walletData.userId})`;
+      document.getElementById('goldsSaldo').textContent = goldsBalance.toLocaleString();
+      document.getElementById('brlSaldo').textContent = `R$${reaisBalance.toFixed(2).replace('.', ',')}`;
       loadTransactions(walletData.transactions || []);
       updateWithdrawButtons(reaisBalance);
     }
@@ -720,13 +724,13 @@
 
     // Convert Golds to Reais
     function convertGoldsToReais() {
-      const userId = auth.currentUser?.uid;
+      const userId = firebase.auth().currentUser?.uid;
       if (!userId) {
         showModal('welcomeModal', 'Usuário não autenticado. Faça login novamente.');
         return;
       }
       const goldsInput = parseInt(document.getElementById('golds-to-convert').value) || 0;
-      db.collection('wallets').doc(userId).get()
+      firebase.firestore().collection('wallets').doc(userId).get()
         .then((doc) => {
           if (doc.exists) {
             const walletData = doc.data();
@@ -742,7 +746,7 @@
               date: new Date().toLocaleString('pt-BR'),
               description: `Conversão: ${goldsInput} Golds → R$ ${reaisToAdd.toFixed(2).replace('.', ',')}`
             };
-            db.collection('wallets').doc(userId).update({
+            firebase.firestore().collection('wallets').doc(userId).update({
               goldsBalance: walletData.goldsBalance - goldsInput,
               reaisBalance: walletData.reaisBalance + reaisToAdd,
               transactions: [newTransaction, ...(walletData.transactions || [])]
@@ -763,7 +767,7 @@
 
     // Open withdraw modal
     function openWithdrawModal(method) {
-      const userId = auth.currentUser?.uid;
+      const userId = firebase.auth().currentUser?.uid;
       if (!userId) {
         showModal('welcomeModal', 'Usuário não autenticado. Faça login novamente.');
         return;
@@ -772,7 +776,7 @@
         showModal('welcomeModal', 'Você deve aceitar a coleta de IP para saques.');
         return;
       }
-      db.collection('wallets').doc(userId).get()
+      firebase.firestore().collection('wallets').doc(userId).get()
         .then((doc) => {
           if (doc.exists) {
             const walletData = doc.data();
@@ -794,7 +798,7 @@
 
     // Confirm withdrawal
     async function confirmWithdraw() {
-      const userId = auth.currentUser?.uid;
+      const userId = firebase.auth().currentUser?.uid;
       if (!userId) {
         showModal('welcomeModal', 'Usuário não autenticado. Faça login novamente.');
         return;
@@ -812,7 +816,7 @@
         return;
       }
       try {
-        const doc = await db.collection('wallets').doc(userId).get();
+        const doc = await firebase.firestore().collection('wallets').doc(userId).get();
         if (doc.exists) {
           const walletData = doc.data();
           if (walletData.reaisBalance < MIN_WITHDRAW[method]) {
@@ -827,7 +831,7 @@
             date: new Date().toLocaleString('pt-BR'),
             description: `Saque via ${method} para ${name} (${keyType}: ${account}) - R$ ${amount.toFixed(2).replace('.', ',')}`
           };
-          await db.collection('wallets').doc(userId).update({
+          await firebase.firestore().collection('wallets').doc(userId).update({
             reaisBalance: 0,
             transactions: [transaction, ...(walletData.transactions || [])]
           });
@@ -889,7 +893,7 @@
 
     // Create default wallet
     function criarCarteiraPadrao(user) {
-      db.collection('wallets').doc(user.uid).set({
+      firebase.firestore().collection('wallets').doc(user.uid).set({
         userId: user.uid,
         name: user.displayName || "Usuário",
         goldsBalance: 0,
@@ -918,19 +922,44 @@
       });
     }
 
-    // Firebase Authentication and Real-Time Listener
+    // Firebase Initialization and Authentication
     document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
+        const firebaseConfig = {
+          apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+          authDomain: "yshippcommerce.firebaseapp.com",
+          projectId: "yshippcommerce",
+          storageBucket: "yshippcommerce.appspot.com",
+          messagingSenderId: "680576769517",
+          appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+        };
+
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Set persistent authentication
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+        // Authentication state listener
         auth.onAuthStateChanged(user => {
           if (user) {
+            document.getElementById("userStatus").textContent = `Usuário ativo: ${user.uid}`;
             document.getElementById("footerUserId").textContent = user.uid;
+            // Real-time wallet listener
             db.collection('wallets').doc(user.uid).onSnapshot(
               (doc) => {
                 if (doc.exists) {
                   const data = doc.data();
                   updateInterface(data);
                   document.getElementById("footerUserName").textContent = data.name || "Usuário";
+                  document.getElementById("goldsSaldo").textContent = data.goldsBalance || 0;
+                  document.getElementById("brlSaldo").textContent = `R$${data.reaisBalance?.toFixed(2).replace('.', ',') || "0,00"}`;
                 } else {
+                  console.warn("⚠ Nenhuma carteira encontrada para o usuário.");
                   criarCarteiraPadrao(user);
                 }
                 if (localStorage.getItem('ipConsent') !== 'true') {
@@ -938,12 +967,12 @@
                 }
               },
               (error) => {
-                console.error("Erro ao carregar dados do usuário:", error.code, error.message);
+                console.error("❌ Erro ao carregar carteira:", error.code, error.message);
                 showModal('welcomeModal', 'Erro ao carregar dados da carteira. Tente novamente.');
               }
             );
           } else {
-            window.location.href = "login.html";
+            window.location.href = "cadrasto.html";
           }
         });
       }, 500);
