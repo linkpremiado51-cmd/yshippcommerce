@@ -1178,11 +1178,12 @@
             price,
             rewardGolds,
             status: 'ativo',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: new Date() // [GROCK EDIT]: Mudado para Date() para indexar imediatamente
           };
 
           const serviceRef = db.collection('services').doc();
           transaction.set(serviceRef, newService);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // [GROCK EDIT]: Delay para Firestore indexar o novo serviço
 
           // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           transaction.update(walletRef, {
@@ -1737,7 +1738,7 @@
       updateSubcategories(); // Initial call to set default state
     });
 
-    // [GROCK EDIT CONFIRMADO]: Correções aplicadas para arrayUnion, sincronização de saldos e remoção de Golds Totais
+    // [GROCK EDIT CONFIRMADO]: Correções aplicadas para arrayUnion, sincronização de saldos, remoção de Golds Totais e indexação imediata
   </script>
 </body>
 </html>
