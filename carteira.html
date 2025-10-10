@@ -616,45 +616,8 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-init.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(() => {
-        const firebaseConfig = {
-          apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
-          authDomain: "yshippcommerce.firebaseapp.com",
-          projectId: "yshippcommerce",
-          storageBucket: "yshippcommerce.appspot.com",
-          messagingSenderId: "680576769517",
-          appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        auth.onAuthStateChanged(user => {
-          if (user) {
-            const uid = user.uid;
-            db.collection("wallets").where("userId", "==", uid).limit(1).get()
-              .then(snapshot => {
-                if (!snapshot.empty) {
-                  const data = snapshot.docs[0].data();
-                  document.getElementById("footerUserName").textContent = data.name || "Usuário";
-                  document.getElementById("footerUserId").textContent = uid;
-                } else {
-                  document.getElementById("footerUserName").textContent = "Usuário";
-                  document.getElementById("footerUserId").textContent = uid;
-                }
-              })
-              .catch(error => console.error("Erro ao buscar carteira:", error));
-          } else {
-            window.location.href = "cadastro.html";
-          }
-        });
-      }, 500);
-    });
-  </script>
-  <script type="text/javascript">
     var gk_isXlsx = false;
     var gk_xlsxFileLookup = {};
     var gk_fileData = {};
@@ -924,59 +887,66 @@
       }
     }
 
-    // Load wallet data from Firestore
-    function carregarCarteiraFirebase(userId) {
-      db.collection('wallets').doc(userId).onSnapshot((doc) => {
-        if (doc.exists) {
-          const walletData = doc.data();
-          updateInterface(walletData);
-          localStorage.setItem('walletData', JSON.stringify({
-            userId: walletData.userId,
-            name: walletData.name,
-            goldsBalance: walletData.goldsBalance,
-            reaisBalance: walletData.reaisBalance,
-            transactions: walletData.transactions
-          }));
-        } else {
-          const defaultWallet = {
-            userId: userId,
-            name: auth.currentUser?.displayName || 'Usuário',
-            goldsBalance: 0,
-            reaisBalance: 0,
-            transactions: []
-          };
-          db.collection('wallets').doc(userId).set(defaultWallet)
-            .then(() => {
-              console.log('Default wallet created for user:', userId);
-              updateInterface(defaultWallet);
-              localStorage.setItem('walletData', JSON.stringify(defaultWallet));
-            })
-            .catch((error) => {
-              console.error('Erro ao criar carteira padrão:', error);
-              showModal('welcomeModal', 'Erro ao inicializar carteira. Tente novamente.');
-            });
-        }
-      }, (error) => {
-        console.error('Erro ao carregar dados da carteira:', error);
-        showModal('welcomeModal', 'Erro ao carregar dados da carteira. Tente novamente.');
+    // Create default wallet
+    function criarCarteiraPadrao(user) {
+      db.collection('wallets').doc(user.uid).set({
+        userId: user.uid,
+        name: user.displayName || "Usuário",
+        goldsBalance: 0,
+        reaisBalance: 0,
+        transactions: [],
+        createdAt: new Date()
+      }).then(() => {
+        console.log('Default wallet created for user:', user.uid);
+        updateInterface({
+          userId: user.uid,
+          name: user.displayName || "Usuário",
+          goldsBalance: 0,
+          reaisBalance: 0,
+          transactions: []
+        });
+        localStorage.setItem('walletData', JSON.stringify({
+          userId: user.uid,
+          name: user.displayName || "Usuário",
+          goldsBalance: 0,
+          reaisBalance: 0,
+          transactions: []
+        }));
+      }).catch((error) => {
+        console.error("Erro ao criar carteira padrão:", error.code, error.message);
+        showModal('welcomeModal', 'Erro ao inicializar carteira. Tente novamente.');
       });
     }
 
-    // Synchronize wallet data with Firestore
-    function sincronizarCarteiraFirebase() {
-      // TODO: Additional synchronization logic if needed
-    }
-
-    // Firebase Authentication
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        carregarCarteiraFirebase(user.uid);
-        if (localStorage.getItem('ipConsent') !== 'true') {
-          document.getElementById('cookieBanner').style.display = 'flex';
-        }
-      } else {
-        window.location.href = 'login.html';
-      }
+    // Firebase Authentication and Real-Time Listener
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            document.getElementById("footerUserId").textContent = user.uid;
+            db.collection('wallets').doc(user.uid).onSnapshot(
+              (doc) => {
+                if (doc.exists) {
+                  const data = doc.data();
+                  updateInterface(data);
+                  document.getElementById("footerUserName").textContent = data.name || "Usuário";
+                } else {
+                  criarCarteiraPadrao(user);
+                }
+                if (localStorage.getItem('ipConsent') !== 'true') {
+                  document.getElementById('cookieBanner').style.display = 'flex';
+                }
+              },
+              (error) => {
+                console.error("Erro ao carregar dados do usuário:", error.code, error.message);
+                showModal('welcomeModal', 'Erro ao carregar dados da carteira. Tente novamente.');
+              }
+            );
+          } else {
+            window.location.href = "login.html";
+          }
+        });
+      }, 500);
     });
 
     // Theme toggle event listener
