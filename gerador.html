@@ -1,43 +1,5 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+```html
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -171,60 +133,6 @@
       color: var(--reais);
       font-size: 1.125rem;
       font-weight: bold;
-    }
-    .wallet-section {
-      width: 100%;
-      max-width: 1200px;
-      padding: 1.5rem 1rem;
-      background: var(--surface);
-      border-radius: 0.375rem;
-      box-shadow: var(--shadow);
-      margin: 1rem 0;
-    }
-    .wallet-section h2 {
-      font-family: 'Jura', sans-serif;
-      font-size: 1.5rem;
-      margin-bottom: 0.75rem;
-      color: var(--text-primary);
-    }
-    .balances-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .balance-card {
-      background: var(--background);
-      border-radius: 0.375rem;
-      padding: 1.5rem;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-    .balance-card.golds {
-      border-left: 4px solid var(--gold);
-    }
-    .balance-card.reais {
-      border-left: 4px solid var(--reais);
-    }
-    .balance-card h3 {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-    .balance-card .balance-amount {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-    .balance-card .balance-amount.golds {
-      color: var(--gold);
-    }
-    .balance-card .balance-amount.reais {
-      color: var(--reais);
-    }
-    .balance-card .user-info {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
     }
     .ads-section {
       width: 100%;
@@ -466,16 +374,11 @@
       .status-bar div {
         padding: 0.5rem;
       }
-      .wallet-section,
       .ads-section {
         padding: 1rem 0.5rem;
       }
-      .wallet-section h2,
       .ads-section h2 {
         font-size: 1.25rem;
-      }
-      .balances-grid {
-        grid-template-columns: 1fr;
       }
       .carousel-container {
         padding: 0 0.5rem 1rem;
@@ -500,11 +403,9 @@
       .header h1 {
         font-size: 1.5rem;
       }
-      .wallet-section,
       .ads-section {
         padding: 1rem;
       }
-      .wallet-section h2,
       .ads-section h2 {
         font-size: 1.4rem;
       }
@@ -534,21 +435,10 @@
       <p style="margin-bottom: 1rem; color: var(--text-secondary);">Realize tarefas de criptomoedas e ganhe Golds inserindo o código fornecido.</p>
       <div class="carousel-container" id="crypto-carousel"></div>
     </section>
-    <section class="wallet-section">
-      <h2>Gerencie Sua Carteira</h2>
-      <div class="balances-grid">
-        <div class="balance-card golds">
-          <h3>Saldo em Golds</h3>
-          <div class="balance-amount golds" id="golds-balance-display">682,500</div>
-          <p>Ganhe Golds visualizando propagandas.</p>
-          <div class="user-info" id="user-info">Usuário: Ana Silva (ID: #mgdqyh5l0BQZ2)</div>
-        </div>
-        <div class="balance-card reais">
-          <h3>Saldo em Reais</h3>
-          <div class="balance-amount reais" id="reais-balance-display">R$ 1,00</div>
-          <p>Converta Golds para reais e solicite saques.</p>
-        </div>
-      </div>
+    <section class="ads-section">
+      <h2>Gerador de Golds Via Tasks</h2>
+      <p style="margin-bottom: 1rem; color: var(--text-secondary);">Realize tarefas e ganhe Golds inserindo o código fornecido.</p>
+      <div class="carousel-container" id="tasks-carousel"></div>
     </section>
     <div id="welcomeModal" class="modal" role="dialog" aria-labelledby="welcomeMessage">
       <div class="modal-content">
@@ -665,9 +555,6 @@
       document.getElementById('golds-balance').textContent = goldsBalance.toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${reaisBalance.toFixed(2).replace('.', ',')}`;
       document.getElementById('golds-total').textContent = goldsBalance.toLocaleString();
-      document.getElementById('golds-balance-display').textContent = goldsBalance.toLocaleString();
-      document.getElementById('reais-balance-display').textContent = `R$ ${reaisBalance.toFixed(2).replace('.', ',')}`;
-      document.getElementById('user-info').textContent = `Usuário: ${walletData.name} (ID: ${walletData.userId})`;
     }
 
     // Load ads into carousels
@@ -675,17 +562,18 @@
       const carousel = document.getElementById('links-carousel');
       carousel.innerHTML = '';
       links.slice(0, 5).forEach(ad => {
+        const golds = ad.golds ?? ad.reward ?? 0;
         const card = document.createElement('div');
         card.classList.add('ad-card');
         card.innerHTML = `
           <h3>${ad.name}</h3>
-          <p><strong>Região:</strong> ${ad.region} | <strong>Tipo:</strong> ${ad.type} | <strong>Subcategoria:</strong> ${ad.subcategory}</p>
-          <div class="golds-reward"><strong>Recompensa:</strong> ${ad.golds} Golds</div>
+          <p><strong>Região:</strong> ${ad.region || '-'} | <strong>Tipo:</strong> ${ad.type || '-'} | <strong>Subcategoria:</strong> ${ad.subcategory || '-'}</p>
+          <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
           <div class="steps-list">
             <strong>Passos:</strong>
-            <ul>${ad.steps.map(step => `<li>${step}</li>`).join('')}</ul>
+            <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
           </div>
-          <button class="view-button" onclick="viewAd('${ad.id}', ${ad.golds})">Visualizar Propaganda</button>
+          <button class="view-button" onclick="viewAd('${ad.id}', ${golds})">Visualizar Propaganda</button>
         `;
         carousel.appendChild(card);
       });
@@ -698,22 +586,50 @@
       const carousel = document.getElementById('crypto-carousel');
       carousel.innerHTML = '';
       cryptoAds.slice(0, 1).forEach(ad => {
+        const golds = ad.golds ?? ad.reward ?? 0;
         const card = document.createElement('div');
         card.classList.add('ad-card');
         card.innerHTML = `
           <h3>${ad.name}</h3>
-          <p><strong>Região:</strong> ${ad.region} | <strong>Tipo:</strong> ${ad.type} | <strong>Subcategoria:</strong> ${ad.subcategory}</p>
-          <div class="golds-reward"><strong>Recompensa:</strong> ${ad.golds} Golds</div>
+          <p><strong>Região:</strong> ${ad.region || '-'} | <strong>Tipo:</strong> ${ad.type || '-'} | <strong>Subcategoria:</strong> ${ad.subcategory || '-'}</p>
+          <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
           <div class="steps-list">
             <strong>Passos:</strong>
-            <ul>${ad.steps.map(step => `<li>${step}</li>`).join('')}</ul>
+            <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
           </div>
-          <button class="view-button" onclick="showCryptoModal('${ad.id}', ${ad.golds}, '${ad.code}')">Insira o Código</button>
+          <button class="view-button" onclick="showCryptoModal('${ad.id}', ${golds}, '${ad.code}')">Insira o Código</button>
         `;
         carousel.appendChild(card);
       });
       if (cryptoAds.length === 0) {
         carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Nenhuma tarefa de cripto disponível.</p>';
+      }
+    }
+
+    function loadTasksCarousel(tasks) {
+      const carousel = document.getElementById('tasks-carousel');
+      carousel.innerHTML = '';
+      tasks.slice(0, 6).forEach(ad => {
+        const reward = ad.golds ?? ad.reward ?? 0;
+        const freelancersNeeded = ad.freelancersNeeded ?? ad.slots ?? null;
+        const acceptedCount = (ad.acceptedBy && ad.acceptedBy.length) || 0;
+        const vagasText = freelancersNeeded ? ` | Vagas: ${Math.max(0, freelancersNeeded - acceptedCount)}` : '';
+        const card = document.createElement('div');
+        card.classList.add('ad-card');
+        card.innerHTML = `
+          <h3>${ad.name}</h3>
+          <p><strong>Região:</strong> ${ad.region || '-'} | <strong>Tipo:</strong> ${ad.type || '-'} | <strong>Subcategoria:</strong> ${ad.subcategory || '-'}</p>
+          <div class="golds-reward"><strong>Recompensa:</strong> ${reward} Golds${vagasText}</div>
+          <div class="steps-list">
+            <strong>Passos:</strong>
+            <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
+          </div>
+          <button class="view-button" onclick="acceptTask('${ad.id}', ${reward})">${ad.buttonText || 'Aceitar Tarefa'}</button>
+        `;
+        carousel.appendChild(card);
+      });
+      if (tasks.length === 0) {
+        carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Nenhuma task disponível.</p>';
       }
     }
 
@@ -783,6 +699,105 @@
       }
     }
 
+    async function acceptTask(adId, reward) {
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        showModal('welcomeModal', 'Usuário não autenticado. Faça login novamente.');
+        return;
+      }
+
+      const ipConsent = localStorage.getItem('ipConsent');
+      if (ipConsent !== 'true') {
+        showModal('welcomeModal', 'Você deve aceitar a coleta de IP para continuar.');
+        return;
+      }
+
+      const adRef = db.collection('ads').doc('tasks').collection('items').doc(adId);
+      const walletRef = db.collection('wallets').doc(userId);
+
+      try {
+        await db.runTransaction(async (t) => {
+          const adDoc = await t.get(adRef);
+          if (!adDoc.exists) throw new Error('Tarefa não encontrada.');
+          const ad = adDoc.data();
+
+          // suporte a campos que limitam vagas
+          const required = ad.freelancersNeeded ?? ad.slots ?? null;
+          const acceptedBy = Array.isArray(ad.acceptedBy) ? ad.acceptedBy.slice() : [];
+
+          // já aceitou?
+          if (acceptedBy.includes(userId)) {
+            throw new Error('Você já aceitou esta tarefa.');
+          }
+
+          // vagas verificacao
+          if (required !== null && acceptedBy.length >= required) {
+            throw new Error('Vagas para esta tarefa esgotadas.');
+          }
+
+          // adiciona o usuário à lista
+          acceptedBy.push(userId);
+          const newAdUpdate = { acceptedBy: acceptedBy };
+          // se lotou, marca como não disponível (compat com status/active)
+          if (required !== null && acceptedBy.length >= required) {
+            if ('status' in ad) newAdUpdate.status = 'unavailable';
+            if ('active' in ad) newAdUpdate.active = false;
+          }
+          t.update(adRef, newAdUpdate);
+
+          // atualiza carteira do usuário (cria se não existir)
+          const walletDoc = await t.get(walletRef);
+          const newTransaction = {
+            type: 'receive',
+            amount: reward,
+            currency: 'golds',
+            date: new Date().toISOString(),
+            description: `Aceitação da tarefa ${adId}`
+          };
+
+          if (!walletDoc.exists) {
+            t.set(walletRef, {
+              userId: userId,
+              name: auth.currentUser?.displayName || 'Usuário',
+              goldsBalance: reward,
+              reaisBalance: 0,
+              transactions: [newTransaction]
+            });
+          } else {
+            const w = walletDoc.data();
+            const current = Number(w.goldsBalance || 0);
+            const txs = Array.isArray(w.transactions) ? w.transactions.slice() : [];
+            txs.unshift(newTransaction);
+            t.update(walletRef, {
+              goldsBalance: current + reward,
+              transactions: txs
+            });
+          }
+        });
+
+        // atualizar UI local
+        const walletData = JSON.parse(localStorage.getItem('walletData') || '{}');
+        walletData.goldsBalance = (walletData.goldsBalance || 0) + reward;
+        walletData.transactions = walletData.transactions || [];
+        walletData.transactions.unshift({
+          type: 'receive',
+          amount: reward,
+          currency: 'golds',
+          date: new Date().toISOString(),
+          description: `Aceitação da tarefa ${adId}`
+        });
+        localStorage.setItem('walletData', JSON.stringify(walletData));
+        updateInterface({ goldsBalance: walletData.goldsBalance, reaisBalance: walletData.reaisBalance || 0, transactions: walletData.transactions });
+
+        showModal('welcomeModal', `Você ganhou ${reward} Golds por aceitar a tarefa!`);
+        // recarregar tasks para atualizar vagas
+        carregarGeradorFirebase(userId);
+      } catch (err) {
+        console.error('Erro ao aceitar task:', err);
+        showModal('welcomeModal', err.message || 'Erro ao aceitar tarefa. Tente novamente.');
+      }
+    }
+
     // Load generator data from Firestore
     function carregarGeradorFirebase(userId) {
       // Load wallet data
@@ -827,8 +842,10 @@
         .then((querySnapshot) => {
           const links = [];
           querySnapshot.forEach((doc) => {
-            if (doc.data().status === 'available') {
-              links.push({ id: doc.id, ...doc.data() });
+            const data = doc.data();
+            const available = (data.status && data.status === 'available') || data.active === true;
+            if (available) {
+              links.push({ id: doc.id, ...data });
             }
           });
           loadLinksCarousel(links);
@@ -843,8 +860,10 @@
         .then((querySnapshot) => {
           const cryptoAds = [];
           querySnapshot.forEach((doc) => {
-            if (doc.data().status === 'available') {
-              cryptoAds.push({ id: doc.id, ...doc.data() });
+            const data = doc.data();
+            const available = (data.status && data.status === 'available') || data.active === true;
+            if (available) {
+              cryptoAds.push({ id: doc.id, ...data });
             }
           });
           loadCryptoCarousel(cryptoAds);
@@ -852,6 +871,24 @@
         .catch((error) => {
           console.error('Erro ao carregar tarefas de cripto:', error);
           showModal('welcomeModal', 'Erro ao carregar tarefas de cripto. Tente novamente.');
+        });
+
+      // Load tasks
+      db.collection('ads').doc('tasks').collection('items').get()
+        .then((querySnapshot) => {
+          const tasks = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const isAvailable = (data.status && data.status === 'available') || (data.active === true) || (data.status === undefined && data.active === undefined);
+            if (isAvailable) {
+              tasks.push({ id: doc.id, ...data });
+            }
+          });
+          loadTasksCarousel(tasks);
+        })
+        .catch((error) => {
+          console.error('Erro ao carregar tasks:', error);
+          showModal('welcomeModal', 'Erro ao carregar tasks. Tente novamente.');
         });
 
       // Show cookie banner if no IP consent
@@ -902,11 +939,23 @@
     // Firebase Authentication
     auth.onAuthStateChanged((user) => {
       if (user) {
-        // User is logged in, load generator data
         carregarGeradorFirebase(user.uid);
+
+        // Exibir UID no topo para debug
+        document.body.insertAdjacentHTML(
+          "afterbegin",
+          `<div style="background:black;color:lime;padding:6px;position:fixed;top:0;left:0;z-index:9999;font-size:12px">
+            UID ativo: ${user.uid}
+          </div>`
+        );
+
+        // Atualizar exibição do usuário logado
+        const userInfoDiv = document.getElementById("user-info");
+        if (userInfoDiv) {
+          userInfoDiv.textContent = `Usuário logado: ${user.displayName || "Usuário"} (ID: ${user.uid})`;
+        }
       } else {
-        // No user is logged in, redirect to login page
-        window.location.href = 'login.html';
+        window.location.href = "cadastro.html";
       }
     });
 
@@ -924,5 +973,97 @@
       loadTheme();
     });
   </script>
+  <script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+      if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+          var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+          var firstSheetName = workbook.SheetNames[0];
+          var worksheet = workbook.Sheets[firstSheetName];
+          var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+          var filteredData = jsonData.filter(row => row.some(filledCell));
+          var headerRowIndex = filteredData.findIndex((row, index) =>
+            row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+          );
+          if (headerRowIndex === -1 || headerRowIndex > 25) {
+            headerRowIndex = 0;
+          }
+          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+          csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+          return csv;
+        } catch (e) {
+          console.error(e);
+          return "";
+        }
+      }
+      return gk_fileData[filename] || "";
+    }
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const firebaseConfig = {
+        apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+        authDomain: "yshippcommerce.firebaseapp.com",
+        projectId: "yshippcommerce",
+        storageBucket: "yshippcommerce.appspot.com",
+        messagingSenderId: "680576769517",
+        appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+      };
+
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      const db = firebase.firestore();
+      const auth = firebase.auth();
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          const userId = user.uid;
+          document.getElementById("footerUserId").textContent = userId;
+
+          db.collection("wallets").where("userId", "==", userId).limit(1).get()
+            .then(snapshot => {
+              if (!snapshot.empty) {
+                const data = snapshot.docs[0].data();
+                document.getElementById("footerUserName").textContent = data.name || "Usuário";
+              } else {
+                document.getElementById("footerUserName").textContent = "Usuário";
+              }
+            })
+            .catch(err => {
+              console.error("Erro ao buscar dados:", err);
+              document.getElementById("footerUserName").textContent = "Erro ao carregar";
+            });
+        } else {
+          document.getElementById("footerUserName").textContent = "Não logado";
+          document.getElementById("footerUserId").textContent = "---";
+          window.location.href = "cadastro.html";
+        }
+      });
+    });
+  </script>
+  <footer id="userInfoFooter" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #0d1117;
+    color: #00ffaa;
+    text-align: center;
+    font-size: 13px;
+    padding: 6px;
+    border-top: 1px solid #00ffaa;
+    z-index: 9999;
+    font-family: 'Ubuntu', sans-serif;">
+    Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
+  </footer>
 </body>
 </html>
+```
