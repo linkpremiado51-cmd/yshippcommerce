@@ -7,6 +7,9 @@
   <title>Publicar Serviço - YshippCommerce</title>
   <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --background: #f9fafb;
@@ -858,16 +861,13 @@
       </div>
     </div>
   </footer>
-  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"></script>
   <script>
     // Firebase configuration and initialization
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
       authDomain: "yshippcommerce.firebaseapp.com",
       projectId: "yshippcommerce",
-      storageBucket: "yshippcommerce.firebasestorage.app",
+      storageBucket: "yshippcommerce.appspot.com",
       messagingSenderId: "680576769517",
       appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
     };
@@ -1721,6 +1721,8 @@
       document.getElementById('serviceType')?.addEventListener('change', updateSubcategories);
       updateSubcategories(); // Initial call to set default state
     });
+
+    // [GROCK EDIT CONFIRMADO]: Firebase compat importado e bucket corrigido.
   </script>
 </body>
 </html>
