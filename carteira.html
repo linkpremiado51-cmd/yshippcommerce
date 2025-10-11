@@ -183,16 +183,16 @@
 
     const auth = firebase.auth();
 
-// Mantém a sessão do usuário salva mesmo após fechar o navegador ou sair
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(() => {
-    console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar.");
-  })
-  .catch((error) => {
-    console.error("❌ Erro configurando persistência:", error);
-  });
+    // [GROCK EDIT]: Configuração de persistência LOCAL para manter sessão
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar.");
+      })
+      .catch((error) => {
+        console.error("❌ Erro configurando persistência:", error);
+      });
 
-const db = firebase.firestore();
+    const db = firebase.firestore();
 
     let currentUser = null;
     let walletData = null;
@@ -230,7 +230,7 @@ const db = firebase.firestore();
       }
     }
 
-    // Observador de estado de autenticação
+    // [GROCK EDIT]: Refinamento da sincronização de carteira para re-login
     auth.onAuthStateChanged(async user => {
       console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário');
       if (!user) {
@@ -242,12 +242,16 @@ const db = firebase.firestore();
       document.getElementById('footerUserName').textContent = user.displayName || (user.isAnonymous ? 'Anônimo' : (user.email || 'Usuário'));
       console.log('Usuário ativo:', user.uid);
 
-      // [GROCK EDIT]: Sincronização de carteira existente no re-login
       try {
         const walletRef = db.collection('wallets').doc(user.uid);
         const walletSnap = await walletRef.get();
 
-        if (!walletSnap.exists) {
+        if (walletSnap.exists) {
+          // [GROCK EDIT]: Sincronização de carteira existente no re-login
+          walletData = walletSnap.data();
+          console.log('[GROCK EDIT] Carteira existente sincronizada:', walletData);
+          atualizarInterfaceCarteira(walletData);
+        } else {
           // [GROCK EDIT 2]: Padronização de timestamps com serverTimestamp()
           await walletRef.set({
             userId: user.uid,
@@ -258,19 +262,24 @@ const db = firebase.firestore();
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           console.log('[GROCK EDIT] Carteira nova criada (usuário sem histórico)');
-        } else {
-          // Sincroniza dados da carteira existente
-          walletData = walletSnap.data();
-          console.log('[GROCK EDIT] Carteira existente sincronizada:', walletData);
+          walletData = {
+            userId: user.uid,
+            name: user.displayName || (user.isAnonymous ? 'Anônimo' : 'Usuário'),
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
           atualizarInterfaceCarteira(walletData);
         }
+
+        // Carrega ou sincroniza os dados da carteira
+        await loadWalletData(user.uid);
+        document.getElementById('loadingOverlay').style.display = 'none';
       } catch (error) {
         console.error('[GROCK EDIT] Erro ao sincronizar carteira:', error);
         showNotification('Erro', `Erro ao sincronizar carteira: ${error.message}`);
       }
-
-      await loadWalletData(user.uid);
-      document.getElementById('loadingOverlay').style.display = 'none';
     });
 
     // Carregar/ Inicializar carteira no Firestore
@@ -303,16 +312,20 @@ const db = firebase.firestore();
       }
     }
 
-    // Atualiza a UI com dados da carteira local (walletData)
+    // [GROCK EDIT]: Adiciona validação antes de renderizar carteira
     function renderWallet(){
-      if (!walletData) return;
+      if (!walletData || walletData.goldsBalance === undefined || walletData.reaisBalance === undefined) {
+        console.warn("[GROCK EDIT]: Carteira incompleta detectada, reconsultando Firestore.");
+        loadWalletData(currentUser.uid);
+        return;
+      }
       document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.',',')}`;
 
       const txs = walletData.transactions || [];
       document.getElementById('total-transactions').textContent = txs.length;
       let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
-      txs.forEach(tx=>{
+      txs.forEach(tx => {
         if (tx.type === 'receive') totalReceived += (tx.amount || 0);
         if (tx.type === 'send' || tx.type === 'withdraw') totalSent += (tx.amount || 0);
         if (tx.type === 'withdraw') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
@@ -326,6 +339,11 @@ const db = firebase.firestore();
 
     // [GROCK EDIT]: Atualiza interface com dados de carteira existentes
     function atualizarInterfaceCarteira(walletData) {
+      if (!walletData || walletData.goldsBalance === undefined || walletData.reaisBalance === undefined) {
+        console.warn("[GROCK EDIT]: Carteira incompleta detectada no atualizarInterfaceCarteira, reconsultando Firestore.");
+        loadWalletData(currentUser.uid);
+        return;
+      }
       document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.', ',')}`;
 
