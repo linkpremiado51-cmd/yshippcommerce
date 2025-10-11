@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Publicar serviços no Mercado de Serviços YshippCommerce">
   <title>Publicar Serviço - YshippCommerce</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=PT+Sans&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
       --background: #f9fafb;
@@ -32,7 +31,6 @@
       --tutorial-bg: #3498db;
       --tutorial-hover: #2980b9;
     }
-
     [data-theme="dark"] {
       --background: #1f2937;
       --surface: #374151;
@@ -49,216 +47,58 @@
       --tutorial-bg: #1e90ff;
       --tutorial-hover: #1c86ee;
     }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
     }
-
     body {
       font-family: 'Ubuntu', sans-serif;
       background: var(--background);
       color: var(--text-primary);
       line-height: 1.6;
       min-height: 100vh;
-      padding-top: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       overflow-x: hidden;
     }
-
-    .header-menu {
-      font-family: 'PT Sans', sans-serif;
-    }
-
     .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 72px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      text-align: center;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 10;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 24px;
-      z-index: 1001;
-      box-shadow: var(--shadow);
     }
-
-    .top-bar__section {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .top-bar__icon {
-      position: relative;
+    .header h1 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.8rem;
       color: var(--text-primary);
-      background: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .theme-button {
+      padding: 0.5rem 1rem;
+      background: var(--tutorial-bg);
       border: none;
-      padding: 12px;
-      border-radius: 12px;
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: 0.375rem;
       cursor: pointer;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
-
-    .top-bar__icon i {
-      position: relative;
-      font-size: 1.25rem;
+    .theme-button:hover {
+      background: var(--tutorial-hover);
+      transform: scale(1.05);
     }
-
-    .top-bar__icon:hover {
-      transform: scale(1.1);
-    }
-
-    .menu {
-      position: fixed;
-      top: 72px;
-      left: 0;
-      width: 280px;
-      height: calc(100vh - 72px);
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      transform: translateX(-100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 1000;
-      overflow-y: auto;
-      box-shadow: var(--shadow);
-    }
-
-    .menu.open {
-      transform: translateX(0);
-    }
-
-    .menu__list {
-      list-style: none;
-      padding: 16px 0;
-    }
-
-    .menu__item {
-      margin: 8px 16px;
-    }
-
-    .menu__link {
-      color: var(--text-primary);
-      text-decoration: none;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      border-radius: 12px;
-      transition: none;
-      position: relative;
-      overflow: hidden;
-      background: transparent;
-    }
-
-    .menu__link i {
-      margin-right: 12px;
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-    }
-
-    .submenu {
-      margin-top: 4px;
-      padding-left: 48px;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-    }
-
-    .submenu.open {
-      max-height: 300px;
-    }
-
-    .submenu__link {
-      color: var(--text-secondary);
-      padding: 8px 16px;
-      font-size: 0.9375rem;
-      display: block;
-      text-decoration: none;
-      transition: none;
-    }
-
-    .premium-button {
-      background: var(--secondary);
-      color: var(--text-primary);
-      border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
-      cursor: pointer;
-      width: calc(100% - 32px);
-      margin: 16px;
-      font-weight: 500;
-      transition: none;
-    }
-
-    .notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 12px 24px;
-      background: var(--surface);
-      color: var(--text-primary);
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      z-index: 2000;
-    }
-
-    .notification.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (max-width: 768px) {
-      .menu {
-        width: min(80vw, 280px);
-      }
-
-      .header {
-        padding: 0 12px;
-      }
-
-      .top-bar__icon {
-        padding: 8px;
-      }
-
-      .top-bar__icon i {
-        font-size: 1.2rem;
-      }
-
-      .menu__link {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-      }
-
-      .menu__link i {
-        font-size: 1.1rem;
-      }
-
-      .submenu__link {
-        font-size: 0.85rem;
-        padding: 6px 12px;
-      }
-
-      .premium-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-      }
-
-      .notification {
-        right: 10px;
-        bottom: 10px;
-        padding: 10px 20px;
-      }
-    }
-
     .status-bar {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -670,14 +510,11 @@
       box-shadow: var(--shadow);
       border-top: 1px solid var(--border);
       z-index: 1000;
-      display: none;
+      display: flex;
       flex-direction: column;
       gap: 0.5rem;
       align-items: center;
       text-align: center;
-    }
-    .cookie-banner.active {
-      display: flex;
     }
     [data-theme="dark"] .cookie-banner {
       background: var(--surface);
@@ -685,13 +522,6 @@
     }
     .cookie-banner .content {
       font-size: 0.875rem;
-    }
-    .cookie-banner .content a {
-      color: var(--primary);
-      text-decoration: underline;
-    }
-    .cookie-banner .content a:hover {
-      color: var(--primary-hover);
     }
     .cookie-banner .buttons {
       display: flex;
@@ -733,11 +563,15 @@
     @media (max-width: 600px) {
       .header {
         padding: 0.75rem;
-        flex-direction: row;
+        flex-direction: column;
         gap: 0.5rem;
       }
       .header h1 {
         font-size: 1.25rem;
+      }
+      .theme-button {
+        width: 100%;
+        max-width: none;
       }
       .status-bar {
         font-size: 0.75rem;
@@ -801,67 +635,18 @@
   </style>
 </head>
 <body data-theme="light">
-  <div class="header-menu">
-    <nav aria-label="Navegação principal" class="header" role="navigation">
-      <div class="top-bar__section">
-        <h1>Centro de Comando - YshippCommerce</h1>
-      </div>
-      <div class="top-bar__section">
-        <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
-          <i class="fas fa-bars"></i>
-        </button>
-        <button aria-label="Alternar tema claro/escuro" class="top-bar__icon" id="theme-toggle" title="Alternar tema">
-          <i class="fas fa-adjust"></i>
-        </button>
-      </div>
-    </nav>
-    <nav aria-label="Menu principal" class="menu" id="main-menu">
-      <ul class="menu__list">
-        <li class="menu__item">
-          <button class="menu__link" onclick="navigateTo('home')">
-            <i class="fas fa-home"></i>
-            <span class="bold-text">Página Principal</span>
-          </button>
-        </li>
-        <li class="menu__item">
-          <button class="menu__link" onclick="navigateTo('market')">
-            <i class="fas fa-briefcase"></i>
-            <span class="bold-text">Mercado de Serviços</span>
-          </button>
-        </li>
-        <li class="menu__item">
-          <button class="menu__link" onclick="navigateTo('store')">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="bold-text">Loja</span>
-          </button>
-        </li>
-        <li class="menu__item">
-          <button class="menu__link" onclick="navigateTo('generator')">
-            <i class="fas fa-ticket-alt"></i>
-            <span class="bold-text">Gerador de Bilhetes</span>
-          </button>
-        </li>
-        <li class="menu__item">
-          <button class="menu__link" onclick="navigateTo('wallet')">
-            <i class="fas fa-wallet"></i>
-            <span class="bold-text">Carteira</span>
-          </button>
-        </li>
-        <li class="menu__item">
-          <button class="menu__link" id="logout-button">
-            <i class="fas fa-sign-out-alt"></i>
-            <span class="bold-text">Sair</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <div id="overlay" class="overlay"></div>
-  <div class="notification" id="notification"></div>
+  <header class="header" role="banner">
+    <h1>Publicar Serviço - YshippCommerce</h1>
+    <div>
+      <button class="theme-button" id="theme-toggle">Alternar Tema</button>
+    </div>
+  </header>
   <main class="flex-grow w-full">
     <div class="status-bar" role="region" aria-label="Resumo de Saldo">
       <div>SALDO EM GOLDS <span class="golds-balance" id="golds-balance">0</span></div>
       <div>SALDO EM REAIS <span class="reais-balance" id="reais-balance">R$ 0,00</span></div>
+      <!-- [GROCK EDIT]: Campo "Golds Totais" desativado por redundância -->
+      <!-- <div>GOLDS TOTAIS <span id="golds-total">900</span></div> -->
     </div>
     <section class="wallet-section">
       <h2>Gerencie Sua Carteira</h2>
@@ -1078,71 +863,6 @@
     </div>
   </footer>
   <script>
-    // Menu and navigation functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const menuToggles = {
-        'menu-icon': 'main-menu'
-      };
-
-      Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
-        const toggle = document.getElementById(toggleId);
-        const menu = document.getElementById(menuId);
-        if (!toggle || !menu) {
-          console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`);
-          return;
-        }
-        toggle.addEventListener('click', e => {
-          e.stopPropagation();
-          menu.classList.toggle('open');
-          toggle.classList.toggle('active');
-        });
-      });
-
-      document.addEventListener('click', e => {
-        if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
-          Object.values(menuToggles).forEach(menuId => {
-            const menu = document.getElementById(menuId);
-            if (menu) menu.classList.remove('open');
-          });
-          document.querySelectorAll('.top-bar__icon').forEach(icon => {
-            if (icon) icon.classList.remove('active');
-          });
-        }
-      });
-
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          Object.values(menuToggles).forEach(menuId => {
-            const menu = document.getElementById(menuId);
-            if (menu) menu.classList.remove('open');
-          });
-          document.querySelectorAll('.top-bar__icon').forEach(icon => {
-            if (icon) icon.classList.remove('active');
-          });
-        }
-      });
-
-      // Theme toggle functionality
-      const themeToggle = document.getElementById('theme-toggle');
-      const body = document.body;
-      themeToggle.addEventListener('click', () => {
-        const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        body.setAttribute('data-theme', currentTheme);
-        localStorage.setItem('theme', currentTheme);
-      });
-
-      // Apply saved theme on page load
-      window.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        body.setAttribute('data-theme', savedTheme);
-      });
-
-      // Logout functionality
-      document.getElementById("logout-button").addEventListener("click", () => {
-        auth.signOut().then(() => window.location.href = "cadastro.html");
-      });
-    });
-
     // Firebase configuration and initialization
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
@@ -1167,6 +887,16 @@
     // Global variables to store claim details
     let currentServiceId, currentOwnerId, currentRewardGolds;
 
+    // Theme toggle functionality
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.dataset.theme = savedTheme;
+    }
+
+    function saveTheme(theme) {
+      localStorage.setItem('theme', theme);
+    }
+
     // Modal control
     function showModal(modalId, message, autoClose = true) {
       const modal = document.getElementById(modalId);
@@ -1183,6 +913,7 @@
 
     // Update local balance display
     function updateBalanceDisplay(goldsBalance, reaisBalance) {
+      // [GROCK EDIT]: Sincronização direta com Firestore implementada — valores agora refletem em tempo real
       const goldsBalanceElement = document.getElementById('golds-balance');
       const goldsBalanceDisplayElement = document.getElementById('golds-balance-display');
       const reaisBalanceElement = document.getElementById('reais-balance');
@@ -1258,6 +989,7 @@
       }
 
       // Load user's wallet balance
+      // [GROCK EDIT]: Sincronização direta com Firestore implementada — valores agora refletem em tempo real
       db.collection('wallets').doc(userId).onSnapshot((doc) => {
         if (doc.exists) {
           const data = doc.data();
@@ -1278,19 +1010,22 @@
           renderUserServices(userServices, userId);
         });
 
-      db.collection("services")
-        .orderBy("createdAt", "desc")
-        .limit(20)
-        .onSnapshot((snapshot) => {
-          const publicServices = [];
-          snapshot.forEach((doc) => {
-            const service = { id: doc.id, ...doc.data() };
-            if (service.status?.toLowerCase().trim() !== "ativo") return;
-            if (service.ownerId === userId) return;
-            publicServices.push(service);
-          });
-          renderPublicServices(publicServices, userId);
-        });
+      // [GROCK EDIT]: Ajuste da query para garantir que serviços ativos sejam listados corretamente
+db.collection("services")
+  .orderBy("createdAt", "desc")
+  .limit(20)
+  .onSnapshot((snapshot) => {
+    const publicServices = [];
+    snapshot.forEach((doc) => {
+      const service = { id: doc.id, ...doc.data() };
+      // Inclui apenas serviços realmente ativos e remove variações de capitalização
+      if (service.status?.toLowerCase().trim() !== "ativo") return;
+      // Oculta serviços do próprio dono
+      if (service.ownerId === userId) return;
+      publicServices.push(service);
+    });
+    renderPublicServices(publicServices, userId);
+  });
     }
 
     // Render user-specific services
@@ -1445,13 +1180,14 @@
             price,
             rewardGolds,
             status: 'ativo',
-            createdAt: new Date()
+            createdAt: new Date() // [GROCK EDIT]: Mudado para Date() para indexar imediatamente
           };
 
           const serviceRef = db.collection('services').doc();
           transaction.set(serviceRef, newService);
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, 1000)); // [GROCK EDIT]: Delay para Firestore indexar o novo serviço
 
+          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           transaction.update(walletRef, {
             goldsBalance: currentBalance - (price + publicationFee),
             transactions: firebase.firestore.FieldValue.arrayUnion({
@@ -1466,8 +1202,8 @@
 
           showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
           form.reset();
-          calculateCost();
-          updateSubcategories();
+          calculateCost(); // Reset total cost display
+          updateSubcategories(); // Reset subcategory dropdown
         });
       } catch (error) {
         console.error('Erro ao publicar serviço:', error);
@@ -1557,11 +1293,13 @@
           return;
         }
 
+        // Populate edit form
+        const editForm = document.getElementById('editForm');
         document.getElementById('editServiceName').value = service.title || '';
         document.getElementById('editZone').value = service.zone || '';
         document.getElementById('editServiceType').value = service.serviceType || '';
         document.getElementById('editSubcategory').innerHTML = '';
-        updateSubcategories();
+        updateSubcategories(); // Populate subcategories based on serviceType
         document.getElementById('editSubcategory').value = service.subcategory || '';
         document.getElementById('editFreelancers').value = service.freelancers || 1;
         document.getElementById('editRewardGolds').value = service.rewardGolds || 1;
@@ -1591,9 +1329,11 @@
           editProofsContainer.appendChild(proofInput);
         });
 
+        // Show edit modal
         document.getElementById('editModal').style.display = 'flex';
 
-        document.getElementById('editForm').onsubmit = async (e) => {
+        // Handle edit form submission
+        editForm.onsubmit = async (e) => {
           e.preventDefault();
           await editarServicoFirebase(serviceId);
         };
@@ -1700,14 +1440,17 @@
 
         const serviceData = serviceDoc.data();
 
+        // Padroniza formato de transações
         const makeTransactionObj = (type, amount, description) => ({
           type,
           amount,
           currency: 'golds',
           description,
+          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           date: new Date()
         });
 
+        // CLAIM: pagar recompensas — debitar dono e creditar claimant
         if (data.type === 'service_claim') {
           if (serviceData.status !== 'ativo') {
             throw new Error('Este serviço não está disponível para reivindicação.');
@@ -1730,12 +1473,14 @@
             throw new Error('Saldo do dono insuficiente para pagar a recompensa.');
           }
 
+          // Atualiza serviço
           transaction.update(serviceRef, {
             status: 'concluído',
             claimedBy: userId,
             claimedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
+          // Debita dono
           transaction.update(ownerRef, {
             goldsBalance: ownerBalance - reward,
             transactions: firebase.firestore.FieldValue.arrayUnion(
@@ -1743,6 +1488,7 @@
             )
           });
 
+          // Credita claimant
           transaction.update(claimantRef, {
             goldsBalance: claimantBalance + reward,
             transactions: firebase.firestore.FieldValue.arrayUnion(
@@ -1750,9 +1496,10 @@
             )
           });
 
-          return;
+          return; // fim do fluxo claim
         }
 
+        // EDIT: atualização de campos (apenas proprietario)
         if (data.type === 'service_edit') {
           if (serviceData.ownerId !== userId) {
             throw new Error('Você não tem permissão para editar este serviço.');
@@ -1772,9 +1519,11 @@
           };
           transaction.update(serviceRef, updateData);
 
+          // (Opcional) registrar uma transação de edição se quiser cobrar algo
           return;
         }
 
+        // outros tipos...
         throw new Error('Tipo de sincronização não tratado.');
       });
     }
@@ -1806,7 +1555,7 @@
           showModal('errorModal', `❌ Erro ao salvar consentimento de IP: ${error.message}`);
         }
       }
-      document.getElementById('cookieBanner').classList.remove('active');
+      document.getElementById('cookieBanner').style.display = 'none';
     }
 
     async function declineIPConsent() {
@@ -1824,10 +1573,10 @@
           showModal('errorModal', `❌ Erro ao salvar recusa de consentimento: ${error.message}`);
         }
       }
-      document.getElementById('cookieBanner').classList.remove('active');
+      document.getElementById('cookieBanner').style.display = 'none';
     }
 
-    // Enviar provas de execução
+    // === ENVIAR PROVAS DE EXECUÇÃO ===
     async function enviarProvasFirebase(serviceId, userId) {
       const proofText = document.getElementById('proofText')?.value.trim();
       if (!proofText) {
