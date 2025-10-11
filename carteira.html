@@ -182,7 +182,17 @@
     }
 
     const auth = firebase.auth();
-    const db = firebase.firestore();
+
+// Mantém a sessão do usuário salva mesmo após fechar o navegador ou sair
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar.");
+  })
+  .catch((error) => {
+    console.error("❌ Erro configurando persistência:", error);
+  });
+
+const db = firebase.firestore();
 
     let currentUser = null;
     let walletData = null;
