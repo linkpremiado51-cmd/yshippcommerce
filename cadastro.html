@@ -106,14 +106,14 @@
     .btn-login:hover, .btn-signup:hover {
       background: var(--primary-hover);
     }
-.social-title {
-  font-size: 0.9rem;
-  color: #666;
-  margin-top: 1.5rem; /* ← aumenta o espaço acima do texto */
-  margin-bottom: 0.5rem;
-  text-align: center;
-  width: 100%;
-}
+    .social-title {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      width: 100%;
+    }
     .social-auth {
       display: flex;
       justify-content: space-between;
@@ -192,12 +192,12 @@
       color: var(--text-secondary);
     }
     body {
-  margin: 0;
-  padding: 0;
-  background-color: #0e0e0e; /* mesmo preto do card */
-  height: 100vh;
-  overflow: hidden; /* impede rolagem desnecessária */
-}
+      margin: 0;
+      padding: 0;
+      background-color: #0e0e0e;
+      height: 100vh;
+      overflow: hidden;
+    }
     @media (max-width: 480px) {
       .card {
         padding: 20px;
@@ -295,7 +295,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, OAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
@@ -309,6 +309,17 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // [GROCK EDIT]: Configuração de persistência LOCAL para manter sessão
+    import { setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar.");
+  })
+  .catch((error) => {
+    console.error("❌ Erro configurando persistência:", error);
+  });
 
     const mensagemEl = document.getElementById('mensagem');
 
@@ -329,14 +340,24 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
         const user = userCredential.user;
 
-        await setDoc(doc(db, 'wallets', user.uid), {
-          userId: user.uid,
-          name: nome,
-          goldsBalance: 0,
-          reaisBalance: 0,
-          transactions: [],
-          createdAt: new Date()
-        });
+        // [GROCK EDIT]: Verifica se a carteira já existe antes de criar
+        const walletRef = doc(db, 'wallets', user.uid);
+        const walletSnap = await getDoc(walletRef);
+
+        if (!walletSnap.exists()) {
+          // [GROCK EDIT]: Cria carteira nova apenas se o usuário nunca teve uma
+          await setDoc(walletRef, {
+            userId: user.uid,
+            name: nome,
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date()
+          });
+          console.log("[GROCK EDIT] Nova carteira criada para novo usuário:", user.uid);
+        } else {
+          console.log("[GROCK EDIT] Carteira existente detectada — sem recriar:", user.uid);
+        }
 
         mensagemEl.textContent = "Conta criada com sucesso! Redirecionando...";
         mensagemEl.classList.replace("text-red-500", "text-green-500");
@@ -374,15 +395,24 @@
         const userCredential = await signInWithPopup(auth, provider);
         const user = userCredential.user;
 
+        // [GROCK EDIT]: Verifica se a carteira já existe antes de criar
         const walletRef = doc(db, 'wallets', user.uid);
-        await setDoc(walletRef, {
-          userId: user.uid,
-          name: user.displayName || 'Usuário Google',
-          goldsBalance: 0,
-          reaisBalance: 0,
-          transactions: [],
-          createdAt: new Date()
-        }, { merge: true });
+        const walletSnap = await getDoc(walletRef);
+
+        if (!walletSnap.exists()) {
+          // [GROCK EDIT]: Cria carteira nova apenas se o usuário nunca teve uma
+          await setDoc(walletRef, {
+            userId: user.uid,
+            name: user.displayName || user.email || 'Usuário Google',
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date()
+          });
+          console.log("[GROCK EDIT] Nova carteira criada para novo usuário social:", user.uid);
+        } else {
+          console.log("[GROCK EDIT] Carteira existente detectada — sem recriar:", user.uid);
+        }
 
         mensagemEl.textContent = "Login com Google realizado! Redirecionando...";
         mensagemEl.classList.replace("text-red-500", "text-green-500");
@@ -402,15 +432,24 @@
         const userCredential = await signInWithPopup(auth, provider);
         const user = userCredential.user;
 
+        // [GROCK EDIT]: Verifica se a carteira já existe antes de criar
         const walletRef = doc(db, 'wallets', user.uid);
-        await setDoc(walletRef, {
-          userId: user.uid,
-          name: user.displayName || 'Usuário Facebook',
-          goldsBalance: 0,
-          reaisBalance: 0,
-          transactions: [],
-          createdAt: new Date()
-        }, { merge: true });
+        const walletSnap = await getDoc(walletRef);
+
+        if (!walletSnap.exists()) {
+          // [GROCK EDIT]: Cria carteira nova apenas se o usuário nunca teve uma
+          await setDoc(walletRef, {
+            userId: user.uid,
+            name: user.displayName || user.email || 'Usuário Facebook',
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date()
+          });
+          console.log("[GROCK EDIT] Nova carteira criada para novo usuário social:", user.uid);
+        } else {
+          console.log("[GROCK EDIT] Carteira existente detectada — sem recriar:", user.uid);
+        }
 
         mensagemEl.textContent = "Login com Facebook realizado! Redirecionando...";
         mensagemEl.classList.replace("text-red-500", "text-green-500");
@@ -430,15 +469,24 @@
         const userCredential = await signInWithPopup(auth, provider);
         const user = userCredential.user;
 
+        // [GROCK EDIT]: Verifica se a carteira já existe antes de criar
         const walletRef = doc(db, 'wallets', user.uid);
-        await setDoc(walletRef, {
-          userId: user.uid,
-          name: user.displayName || 'Usuário Microsoft',
-          goldsBalance: 0,
-          reaisBalance: 0,
-          transactions: [],
-          createdAt: new Date()
-        }, { merge: true });
+        const walletSnap = await getDoc(walletRef);
+
+        if (!walletSnap.exists()) {
+          // [GROCK EDIT]: Cria carteira nova apenas se o usuário nunca teve uma
+          await setDoc(walletRef, {
+            userId: user.uid,
+            name: user.displayName || user.email || 'Usuário Microsoft',
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date()
+          });
+          console.log("[GROCK EDIT] Nova carteira criada para novo usuário social:", user.uid);
+        } else {
+          console.log("[GROCK EDIT] Carteira existente detectada — sem recriar:", user.uid);
+        }
 
         mensagemEl.textContent = "Login com Microsoft realizado! Redirecionando...";
         mensagemEl.classList.replace("text-red-500", "text-green-500");
