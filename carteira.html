@@ -164,7 +164,7 @@
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
       authDomain: "yshippcommerce.firebaseapp.com",
       projectId: "yshippcommerce",
-      storageBucket: "yshippcommerce.firebasestorage.app",
+      storageBucket: "yshippcommerce.appspot.com",
       messagingSenderId: "680576769517",
       appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
     };
@@ -238,14 +238,14 @@
         const walletSnap = await walletRef.get();
 
         if (!walletSnap.exists) {
-          // Cria carteira nova apenas se não houver nenhuma
+          // [GROCK EDIT 2]: Padronização de timestamps com serverTimestamp()
           await walletRef.set({
             userId: user.uid,
             name: user.displayName || (user.isAnonymous ? 'Anônimo' : 'Usuário'),
             goldsBalance: 0,
             reaisBalance: 0,
             transactions: [],
-            createdAt: new Date().toISOString()
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           console.log('[GROCK EDIT] Carteira nova criada (usuário sem histórico)');
         } else {
@@ -269,14 +269,14 @@
         const ref = db.collection('wallets').doc(uid);
         const snap = await ref.get();
         if (!snap.exists) {
-          // Carteira já criada no onAuthStateChanged, mas mantemos para consistência
+          // [GROCK EDIT 2]: Padronização de timestamps com serverTimestamp()
           const initial = {
             userId: uid,
             name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'),
             goldsBalance: 0,
             reaisBalance: 0,
             transactions: [],
-            createdAt: new Date().toISOString()
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
           };
           await ref.set(initial);
           walletData = initial;
@@ -522,6 +522,12 @@
         showNotification('Erro', 'Falha ao converter. Veja console.');
       }
     }
+
+    // [GROCK EDIT 2]: Definidas funções dos modais ausentes
+    function openDepositModal() { openModal('depositModal'); }
+    function openWithdrawModal() { openModal('withdrawModal'); }
+    function openTransferModal() { openModal('transferModal'); }
+    function openConvertModal() { openModal('convertModal'); }
 
     // -------------------------
     // Inicialização
