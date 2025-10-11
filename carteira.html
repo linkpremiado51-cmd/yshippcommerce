@@ -1,27 +1,264 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Carteira - YshippCommerce">
   <title>Carteira - YshippCommerce</title>
-
   <!-- Firebase compat (mantendo a versão 10.12.0 conforme original) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=PT+Sans&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    /* Estilos mantidos exatamente como fornecidos */
-    :root{--background:#f9fafb;--surface:#ffffff;--text-primary:#1f2937;--text-secondary:#6b7280;--primary:#7c3aed;--primary-hover:#6d28d9;--secondary:#10b981;--secondary-hover:#059669;--border:#e5e7eb;--shadow:0 2px 4px rgba(0,0,0,0.1);--accent:#ff6b6b;--gold:#e67e22;--reais:#10b981;--tutorial-bg:#3498db;--tutorial-hover:#2980b9}
-    [data-theme="dark"]{--background:#1f2937;--surface:#374151;--text-primary:#f3f4f6;--text-secondary:#9ca3af;--border:#4b5563;--shadow:0 2px 4px rgba(0,0,0,0.3);--accent:#ff8787;--gold:#e6a24b;--reais:#059669;--tutorial-bg:#1e90ff;--tutorial-hover:#1c86ee}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Ubuntu',sans-serif;background:var(--background);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;align-items:center}
-    .header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem;width:100%;position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center}
-    .header h1{font-family:'Jura',sans-serif;font-size:1.3rem;letter-spacing:1px}
-    .theme-button{padding:.5rem 1rem;border-radius:.375rem;border:0;background:var(--tutorial-bg);color:#fff;cursor:pointer}
+    :root {
+      --background: #f9fafb;
+      --surface: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --secondary: #10b981;
+      --secondary-hover: #059669;
+      --border: #e5e7eb;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --accent: #ff6b6b;
+      --nsfw-bg: #e74c3c;
+      --nsfw-hover: #c0392b;
+      --gold: #e67e22;
+      --progress-bg: #ecf0f1;
+      --tutorial-bg: #3498db;
+      --tutorial-hover: #2980b9;
+      --reais: #10b981;
+    }
+
+    [data-theme="dark"] {
+      --background: #1f2937;
+      --surface: #374151;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border: #4b5563;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --accent: #ff8787;
+      --nsfw-bg: #c0392b;
+      --nsfw-hover: #a5281a;
+      --progress-bg: #4b5563;
+      --tutorial-bg: #1e90ff;
+      --tutorial-hover: #1c86ee;
+      --reais: #059669;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: 'Ubuntu', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: 72px;
+      overflow-x: hidden;
+    }
+
+    .header-menu {
+      font-family: 'PT Sans', sans-serif;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 1001;
+      box-shadow: var(--shadow);
+    }
+
+    .top-bar__section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .top-bar__icon {
+      position: relative;
+      color: var(--text-primary);
+      background: none;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .top-bar__icon i {
+      position: relative;
+      font-size: 1.25rem;
+    }
+
+    .top-bar__icon:hover {
+      transform: scale(1.1);
+    }
+
+    .menu {
+      position: fixed;
+      top: 72px;
+      left: 0;
+      width: 280px;
+      height: calc(100vh - 72px);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .menu.open {
+      transform: translateX(0);
+    }
+
+    .menu__list {
+      list-style: none;
+      padding: 16px 0;
+    }
+
+    .menu__item {
+      margin: 8px 16px;
+    }
+
+    .menu__link {
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      border-radius: 12px;
+      transition: none;
+      position: relative;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .menu__link i {
+      margin-right: 12px;
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+    }
+
+    .submenu {
+      margin-top: 4px;
+      padding-left: 48px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .submenu.open {
+      max-height: 300px;
+    }
+
+    .submenu__link {
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      font-size: 0.9375rem;
+      display: block;
+      text-decoration: none;
+      transition: none;
+    }
+
+    .premium-button {
+      background: var(--secondary);
+      color: var(--text-primary);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      width: calc(100% - 32px);
+      margin: 16px;
+      font-weight: 500;
+      transition: none;
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      background: var(--surface);
+      color: var(--text-primary);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 2000;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .menu {
+        width: min(80vw, 280px);
+      }
+
+      .header {
+        padding: 0 12px;
+      }
+
+      .top-bar__icon {
+        padding: 8px;
+      }
+
+      .top-bar__icon i {
+        font-size: 1.2rem;
+      }
+
+      .menu__link {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      .menu__link i {
+        font-size: 1.1rem;
+      }
+
+      .submenu__link {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+      }
+
+      .premium-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+
+      .notification {
+        right: 10px;
+        bottom: 10px;
+        padding: 10px 20px;
+      }
+    }
+
     .balance-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;width:100%;max-width:1200px;padding:1.2rem}
     .balance-card{border-radius:1rem;padding:1.6rem;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow)}
     .balance-card.gold{background:linear-gradient(135deg,#f39c12,#e67e22)}
@@ -41,7 +278,7 @@
     .transaction-desc{color:var(--text-secondary);font-size:.9rem}
     .transaction-date{color:var(--text-secondary);font-size:.8rem}
     .transaction-amount{font-weight:800}
-    footer#userInfoFooter{position:fixed;bottom:0;left:0;width:100%;background:#07121a;color:#00ffb3;text-align:center;padding:.4rem;font-size:13px;z-index:999}
+    footer#userInfoFooter{position:fixed;bottom:0;left:0;width:100%;background:#0d1117;color:#00ffaa;text-align:center;padding:.4rem;font-size:13px;border-top:1px solid #00ffaa;z-index:9999;font-family:'Ubuntu',sans-serif}
     .modal{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:9999}
     .modal-content{background:var(--surface);padding:1.1rem;border-radius:.6rem;width:92%;max-width:520px}
     .form-group{margin-bottom:.8rem}
@@ -53,13 +290,63 @@
 </head>
 <body data-theme="light">
   <div id="loadingOverlay">Carregando carteira...</div>
-
-  <header class="header">
-    <h1>💼 Carteira - YshippCommerce</h1>
-    <div>
-      <button id="theme-toggle" class="theme-button">Alternar Tema</button>
-    </div>
-  </header>
+  <div class="header-menu">
+    <nav aria-label="Navegação principal" class="header" role="navigation">
+      <div class="top-bar__section">
+        <h1>Centro de Comando - YshippCommerce</h1>
+      </div>
+      <div class="top-bar__section">
+        <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
+          <i class="fas fa-bars"></i>
+        </button>
+        <button aria-label="Alternar tema claro/escuro" class="top-bar__icon" id="theme-toggle" title="Alternar tema">
+          <i class="fas fa-adjust"></i>
+        </button>
+      </div>
+    </nav>
+    <nav aria-label="Menu principal" class="menu" id="main-menu">
+      <ul class="menu__list">
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('home')">
+            <i class="fas fa-home"></i>
+            <span class="bold-text">Página Principal</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('market')">
+            <i class="fas fa-briefcase"></i>
+            <span class="bold-text">Mercado de Serviços</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('store')">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="bold-text">Loja</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('generator')">
+            <i class="fas fa-ticket-alt"></i>
+            <span class="bold-text">Gerador de Bilhetes</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span class="bold-text">Carteira</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" id="logout-button">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="bold-text">Sair</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="notification" id="notification"></div>
+  <div id="overlay" class="overlay"></div>
 
   <main style="width:100%;max-width:1200px;padding:0 1rem 140px;">
     <div class="balance-cards">
@@ -154,9 +441,67 @@
     <div style="display:flex;gap:.6rem"><button class="action-btn default" onclick="closeModal('notificationModal')">OK</button></div>
   </div></div>
 
-  <footer id="userInfoFooter">Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span></footer>
+  <footer id="userInfoFooter" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #0d1117;
+    color: #00ffaa;
+    text-align: center;
+    font-size: 13px;
+    padding: 6px;
+    border-top: 1px solid #00ffaa;
+    z-index: 9999;
+    font-family: 'Ubuntu', sans-serif;">
+    Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
+  </footer>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuToggles = {
+        'menu-icon': 'main-menu'
+      };
+
+      Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
+        const toggle = document.getElementById(toggleId);
+        const menu = document.getElementById(menuId);
+        if (!toggle || !menu) {
+          console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`);
+          return;
+        }
+        toggle.addEventListener('click', e => {
+          e.stopPropagation();
+          menu.classList.toggle('open');
+          toggle.classList.toggle('active');
+        });
+      });
+
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+    });
+
     // -------------------------
     // Configuração Firebase
     // -------------------------
@@ -183,7 +528,7 @@
 
     const auth = firebase.auth();
 
-    // [GROCK EDIT]: Configuração de persistência LOCAL para manter sessão
+    // Mantém a sessão do usuário salva mesmo após fechar o navegador ou sair
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(() => {
         console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar.");
@@ -230,7 +575,7 @@
       }
     }
 
-    // [GROCK EDIT]: Refinamento da sincronização de carteira para re-login
+    // Observador de estado de autenticação
     auth.onAuthStateChanged(async user => {
       console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário');
       if (!user) {
@@ -242,16 +587,12 @@
       document.getElementById('footerUserName').textContent = user.displayName || (user.isAnonymous ? 'Anônimo' : (user.email || 'Usuário'));
       console.log('Usuário ativo:', user.uid);
 
+      // [GROCK EDIT]: Sincronização de carteira existente no re-login
       try {
         const walletRef = db.collection('wallets').doc(user.uid);
         const walletSnap = await walletRef.get();
 
-        if (walletSnap.exists) {
-          // [GROCK EDIT]: Sincronização de carteira existente no re-login
-          walletData = walletSnap.data();
-          console.log('[GROCK EDIT] Carteira existente sincronizada:', walletData);
-          atualizarInterfaceCarteira(walletData);
-        } else {
+        if (!walletSnap.exists) {
           // [GROCK EDIT 2]: Padronização de timestamps com serverTimestamp()
           await walletRef.set({
             userId: user.uid,
@@ -262,24 +603,19 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           console.log('[GROCK EDIT] Carteira nova criada (usuário sem histórico)');
-          walletData = {
-            userId: user.uid,
-            name: user.displayName || (user.isAnonymous ? 'Anônimo' : 'Usuário'),
-            goldsBalance: 0,
-            reaisBalance: 0,
-            transactions: [],
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          };
+        } else {
+          // Sincroniza dados da carteira existente
+          walletData = walletSnap.data();
+          console.log('[GROCK EDIT] Carteira existente sincronizada:', walletData);
           atualizarInterfaceCarteira(walletData);
         }
-
-        // Carrega ou sincroniza os dados da carteira
-        await loadWalletData(user.uid);
-        document.getElementById('loadingOverlay').style.display = 'none';
       } catch (error) {
         console.error('[GROCK EDIT] Erro ao sincronizar carteira:', error);
         showNotification('Erro', `Erro ao sincronizar carteira: ${error.message}`);
       }
+
+      await loadWalletData(user.uid);
+      document.getElementById('loadingOverlay').style.display = 'none';
     });
 
     // Carregar/ Inicializar carteira no Firestore
@@ -312,20 +648,16 @@
       }
     }
 
-    // [GROCK EDIT]: Adiciona validação antes de renderizar carteira
+    // Atualiza a UI com dados da carteira local (walletData)
     function renderWallet(){
-      if (!walletData || walletData.goldsBalance === undefined || walletData.reaisBalance === undefined) {
-        console.warn("[GROCK EDIT]: Carteira incompleta detectada, reconsultando Firestore.");
-        loadWalletData(currentUser.uid);
-        return;
-      }
+      if (!walletData) return;
       document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.',',')}`;
 
       const txs = walletData.transactions || [];
       document.getElementById('total-transactions').textContent = txs.length;
       let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
-      txs.forEach(tx => {
+      txs.forEach(tx=>{
         if (tx.type === 'receive') totalReceived += (tx.amount || 0);
         if (tx.type === 'send' || tx.type === 'withdraw') totalSent += (tx.amount || 0);
         if (tx.type === 'withdraw') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
@@ -339,11 +671,6 @@
 
     // [GROCK EDIT]: Atualiza interface com dados de carteira existentes
     function atualizarInterfaceCarteira(walletData) {
-      if (!walletData || walletData.goldsBalance === undefined || walletData.reaisBalance === undefined) {
-        console.warn("[GROCK EDIT]: Carteira incompleta detectada no atualizarInterfaceCarteira, reconsultando Firestore.");
-        loadWalletData(currentUser.uid);
-        return;
-      }
       document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.', ',')}`;
 
@@ -557,13 +884,32 @@
     function openTransferModal() { openModal('transferModal'); }
     function openConvertModal() { openModal('convertModal'); }
 
-    // -------------------------
-    // Inicialização
-    // -------------------------
-    (function init(){
-      document.getElementById('loadingOverlay').style.display = 'flex';
-      console.log('Aguardando autenticação...');
-    })();
+    function navigateTo(page) {
+      switch(page) {
+        case 'wallet':
+          window.location.href = "carteira.html";
+          break;
+        case 'generator':
+          window.location.href = "gerador.html";
+          break;
+        case 'market':
+          window.location.href = "mercado.html";
+          break;
+        case 'store':
+          window.location.href = "loja.html";
+          break;
+        case 'service':
+          window.location.href = "servicos.html";
+          break;
+        case 'raffles':
+          window.location.href = "sorteios.html";
+          break;
+        case 'home':
+        default:
+          window.location.href = "index.html";
+          break;
+      }
+    }
 
     // Expor funções para botões inline
     window.openDepositModal = openDepositModal;
@@ -576,7 +922,15 @@
     window.processConversion = processConversion;
     window.closeModal = closeModal;
     window.showNotification = showNotification;
+    window.navigateTo = navigateTo;
 
+    // -------------------------
+    // Inicialização
+    // -------------------------
+    (function init(){
+      document.getElementById('loadingOverlay').style.display = 'flex';
+      console.log('Aguardando autenticação...');
+    })();
   </script>
 </body>
 </html>
