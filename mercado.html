@@ -1010,20 +1010,22 @@
           renderUserServices(userServices, userId);
         });
 
-      // Load active public services, excluding owner's own services
-      db.collection("services")
-        .where("status", "==", "ativo")
-        .orderBy("createdAt", "desc")
-        .limit(10)
-        .onSnapshot((snapshot) => {
-          const publicServices = [];
-          snapshot.forEach((doc) => {
-            const service = { id: doc.id, ...doc.data() };
-            if (service.ownerId === userId) return; // Oculta serviços do próprio dono
-            publicServices.push(service);
-          });
-          renderPublicServices(publicServices, userId);
-        });
+      // [GROCK EDIT]: Ajuste da query para garantir que serviços ativos sejam listados corretamente
+db.collection("services")
+  .orderBy("createdAt", "desc")
+  .limit(20)
+  .onSnapshot((snapshot) => {
+    const publicServices = [];
+    snapshot.forEach((doc) => {
+      const service = { id: doc.id, ...doc.data() };
+      // Inclui apenas serviços realmente ativos e remove variações de capitalização
+      if (service.status?.toLowerCase().trim() !== "ativo") return;
+      // Oculta serviços do próprio dono
+      if (service.ownerId === userId) return;
+      publicServices.push(service);
+    });
+    renderPublicServices(publicServices, userId);
+  });
     }
 
     // Render user-specific services
