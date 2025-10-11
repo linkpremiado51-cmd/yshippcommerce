@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Carteira - YshippCommerce</title>
 
-  <!-- Firebase compat (igual às suas outras páginas) -->
+  <!-- Firebase compat (mantendo a versão 10.12.0 conforme original) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -14,7 +14,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* Copiei o estilo finalizado do seu design (dark/light) */
+    /* Estilos mantidos exatamente como fornecidos */
     :root{--background:#f9fafb;--surface:#ffffff;--text-primary:#1f2937;--text-secondary:#6b7280;--primary:#7c3aed;--primary-hover:#6d28d9;--secondary:#10b981;--secondary-hover:#059669;--border:#e5e7eb;--shadow:0 2px 4px rgba(0,0,0,0.1);--accent:#ff6b6b;--gold:#e67e22;--reais:#10b981;--tutorial-bg:#3498db;--tutorial-hover:#2980b9}
     [data-theme="dark"]{--background:#1f2937;--surface:#374151;--text-primary:#f3f4f6;--text-secondary:#9ca3af;--border:#4b5563;--shadow:0 2px 4px rgba(0,0,0,0.3);--accent:#ff8787;--gold:#e6a24b;--reais:#059669;--tutorial-bg:#1e90ff;--tutorial-hover:#1c86ee}
     *{box-sizing:border-box;margin:0;padding:0}
@@ -178,7 +178,7 @@
       }
     } catch (e) {
       console.error('Erro inicializando Firebase:', e);
-      alert('Erro ao inicializar Firebase. Verifique as credenciais.');
+      showNotification('Erro', 'Erro ao inicializar Firebase. Verifique as credenciais.');
     }
 
     const auth = firebase.auth();
@@ -210,16 +210,13 @@
     // Autenticação e carregamento de carteira
     // -------------------------
     async function ensureAnonymousSignIn(){
-      // Tentativa de login anônimo se não houver usuário
       try {
         console.warn('Nenhum usuário logado. Tentando login anônimo...');
         const res = await auth.signInAnonymously();
         console.log('Login anônimo realizado. UID:', res.user.uid);
       } catch (error) {
-        // Erros comuns: admin-restricted-operation quando tentativa de signInAnonymously em ambiente Admin
         console.error('Erro ao autenticar anonimamente:', error);
         showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`);
-        // Não rethrow — mostra erro e para (o usuário precisa estar logado)
       }
     }
 
@@ -227,16 +224,41 @@
     auth.onAuthStateChanged(async user => {
       console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário');
       if (!user) {
-        // tenta signInAnonymously (se permitido no console do Firebase)
         await ensureAnonymousSignIn();
-        // depois de tentar, espera nova chamada onAuthStateChanged
         return;
       }
       currentUser = user;
       document.getElementById('footerUserId').textContent = user.uid;
       document.getElementById('footerUserName').textContent = user.displayName || (user.isAnonymous ? 'Anônimo' : (user.email || 'Usuário'));
       console.log('Usuário ativo:', user.uid);
-      // Carrega a carteira
+
+      // [GROCK EDIT]: Sincronização de carteira existente no re-login
+      try {
+        const walletRef = db.collection('wallets').doc(user.uid);
+        const walletSnap = await walletRef.get();
+
+        if (!walletSnap.exists) {
+          // Cria carteira nova apenas se não houver nenhuma
+          await walletRef.set({
+            userId: user.uid,
+            name: user.displayName || (user.isAnonymous ? 'Anônimo' : 'Usuário'),
+            goldsBalance: 0,
+            reaisBalance: 0,
+            transactions: [],
+            createdAt: new Date().toISOString()
+          });
+          console.log('[GROCK EDIT] Carteira nova criada (usuário sem histórico)');
+        } else {
+          // Sincroniza dados da carteira existente
+          walletData = walletSnap.data();
+          console.log('[GROCK EDIT] Carteira existente sincronizada:', walletData);
+          atualizarInterfaceCarteira(walletData);
+        }
+      } catch (error) {
+        console.error('[GROCK EDIT] Erro ao sincronizar carteira:', error);
+        showNotification('Erro', `Erro ao sincronizar carteira: ${error.message}`);
+      }
+
       await loadWalletData(user.uid);
       document.getElementById('loadingOverlay').style.display = 'none';
     });
@@ -247,7 +269,7 @@
         const ref = db.collection('wallets').doc(uid);
         const snap = await ref.get();
         if (!snap.exists) {
-          // cria padrão
+          // Carteira já criada no onAuthStateChanged, mas mantemos para consistência
           const initial = {
             userId: uid,
             name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'),
@@ -274,7 +296,6 @@
     // Atualiza a UI com dados da carteira local (walletData)
     function renderWallet(){
       if (!walletData) return;
-      // saldos
       document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.',',')}`;
 
@@ -282,6 +303,26 @@
       document.getElementById('total-transactions').textContent = txs.length;
       let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
       txs.forEach(tx=>{
+        if (tx.type === 'receive') totalReceived += (tx.amount || 0);
+        if (tx.type === 'send' || tx.type === 'withdraw') totalSent += (tx.amount || 0);
+        if (tx.type === 'withdraw') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
+      });
+      document.getElementById('total-received').textContent = totalReceived.toLocaleString();
+      document.getElementById('total-sent').textContent = totalSent.toLocaleString();
+      document.getElementById('last-withdrawal').textContent = lastWithdrawal;
+
+      renderTransactions();
+    }
+
+    // [GROCK EDIT]: Atualiza interface com dados de carteira existentes
+    function atualizarInterfaceCarteira(walletData) {
+      document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
+      document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.', ',')}`;
+
+      const txs = walletData.transactions || [];
+      document.getElementById('total-transactions').textContent = txs.length;
+      let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
+      txs.forEach(tx => {
         if (tx.type === 'receive') totalReceived += (tx.amount || 0);
         if (tx.type === 'send' || tx.type === 'withdraw') totalSent += (tx.amount || 0);
         if (tx.type === 'withdraw') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
@@ -338,7 +379,6 @@
     }
 
     async function pushTransaction(tx){
-      // tx: { type, amount, currency, description, date, to?, from? }
       if (!walletData) walletData = {};
       const arr = Array.isArray(walletData.transactions) ? walletData.transactions : [];
       arr.push(tx);
@@ -351,7 +391,6 @@
     async function processDeposit(){
       const amount = Number(document.getElementById('deposit-amount').value);
       if (!amount || amount <= 0) { showNotification('Erro', 'Informe um valor válido para depósito.'); return; }
-      // Simulação: adiciona reais ao saldo
       try {
         const newReais = (walletData.reaisBalance || 0) + amount;
         await saveWallet({ reaisBalance: newReais });
@@ -381,12 +420,11 @@
           showNotification('Erro', 'Não foi possível solicitar saque.');
         }
       } else {
-        // Saque em Golds -> converte para reais antes de processar
         if ((walletData.goldsBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Golds.'); return; }
         const goldsToRemove = amount;
         const reaisEquivalent = amount / GOLD_TO_REAL_RATE;
         try {
-          await saveWallet({ goldsBalance: (walletData.goldsBalance || 0) - goldsToRemove, reaisBalance: (walletData.reaisBalance||0) + 0 }); // apenas retirar golds; normalmente conversão antes de sacar
+          await saveWallet({ goldsBalance: (walletData.goldsBalance || 0) - goldsToRemove, reaisBalance: (walletData.reaisBalance||0) + 0 });
           await pushTransaction({ type:'withdraw', amount:amount, currency:'golds', description:`Saque de ${amount} Golds (equiv. R$ ${reaisEquivalent.toFixed(2)})`, date:new Date().toISOString() });
           closeModal('withdrawModal');
           showNotification('Solicitação enviada', `Saque de ${amount} Golds solicitado.`);
@@ -413,10 +451,8 @@
           return;
         }
 
-        // Verifica saldo
         if (currency === 'reais') {
           if ((walletData.reaisBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Reais.'); return; }
-          // atualizar ambos documentos em uma batch
           const batch = db.batch();
           const senderRef = db.collection('wallets').doc(currentUser.uid);
           batch.update(senderRef, {
@@ -428,12 +464,10 @@
             transactions: firebase.firestore.FieldValue.arrayUnion({ type:'receive', amount, currency:'reais', description:`Recebido de ${currentUser.uid}`, date:new Date().toISOString(), from:currentUser.uid })
           });
           await batch.commit();
-          // recarrega local
           await loadWalletData(currentUser.uid);
           closeModal('transferModal');
           showNotification('Sucesso', `Transferência de R$ ${amount.toFixed(2)} enviada.`);
         } else {
-          // transfer Golds
           if ((walletData.goldsBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Golds.'); return; }
           const batch = db.batch();
           const senderRef = db.collection('wallets').doc(currentUser.uid);
@@ -470,7 +504,7 @@
           const newGolds = (walletData.goldsBalance || 0) - amount;
           const newReais = (walletData.reaisBalance || 0) + reais;
           await saveWallet({ goldsBalance: newGolds, reaisBalance: newReais });
-          await pushTransaction({ type:'conversion', amount, currency:'golds', description:`Conversão ${amount} Golds → R$ ${reais.toFixed(2)}`, date:new Date().toISOString() });
+          await pushTransaction({ type:'conversion', amount, currency:'golds', description:`Conversão ${amount} Golds → R$ ${reais.toFixed(2)}`, date: new Date().toISOString() });
           closeModal('convertModal');
           showNotification('Conversão', `Convertido ${amount} Golds para R$ ${reais.toFixed(2)}`);
         } else if (from === 'reais' && to === 'golds') {
@@ -479,7 +513,7 @@
           const newReais = (walletData.reaisBalance || 0) - amount;
           const newGolds = (walletData.goldsBalance || 0) + golds;
           await saveWallet({ reaisBalance: newReais, goldsBalance: newGolds });
-          await pushTransaction({ type:'conversion', amount: golds, currency:'golds', description:`Conversão R$ ${amount.toFixed(2)} → ${golds} Golds`, date:new Date().toISOString() });
+          await pushTransaction({ type:'conversion', amount: golds, currency:'golds', description:`Conversão R$ ${amount.toFixed(2)} → ${golds} Golds`, date: new Date().toISOString() });
           closeModal('convertModal');
           showNotification('Conversão', `Convertido R$ ${amount.toFixed(2)} para ${golds} Golds`);
         }
@@ -490,20 +524,18 @@
     }
 
     // -------------------------
-    // Inicialização (caso já logado será tratado pelo onAuthStateChanged)
+    // Inicialização
     // -------------------------
     (function init(){
       document.getElementById('loadingOverlay').style.display = 'flex';
       console.log('Aguardando autenticação...');
-      // Se quiser forçar tentativa de login anônimo imediata quando não houver usuário, pode descomentar:
-      // ensureAnonymousSignIn();
     })();
 
     // Expor funções para botões inline
-    window.openDepositModal = ()=>openModal('depositModal');
-    window.openWithdrawModal = ()=>openModal('withdrawModal');
-    window.openTransferModal = ()=>openModal('transferModal');
-    window.openConvertModal = ()=>openModal('convertModal');
+    window.openDepositModal = openDepositModal;
+    window.openWithdrawModal = openWithdrawModal;
+    window.openTransferModal = openTransferModal;
+    window.openConvertModal = openConvertModal;
     window.processDeposit = processDeposit;
     window.processWithdrawal = processWithdrawal;
     window.processTransfer = processTransfer;
