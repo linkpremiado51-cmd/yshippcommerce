@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Centro de Comando - YshippCommerce">
   <title>Centro de Comando - YshippCommerce</title>
-  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=PT+Sans&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -20,6 +20,7 @@
       --secondary-hover: #059669;
       --border: #e5e7eb;
       --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
       --accent: #ff6b6b;
       --nsfw-bg: #e74c3c;
       --nsfw-hover: #c0392b;
@@ -36,6 +37,7 @@
       --text-secondary: #9ca3af;
       --border: #4b5563;
       --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
       --accent: #ff8787;
       --nsfw-bg: #c0392b;
       --nsfw-hover: #a5281a;
@@ -82,6 +84,19 @@
       box-shadow: var(--shadow);
     }
 
+    .header h1 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header h1 i {
+      color: var(--primary);
+    }
+
     .top-bar__section {
       display: flex;
       align-items: center;
@@ -96,7 +111,7 @@
       padding: 12px;
       border-radius: 12px;
       cursor: pointer;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
       overflow: hidden;
     }
 
@@ -107,6 +122,8 @@
 
     .top-bar__icon:hover {
       transform: scale(1.1);
+      background: var(--tutorial-bg);
+      color: white;
     }
 
     .menu {
@@ -144,16 +161,27 @@
       display: flex;
       align-items: center;
       border-radius: 12px;
-      transition: none;
+      transition: background 0.3s ease, transform 0.2s ease;
       position: relative;
       overflow: hidden;
       background: transparent;
+    }
+
+    .menu__link:hover {
+      background: var(--tutorial-bg);
+      color: white;
+      transform: translateX(5px);
     }
 
     .menu__link i {
       margin-right: 12px;
       font-size: 1.25rem;
       color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .menu__link:hover i {
+      color: white;
     }
 
     .submenu {
@@ -174,12 +202,18 @@
       font-size: 0.9375rem;
       display: block;
       text-decoration: none;
-      transition: none;
+      transition: background 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .submenu__link:hover {
+      background: var(--primary);
+      color: white;
     }
 
     .premium-button {
-      background: var(--secondary);
-      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
+      color: white;
       border: none;
       padding: 12px 24px;
       border-radius: 12px;
@@ -187,7 +221,12 @@
       width: calc(100% - 32px);
       margin: 16px;
       font-weight: 500;
-      transition: none;
+      transition: transform 0.2s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .premium-button:hover {
+      transform: scale(1.05);
     }
 
     .notification {
@@ -256,27 +295,48 @@
     .dashboard-section {
       width: 100%;
       max-width: 1200px;
-      padding: 1.5rem 1rem;
+      padding: 1.2rem;
       background: var(--surface);
-      border-radius: 0.375rem;
+      border-radius: 1rem;
       box-shadow: var(--shadow);
-      margin: 1.47rem 0;
+      margin: 1rem 0;
+      border: 1px solid var(--border);
     }
 
     .dashboard-section h2 {
       font-family: 'Jura', sans-serif;
-      font-size: 1.5rem;
-      margin-bottom: 0.75rem;
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
       color: var(--text-primary);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dashboard-section h2 i {
+      color: var(--secondary);
     }
 
     .profile-section {
-      background: var(--background);
-      border-radius: 0.375rem;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--background), var(--surface));
+      border-radius: 1rem;
+      padding: 1.6rem;
+      margin-bottom: 1.2rem;
       border: 1px solid var(--border);
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
 
     .profile-section h3 {
@@ -294,28 +354,54 @@
     .profile-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
+      gap: 0.8rem;
       margin-top: 1rem;
     }
 
     .stat-item {
-      background: var(--surface);
+      background: var(--background);
       padding: 1rem;
-      border-radius: 0.375rem;
+      border-radius: 0.75rem;
       border: 1px solid var(--border);
       text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gold);
+    }
+
+    .stat-item:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-item i {
+      font-size: 2rem;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+      display: block;
     }
 
     .stat-item h4 {
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       color: var(--text-secondary);
       margin-bottom: 0.25rem;
     }
 
     .stat-item .stat-value {
-      font-size: 1.125rem;
-      font-weight: 600;
+      font-size: 1.25rem;
+      font-weight: 700;
       color: var(--text-primary);
+      font-family: 'Jura', sans-serif;
     }
 
     .published-services-list,
@@ -329,45 +415,87 @@
       font-size: 0.875rem;
       color: var(--text-secondary);
       margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .published-services-list h4 i,
+    .tasks-accepted-list h4 i {
+      color: var(--primary);
     }
 
     .service-item,
     .task-item {
-      background: var(--surface);
-      padding: 0.75rem;
-      border-radius: 0.375rem;
-      margin-bottom: 0.5rem;
+      background: var(--background);
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.6rem;
       border: 1px solid var(--border);
       font-size: 0.75rem;
+      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .service-item:hover,
+    .task-item:hover {
+      background: var(--tutorial-bg);
+      color: white;
+    }
+
+    .service-item i,
+    .task-item i {
+      color: var(--secondary);
     }
 
     .navigation-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
       margin-top: 1rem;
     }
 
     .nav-card {
-      background: var(--background);
-      border-radius: 0.375rem;
-      padding: 1.5rem;
+      background: linear-gradient(135deg, var(--background), var(--surface));
+      border-radius: 1rem;
+      padding: 1.6rem;
       box-shadow: var(--shadow);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       border: 1px solid var(--border);
       text-align: center;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
 
     .nav-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-card i {
+      font-size: 3rem;
+      color: var(--tutorial-bg);
+      margin-bottom: 1rem;
+      display: block;
     }
 
     .nav-card h3 {
       font-family: 'Jura', sans-serif;
       font-size: 1.125rem;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 0.75rem;
       color: var(--text-primary);
     }
@@ -380,19 +508,19 @@
 
     .nav-card .nav-button {
       width: 100%;
-      padding: 0.75rem;
-      background: var(--secondary);
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
       color: white;
       border: none;
-      border-radius: 0.375rem;
+      border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
+      transition: transform 0.2s ease;
+      box-shadow: var(--shadow);
     }
 
     .nav-card .nav-button:hover {
-      background: var(--secondary-hover);
       transform: scale(1.05);
     }
 
@@ -408,18 +536,44 @@
     }
 
     .member-card {
-      background: var(--background);
-      border-radius: 0.375rem;
+      background: linear-gradient(135deg, var(--background), var(--surface));
+      border-radius: 1rem;
       padding: 1rem;
       box-shadow: var(--shadow);
       border: 1px solid var(--border);
       text-align: center;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .member-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent);
     }
 
     .member-card:hover {
       transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .member-card .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--tutorial-bg);
+      margin: 0 auto 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
     }
 
     .member-card h4 {
@@ -489,12 +643,12 @@
     }
 
     .cookie-banner button.accept {
-      background: var(--secondary);
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
       color: white;
     }
 
     .cookie-banner button.accept:hover {
-      background: var(--secondary-hover);
+      transform: scale(1.05);
     }
 
     .cookie-banner button.decline {
@@ -509,58 +663,81 @@
     }
 
     .wallet-card {
-      background: var(--background);
-      border-radius: 0.375rem;
-      padding: 1.5rem;
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      border-radius: 1rem;
+      padding: 1.6rem;
       box-shadow: var(--shadow);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid var(--border);
+      color: white;
       text-align: center;
       cursor: pointer;
       margin: 1rem auto 0;
-      max-width: 250px;
+      max-width: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wallet-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #f39c12, #e67e22);
     }
 
     .wallet-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .wallet-card i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+      opacity: 0.9;
     }
 
     .wallet-card h3 {
       font-family: 'Jura', sans-serif;
       font-size: 1.125rem;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 0.75rem;
-      color: var(--text-primary);
     }
 
     .wallet-card p {
       font-size: 0.875rem;
-      color: var(--text-secondary);
+      opacity: 0.85;
       margin-bottom: 1rem;
     }
 
     .wallet-card .nav-button {
       width: 100%;
-      padding: 0.75rem;
-      background: var(--secondary);
+      padding: 0.9rem;
+      background: rgba(255, 255, 255, 0.2);
       color: white;
       border: none;
-      border-radius: 0.375rem;
+      border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.2s ease;
+      backdrop-filter: blur(10px);
     }
 
     .wallet-card .nav-button:hover {
-      background: var(--secondary-hover);
+      background: rgba(255, 255, 255, 0.3);
       transform: scale(1.05);
     }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
     }
 
     @media (max-width: 600px) {
@@ -594,6 +771,10 @@
         font-size: 1rem;
       }
 
+      .nav-card i {
+        font-size: 2.5rem;
+      }
+
       .members-grid {
         grid-template-columns: 1fr;
       }
@@ -615,6 +796,10 @@
         padding: 1rem;
         max-width: 100%;
       }
+
+      .wallet-card i {
+        font-size: 2.5rem;
+      }
     }
 
     @media (min-width: 601px) and (max-width: 1024px) {
@@ -634,13 +819,28 @@
         max-width: 300px;
       }
     }
+
+    footer#userInfoFooter {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #07121a;
+      color: #00ffb3;
+      text-align: center;
+      padding: 0.4rem;
+      font-size: 13px;
+      border-top: 1px solid #00ffb3;
+      z-index: 999;
+      font-family: 'Ubuntu', sans-serif;
+    }
   </style>
 </head>
 <body data-theme="light">
   <div class="header-menu">
     <nav aria-label="Navegação principal" class="header" role="navigation">
       <div class="top-bar__section">
-        <h1>Centro de Comando - YshippCommerce</h1>
+        <h1><i class="fas fa-rocket"></i>Centro de Comando - YshippCommerce</h1>
       </div>
       <div class="top-bar__section">
         <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
@@ -695,15 +895,16 @@
   <div class="notification" id="notification"></div>
   <div id="overlay" class="overlay"></div>
 
-  <main class="flex-grow w-full">
-    <div id="wallet-card" class="wallet-card">
+  <main style="width:100%; max-width:1200px; padding:0 1rem 140px; margin:0 auto;">
+    <div id="wallet-card" class="wallet-card fade-in">
+      <i class="fas fa-wallet"></i>
       <h3>Carteira</h3>
       <p>Gerencie seus Golds, transações e histórico de saldo.</p>
       <button class="nav-button" onclick="navigateTo('wallet')">Acessar Carteira</button>
     </div>
 
-    <section id="dashboard-section" class="dashboard-section">
-      <h2>Perfil de Membro</h2>
+    <section id="dashboard-section" class="dashboard-section fade-in">
+      <h2><i class="fas fa-user"></i>Perfil de Membro</h2>
       <div class="profile-section" id="profileSection">
         <h3 id="profileName">Bem-vindo, Usuário!</h3>
         <p>ID de Membro: <span id="userIdDisplay"></span></p>
@@ -712,39 +913,54 @@
 
         <div class="profile-stats">
           <div class="stat-item">
+            <i class="fas fa-briefcase"></i>
             <h4>Serviços Publicados</h4>
             <div class="stat-value" id="servicesPublishedCount">0</div>
           </div>
           <div class="stat-item">
+            <i class="fas fa-check-circle"></i>
             <h4>Tarefas Aceitas</h4>
             <div class="stat-value" id="tasksAcceptedCount">0</div>
           </div>
           <div class="stat-item">
+            <i class="fas fa-coins"></i>
             <h4>Golds Ganhos</h4>
             <div class="stat-value" id="goldsEarned">0</div>
           </div>
           <div class="stat-item">
+            <i class="fas fa-ticket-alt"></i>
             <h4>Bilhetes Ganhos</h4>
             <div class="stat-value" id="ticketsEarned">0</div>
           </div>
         </div>
 
         <div class="published-services-list" id="publishedServicesList">
-          <h4>Serviços Publicados Recentemente</h4>
-          <div id="servicesListContainer"></div>
+          <h4><i class="fas fa-list"></i>Serviços Publicados Recentemente</h4>
+          <div id="servicesListContainer">
+            <div class="service-item">
+              <i class="fas fa-briefcase"></i>
+              Carregando serviços...
+            </div>
+          </div>
         </div>
 
         <div class="tasks-accepted-list" id="tasksAcceptedList">
-          <h4>Tarefas Realizadas Recentemente</h4>
-          <div id="tasksListContainer"></div>
+          <h4><i class="fas fa-tasks"></i>Tarefas Realizadas Recentemente</h4>
+          <div id="tasksListContainer">
+            <div class="task-item">
+              <i class="fas fa-check"></i>
+              Carregando tarefas...
+            </div>
+          </div>
         </div>
       </div>
 
       <div id="navigationSection">
-        <h2>Painel de Navegação</h2>
+        <h2><i class="fas fa-compass"></i>Painel de Navegação</h2>
         <p style="margin-bottom: 1rem; color: var(--text-secondary);">Acesse rapidamente as principais seções da YshippCommerce. Todas as ações serão vinculadas ao seu ID de usuário.</p>
         <div class="navigation-grid">
-          <div class="nav-card">
+          <div class="nav-card fade-in">
+            <i class="fas fa-magic"></i>
             <h3>Gerador de Bilhetes e Golds</h3>
             <p>Crie bilhetes e ganhe Golds participando de sorteios.</p>
             <button class="nav-button" onclick="navigateTo('generator')">Acessar</button>
@@ -752,19 +968,29 @@
         </div>
 
         <div class="members-profiles-section">
-          <h2>Perfis de Membros Destacados</h2>
+          <h2><i class="fas fa-users"></i>Perfis de Membros Destacados</h2>
           <p style="margin-bottom: 1rem; color: var(--text-secondary);">Veja outros membros ativos na comunidade.</p>
-          <div class="members-grid" id="membersGrid"></div>
+          <div class="members-grid" id="membersGrid">
+            <div class="member-card fade-in">
+              <div class="avatar"><i class="fas fa-user"></i></div>
+              <h4>João Silva</h4>
+              <p>Nível Pro</p>
+            </div>
+            <div class="member-card fade-in">
+              <div class="avatar"><i class="fas fa-user"></i></div>
+              <h4>Maria Santos</h4>
+              <p>Nível Elite</p>
+            </div>
+            <div class="member-card fade-in">
+              <div class="avatar"><i class="fas fa-user"></i></div>
+              <h4>Pedro Oliveira</h4>
+              <p>Nível Iniciante</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
-
-  <footer id="footer" class="footer py-4 mt-auto w-full">
-    <div class="container text-center">
-      <p class="text-sm">© 2025 YshippCommerce. Todos os direitos reservados. Desenvolvido por xAI.</p>
-    </div>
-  </footer>
 
   <div id="cookieBanner" class="cookie-banner">
     <div class="content">
@@ -776,19 +1002,7 @@
     </div>
   </div>
 
-  <footer id="userInfoFooter" style="
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #0d1117;
-    color: #00ffaa;
-    text-align: center;
-    font-size: 13px;
-    padding: 6px;
-    border-top: 1px solid #00ffaa;
-    z-index: 9999;
-    font-family: 'Ubuntu', sans-serif;">
+  <footer id="userInfoFooter">
     Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
   </footer>
 
@@ -814,13 +1028,10 @@
 
       auth.onAuthStateChanged(user => {
         if (user) {
-          document.body.insertAdjacentHTML(
-            "afterbegin",
-            `<div style="background:black;color:lime;padding:8px;position:fixed;top:0;left:0;z-index:9999;font-size:12px">
-              UID ativo: ${user.uid}
-            </div>`
-          );
           carregarDadosUsuario(user);
+          carregarEstatisticas(user.uid, db);
+          carregarServicosPublicados(user.uid, db);
+          carregarTarefasAceitas(user.uid, db);
         } else {
           document.getElementById("footerUserName").textContent = "Nenhum usuário ativo";
           document.getElementById("footerUserId").textContent = "---";
@@ -839,7 +1050,7 @@
               document.getElementById("footerUserName").textContent = data.name || "Usuário";
               document.getElementById("footerUserId").textContent = userId;
               document.getElementById("registrationDate").textContent =
-                data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "N/D";
+                data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : "N/D";
               document.getElementById("userLevel").textContent = data.nivel || "Iniciante";
             } else {
               console.warn("⚠️ Documento do usuário não encontrado no Firestore.");
@@ -851,6 +1062,67 @@
             console.error("❌ Erro ao carregar dados:", error);
             document.getElementById("footerUserName").textContent = "Usuário";
             document.getElementById("footerUserId").textContent = userId;
+          });
+      }
+
+      function carregarEstatisticas(userId, db) {
+        // Supondo coleções 'services', 'tasks', 'transactions' para estatísticas
+        Promise.all([
+          db.collection("services").where("userId", "==", userId).get(),
+          db.collection("tasks").where("userId", "==", userId).where("status", "==", "accepted").get(),
+          db.collection("transactions").where("userId", "==", userId).where("type", "==", "earn_gold").get(),
+          db.collection("tickets").where("userId", "==", userId).get()
+        ]).then(([servicesSnap, tasksSnap, goldsSnap, ticketsSnap]) => {
+          document.getElementById("servicesPublishedCount").textContent = servicesSnap.size;
+          document.getElementById("tasksAcceptedCount").textContent = tasksSnap.size;
+          const totalGolds = goldsSnap.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+          document.getElementById("goldsEarned").textContent = totalGolds.toLocaleString();
+          document.getElementById("ticketsEarned").textContent = ticketsSnap.size;
+        }).catch(error => {
+          console.error("❌ Erro ao carregar estatísticas:", error);
+          showNotification("Erro ao carregar estatísticas. Tente novamente.");
+        });
+      }
+
+      function carregarServicosPublicados(userId, db) {
+        db.collection("services").where("userId", "==", userId).orderBy("createdAt", "desc").limit(5).get()
+          .then(snapshot => {
+            const container = document.getElementById("servicesListContainer");
+            if (snapshot.empty) {
+              container.innerHTML = '<div class="service-item"><i class="fas fa-briefcase"></i>Nenhum serviço publicado ainda.</div>';
+              return;
+            }
+            container.innerHTML = snapshot.docs.map(doc => {
+              const data = doc.data();
+              return `<div class="service-item">
+                <i class="fas fa-briefcase"></i>
+                <span>${data.title || "Serviço sem título"} - ${data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : "N/D"}</span>
+              </div>`;
+            }).join('');
+          }).catch(error => {
+            console.error("❌ Erro ao carregar serviços:", error);
+            document.getElementById("servicesListContainer").innerHTML = '<div class="service-item"><i class="fas fa-exclamation-triangle"></i>Erro ao carregar serviços.</div>';
+          });
+      }
+
+      function carregarTarefasAceitas(userId, db) {
+        db.collection("tasks").where("userId", "==", userId).where("status", "==", "completed").orderBy("completedAt", "desc").limit(5).get()
+          .then(snapshot => {
+            const container = document.getElementById("tasksListContainer");
+            if (snapshot.empty) {
+              container.innerHTML = '<div class="task-item"><i class="fas fa-check"></i>Nenhuma tarefa realizada ainda.</div>';
+              return;
+            }
+            container.innerHTML = snapshot.docs.map(doc => {
+              const data = doc.data();
+              return `<div class="task-item">
+                <i class="fas fa-check"></i>
+                <span>${data.title || "Tarefa sem título"} - ${data.completedAt?.seconds ? new Date(data.completedAt.seconds * 1000).toLocaleDateString('pt-BR') : "N/D"}</span>
+              </div>`;
+            }).join('');
+          }).catch(error => {
+            console.error("❌ Erro ao carregar tarefas:", error);
+            document.getElementById("tasksListContainer").innerHTML = '<div class="task-item"><i class="fas fa-exclamation-triangle"></i>Erro ao carregar tarefas.</div>';
           });
       }
 
