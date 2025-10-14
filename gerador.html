@@ -628,18 +628,10 @@
           <h3>${ad.title}</h3>
           <div class="steps-list">
             <strong>Passos:</strong>
-            <ul id="steps-${ad.id}">
-              ${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}
-            </ul>
-          </div>
-          <div class="steps-list">
-            <strong>Provas:</strong>
-            <ul>
-              ${(ad.provas || []).map(prova => `<li>${prova}</li>`).join('')}
-            </ul>
+            <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
           </div>
           <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
-          <button class="view-button" onclick="registrarClique('${ad.id}', ${golds}, '${ad.url || '#'}')">${ad.buttonText || 'Visualizar Propaganda'}</button>
+          <button class="view-button" onclick="window.open('${ad.url || '#'}', '_blank'); viewAd('${ad.id}', ${golds})">${ad.buttonText || 'Visualizar Propaganda'}</button>
         `;
         carousel.appendChild(card);
       });
@@ -701,46 +693,6 @@
     }
 
     // Handle ad viewing
-    async function registrarClique(adId, golds, url) {
-      const userId = auth.currentUser?.uid;
-      if (!userId) {
-        showModal('welcomeModal', 'Usuário não autenticado. Faça login novamente.', true, 'erro');
-        return;
-      }
-
-      const clickKey = `clicks_${userId}_${adId}`;
-      const today = new Date().toLocaleDateString();
-      const data = JSON.parse(localStorage.getItem(clickKey) || `{"date":"${today}","remaining":5}`);
-
-      // Reiniciar contagem diária
-      if (data.date !== today) {
-        data.date = today;
-        data.remaining = 5;
-      }
-
-      if (data.remaining <= 0) {
-        showModal('welcomeModal', 'Limite de 5 visualizações atingido hoje. Tente novamente amanhã.', true, 'erro');
-        return;
-      }
-
-      data.remaining -= 1;
-      localStorage.setItem(clickKey, JSON.stringify(data));
-
-      // Atualizar texto de passos em tempo real
-      const stepsList = document.getElementById(`steps-${adId}`);
-      if (stepsList) {
-        const steps = Array.from(stepsList.querySelectorAll('li'));
-        if (steps.length > 0) {
-          steps[0].innerHTML = `Acesse o link até ${data.remaining} vezes diariamente`;
-        }
-      }
-
-      // Abrir link e registrar visualização
-      window.open(url, '_blank');
-      sincronizarGeradorFirebase(userId, adId, golds, `Visualização de link curto ID: ${adId}`, 'receive');
-      showModal('welcomeModal', `Você ganhou ${golds} Golds! Restam ${data.remaining} cliques hoje.`, true, 'sucesso');
-    }
-
     function viewAd(adId, golds) {
       const userId = auth.currentUser?.uid;
       if (!userId) {
