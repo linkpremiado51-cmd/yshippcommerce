@@ -524,146 +524,6 @@
       }
     }
 
-    // Calculate reward based on base + steps + proofs
-    function calculateReward(serviceTypeId, subId, stepsContainerSelector, proofsContainerSelector) {
-      const category = document.getElementById(serviceTypeId).value;
-      const subcategoryValue = document.getElementById(subId).value;
-      let base = 0;
-      if (category && subcategoryValue && serviceCategories[category]) {
-        const selectedSub = serviceCategories[category].find(sub => sub.name === subcategoryValue);
-        if (selectedSub) base = selectedSub.golds;
-      }
-      const stepsCount = document.querySelectorAll(stepsContainerSelector + ' .step-input').length;
-      const proofTypes = document.querySelectorAll(proofsContainerSelector + ' .proof-input .proof-type');
-      let proofBonus = 0;
-      proofTypes.forEach(select => {
-        const type = select.value;
-        proofBonus += type === 'Captura de Tela' ? 100 : 50;
-      });
-      return base + (stepsCount * 50) + proofBonus;
-    }
-
-    // Update reward input min and value
-    function updateReward(rewardId, serviceTypeId, subId, stepsContainerSelector, proofsContainerSelector) {
-      const rw = calculateReward(serviceTypeId, subId, stepsContainerSelector, proofsContainerSelector);
-      const input = document.getElementById(rewardId);
-      const current = parseInt(input.value) || 0;
-      if (current < rw) {
-        input.value = rw;
-      }
-      input.min = rw;
-      if (rewardId === 'rewardGolds') {
-        calculateCost();
-      }
-    }
-
-    // Update buttons for steps or proofs
-    function updateButtons(containerId, isStep = true) {
-      const allItems = document.querySelectorAll(`#${containerId} ${isStep ? '.step-input' : '.proof-input'}`);
-      const classAdd = isStep ? 'add-step' : 'add-proof';
-      const classRemove = isStep ? 'remove-step' : 'remove-proof';
-      const textAdd = isStep ? '+ Adicionar Passo' : '+ Adicionar Prova';
-      const textRemove = isStep ? '- Remover Passo' : '- Remover Prova';
-      const onclickFunc = isStep ? 'removeStep' : 'removeProof';
-      allItems.forEach((item, index) => {
-        let btnHtml;
-        if (index === allItems.length - 1) {
-          btnHtml = `<button type="button" class="${classAdd}">${textAdd}</button>`;
-        } else {
-          btnHtml = `<button type="button" class="${classRemove} remove" onclick="${onclickFunc}(this)">${textRemove}</button>`;
-        }
-        let buttons = item.querySelector('.add-remove-buttons');
-        if (!buttons) {
-          buttons = document.createElement('div');
-          buttons.className = 'add-remove-buttons';
-          item.appendChild(buttons);
-        }
-        buttons.innerHTML = btnHtml;
-      });
-    }
-
-    // Add step
-    function addStep(containerId) {
-      const container = document.getElementById(containerId);
-      const newStepDiv = document.createElement('div');
-      newStepDiv.className = 'step-input';
-      newStepDiv.innerHTML = `
-        <textarea placeholder="Ex.: Acesse o link fornecido" required></textarea>
-        <div class="add-remove-buttons"></div>
-      `;
-      container.appendChild(newStepDiv);
-      updateButtons(containerId, true);
-      const isEdit = containerId === 'editStepsContainer';
-      const rewardId = isEdit ? 'editRewardGolds' : 'rewardGolds';
-      const typeId = isEdit ? 'editServiceType' : 'serviceType';
-      const subId = isEdit ? 'editSubcategory' : 'subcategory';
-      const stepsSel = `#${containerId}`;
-      const proofsSel = isEdit ? '#editProofsContainer' : '#proofsContainer';
-      updateReward(rewardId, typeId, subId, stepsSel, proofsSel);
-    }
-
-    // Remove step
-    function removeStep(button) {
-      const stepInput = button.closest('.step-input');
-      const formGroup = stepInput.closest('.form-group');
-      const containerId = formGroup.id;
-      const numSteps = document.querySelectorAll(`#${containerId} .step-input`).length;
-      if (numSteps > 1) {
-        stepInput.remove();
-        updateButtons(containerId, true);
-        const isEdit = containerId === 'editStepsContainer';
-        const rewardId = isEdit ? 'editRewardGolds' : 'rewardGolds';
-        const typeId = isEdit ? 'editServiceType' : 'serviceType';
-        const subId = isEdit ? 'editSubcategory' : 'subcategory';
-        const stepsSel = `#${containerId}`;
-        const proofsSel = isEdit ? '#editProofsContainer' : '#proofsContainer';
-        updateReward(rewardId, typeId, subId, stepsSel, proofsSel);
-      }
-    }
-
-    // Add proof
-    function addProof(containerId) {
-      const container = document.getElementById(containerId);
-      const newProofDiv = document.createElement('div');
-      newProofDiv.className = 'proof-input';
-      newProofDiv.innerHTML = `
-        <select class="proof-type" required>
-          <option value="Texto">Texto</option>
-          <option value="Captura de Tela">Captura de Tela</option>
-        </select>
-        <textarea placeholder="Ex.: Screenshot da curtida" required></textarea>
-        <div class="add-remove-buttons"></div>
-      `;
-      container.appendChild(newProofDiv);
-      updateButtons(containerId, false);
-      const isEdit = containerId === 'editProofsContainer';
-      const rewardId = isEdit ? 'editRewardGolds' : 'rewardGolds';
-      const typeId = isEdit ? 'editServiceType' : 'serviceType';
-      const subId = isEdit ? 'editSubcategory' : 'subcategory';
-      const stepsSel = isEdit ? '#editStepsContainer' : '#stepsContainer';
-      const proofsSel = `#${containerId}`;
-      updateReward(rewardId, typeId, subId, stepsSel, proofsSel);
-    }
-
-    // Remove proof
-    function removeProof(button) {
-      const proofInput = button.closest('.proof-input');
-      const formGroup = proofInput.closest('.form-group');
-      const containerId = formGroup.id;
-      const numProofs = document.querySelectorAll(`#${containerId} .proof-input`).length;
-      if (numProofs > 1) {
-        proofInput.remove();
-        updateButtons(containerId, false);
-        const isEdit = containerId === 'editProofsContainer';
-        const rewardId = isEdit ? 'editRewardGolds' : 'rewardGolds';
-        const typeId = isEdit ? 'editServiceType' : 'serviceType';
-        const subId = isEdit ? 'editSubcategory' : 'subcategory';
-        const stepsSel = isEdit ? '#editStepsContainer' : '#stepsContainer';
-        const proofsSel = `#${containerId}`;
-        updateReward(rewardId, typeId, subId, stepsSel, proofsSel);
-      }
-    }
-
     // Update subcategories based on service type
     function updateSubcategories(selectId = 'subcategory', rewardId = 'rewardGolds', difficultyId = 'difficultyInfo', typeSelectId = 'serviceType') {
       const category = document.getElementById(typeSelectId).value;
@@ -697,12 +557,9 @@
           rewardInput.value = baseGolds;
           rewardInput.min = baseGolds;
           document.getElementById(difficultyId).textContent = `Dificuldade: ${selectedSub.difficulty}`;
+          calculateCost();
         }
       }
-      // Update for additions
-      const stepsSel = selectId === 'subcategory' ? '#stepsContainer' : '#editStepsContainer';
-      const proofsSel = selectId === 'subcategory' ? '#proofsContainer' : '#editProofsContainer';
-      updateReward(rewardId, typeSelectId, selectId, stepsSel, proofsSel);
     }
 
     // Ensure wallet exists
@@ -976,7 +833,7 @@
         await sincronizarMercadoFirebase(user.uid, serviceId, {
           rewardGolds,
           type: 'service_claim',
-          description: `Reivindicou serviço ID: ${serviceId}`
+          description: `Reivindicou serviço ID: ${serviceId}` // [GROK MODIFICAÇÃO]: Descrição base, mas será enriquecida com serviceType na função
         });
         showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
       } catch (error) {
@@ -1005,7 +862,7 @@
         await sincronizarMercadoFirebase(userId, serviceId, {
           rewardGolds,
           type: 'service_claim',
-          description: `Reivindicou serviço ID: ${serviceId}`
+          description: `Reivindicou serviço ID: ${serviceId}` // [GROK MODIFICAÇÃO]: Descrição base, enriquecida na função
         });
 
         showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
@@ -1052,16 +909,16 @@
 
         const editStepsContainer = document.getElementById('editStepsContainer');
         editStepsContainer.innerHTML = '<label>Passos do Serviço</label>';
-        service.steps.forEach((step, index) => {
+        service.steps.forEach(step => {
           const stepInput = document.createElement('div');
           stepInput.className = 'step-input';
-          stepInput.innerHTML = `<textarea required>${step}</textarea><div class="add-remove-buttons"></div>`;
+          stepInput.innerHTML = `<textarea required>${step}</textarea>`;
           editStepsContainer.appendChild(stepInput);
         });
 
         const editProofsContainer = document.getElementById('editProofsContainer');
         editProofsContainer.innerHTML = '<label>Provas Necessárias</label>';
-        service.proofs.forEach((proof, index) => {
+        service.proofs.forEach(proof => {
           const proofInput = document.createElement('div');
           proofInput.className = 'proof-input';
           proofInput.innerHTML = `
@@ -1070,26 +927,9 @@
               <option value="Captura de Tela" ${proof.type === 'Captura de Tela' ? 'selected' : ''}>Captura de Tela</option>
             </select>
             <textarea required>${proof.description}</textarea>
-            <div class="add-remove-buttons"></div>
           `;
           editProofsContainer.appendChild(proofInput);
         });
-
-        // Update buttons and reward
-        updateButtons('editStepsContainer', true);
-        updateButtons('editProofsContainer', false);
-        updateReward('editRewardGolds', 'editServiceType', 'editSubcategory', '#editStepsContainer', '#editProofsContainer');
-
-        // Add input listener for edit reward
-        const editRewardInput = document.getElementById('editRewardGolds');
-        const editInputHandler = (e) => {
-          let val = parseInt(e.target.value) || 0;
-          const minVal = parseInt(e.target.min) || 0;
-          if (val < minVal) {
-            e.target.value = minVal;
-          }
-        };
-        editRewardInput.addEventListener('input', editInputHandler);
 
         // Show edit modal
         document.getElementById('editModal').style.display = 'flex';
@@ -1097,7 +937,6 @@
         // Handle edit form submission
         editForm.onsubmit = async (e) => {
           e.preventDefault();
-          editRewardInput.removeEventListener('input', editInputHandler);
           await editarServicoFirebase(serviceId);
         };
       } catch (error) {
@@ -1236,6 +1075,10 @@
             throw new Error('Saldo do dono insuficiente para pagar a recompensa.');
           }
 
+          // [GROK MODIFICAÇÃO]: Adiciona o serviceType à descrição das transações para maior especificidade no histórico da carteira
+          const ownerTxDesc = `Pagamento por serviço ${serviceData.serviceType || 'desconhecido'} ID: ${serviceId}`;
+          const claimantTxDesc = `Reivindicou serviço ${serviceData.serviceType || 'desconhecido'} ID: ${serviceId}`;
+
           // Atualiza serviço
           transaction.update(serviceRef, {
             status: 'concluído',
@@ -1247,7 +1090,7 @@
           transaction.update(ownerRef, {
             goldsBalance: ownerBalance - reward,
             transactions: firebase.firestore.FieldValue.arrayUnion(
-              makeTransactionObj('service_payout', -reward, `Pagamento por serviço ID: ${serviceId}`)
+              makeTransactionObj('service_payout', -reward, ownerTxDesc)
             )
           });
 
@@ -1255,7 +1098,7 @@
           transaction.update(claimantRef, {
             goldsBalance: claimantBalance + reward,
             transactions: firebase.firestore.FieldValue.arrayUnion(
-              makeTransactionObj('service_claim', reward, data.description || `Reivindicou serviço ID: ${serviceId}`)
+              makeTransactionObj('service_claim', reward, claimantTxDesc)
             )
           });
 
@@ -1420,6 +1263,9 @@
           throw new Error('Reivindicador inválido.');
         }
 
+        // [GROK MODIFICAÇÃO]: Adiciona o serviceType à descrição da transação de conclusão para maior especificidade no histórico
+        const claimantTxDesc = `Serviço concluído: ${serviceData.serviceType || 'desconhecido'} - ${serviceData.title}`;
+
         // Atualiza serviço
         await serviceRef.update({
           status: 'finalizado',
@@ -1433,7 +1279,7 @@
         const transactions = walletData.transactions || [];
         transactions.push({
           type: 'entrada',
-          description: `Serviço concluído: ${serviceData.title}`,
+          description: claimantTxDesc,
           amount: serviceData.rewardGolds,
           // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           date: new Date()
@@ -1475,6 +1321,52 @@
       loadPublicServices(auth.currentUser.uid);
     });
 
+    // Add step functionality
+    function addStep(containerId = 'stepsContainer') {
+      const container = document.getElementById(containerId);
+      const newStepDiv = document.createElement('div');
+      newStepDiv.className = 'step-input';
+      newStepDiv.innerHTML = `
+        <textarea placeholder="Ex.: Acesse o link fornecido" required></textarea>
+        <div class="add-remove-buttons">
+          <button type="button" class="remove-step remove" onclick="removeStep(this)">- Remover Passo</button>
+        </div>
+      `;
+      container.appendChild(newStepDiv);
+    }
+
+    // Remove step functionality
+    function removeStep(button) {
+      if (document.querySelectorAll('#stepsContainer .step-input').length > 1) {
+        button.closest('.step-input').remove();
+      }
+    }
+
+    // Add proof functionality
+    function addProof(containerId = 'proofsContainer') {
+      const container = document.getElementById(containerId);
+      const newProofDiv = document.createElement('div');
+      newProofDiv.className = 'proof-input';
+      newProofDiv.innerHTML = `
+        <select class="proof-type" required>
+          <option value="Texto">Texto</option>
+          <option value="Captura de Tela">Captura de Tela</option>
+        </select>
+        <textarea placeholder="Ex.: Screenshot da curtida" required></textarea>
+        <div class="add-remove-buttons">
+          <button type="button" class="remove-proof remove" onclick="removeProof(this)">- Remover Prova</button>
+        </div>
+      `;
+      container.appendChild(newProofDiv);
+    }
+
+    // Remove proof functionality
+    function removeProof(button) {
+      if (document.querySelectorAll('#proofsContainer .proof-input').length > 1) {
+        button.closest('.proof-input').remove();
+      }
+    }
+
     // Publish form submit listener
     document.getElementById('publishForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -1502,15 +1394,7 @@
       }
       // Initialize dynamic cost calculation
       document.getElementById('freelancers')?.addEventListener('input', calculateCost);
-      document.getElementById('rewardGolds')?.addEventListener('input', (e) => {
-        let val = parseInt(e.target.value) || 0;
-        const minVal = parseInt(e.target.min) || 0;
-        if (val < minVal) {
-          e.target.value = minVal;
-          val = minVal;
-        }
-        calculateCost();
-      });
+      document.getElementById('rewardGolds')?.addEventListener('input', calculateCost);
       // Initialize dynamic subcategories
       document.getElementById('serviceType')?.addEventListener('change', () => {
         updateSubcategories();
@@ -1518,9 +1402,6 @@
       });
       document.getElementById('subcategory')?.addEventListener('change', handleSubcategoryChange);
       updateSubcategories(); // Initial call to set default state
-      updateButtons('stepsContainer', true);
-      updateButtons('proofsContainer', false);
-      updateReward('rewardGolds', 'serviceType', 'subcategory', '#stepsContainer', '#proofsContainer');
 
       // For edit modal
       document.getElementById('editServiceType')?.addEventListener('change', () => {
@@ -1532,29 +1413,11 @@
       // Event delegation for add/remove buttons
       document.addEventListener('click', (e) => {
         if (e.target.classList.contains('add-step')) {
-          const formGroup = e.target.closest('.form-group');
-          const containerId = formGroup.id;
-          addStep(containerId);
+          addStep();
+          e.target.textContent = '+ Adicionar Outro Passo';
         } else if (e.target.classList.contains('add-proof')) {
-          const formGroup = e.target.closest('.form-group');
-          const containerId = formGroup.id;
-          addProof(containerId);
-        }
-      });
-
-      // Event delegation for proof type change
-      document.addEventListener('change', (e) => {
-        if (e.target.classList.contains('proof-type')) {
-          const proofInput = e.target.closest('.proof-input');
-          const formGroup = proofInput.closest('.form-group');
-          const containerId = formGroup.id;
-          const isEdit = containerId === 'editProofsContainer';
-          const rewardId = isEdit ? 'editRewardGolds' : 'rewardGolds';
-          const typeId = isEdit ? 'editServiceType' : 'serviceType';
-          const subId = isEdit ? 'editSubcategory' : 'subcategory';
-          const stepsSel = isEdit ? '#editStepsContainer' : '#stepsContainer';
-          const proofsSel = `#${containerId}`;
-          updateReward(rewardId, typeId, subId, stepsSel, proofsSel);
+          addProof();
+          e.target.textContent = '+ Adicionar Outra Prova';
         }
       });
     });
