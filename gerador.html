@@ -35,7 +35,6 @@
       --nsfw-hover: #c0392b;
       --progress-bg: #ecf0f1;
     }
-
     [data-theme="dark"] {
       --background: #1f2937;
       --surface: #374151;
@@ -55,7 +54,6 @@
       --nsfw-hover: #a5281a;
       --progress-bg: #4b5563;
     }
-
     * {
       margin: 0;
       padding: 0;
@@ -63,7 +61,6 @@
       user-select: none;
       -webkit-user-select: none;
     }
-
     body {
       font-family: 'Ubuntu', sans-serif;
       background: var(--background);
@@ -73,11 +70,9 @@
       padding-top: 72px;
       overflow-x: hidden;
     }
-
     .header-menu {
       font-family: 'PT Sans', sans-serif;
     }
-
     .header {
       position: fixed;
       top: 0;
@@ -93,7 +88,6 @@
       z-index: 1001;
       box-shadow: var(--shadow);
     }
-
     .header h1 {
       font-family: 'Jura', sans-serif;
       font-size: 1.3rem;
@@ -102,17 +96,14 @@
       align-items: center;
       gap: 0.5rem;
     }
-
     .header h1 i {
       color: var(--primary);
     }
-
     .top-bar__section {
       display: flex;
       align-items: center;
       gap: 16px;
     }
-
     .top-bar__icon {
       position: relative;
       color: var(--text-primary);
@@ -124,18 +115,15 @@
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
       overflow: hidden;
     }
-
     .top-bar__icon i {
       position: relative;
       font-size: 1.25rem;
     }
-
     .top-bar__icon:hover {
       transform: scale(1.1);
       background: var(--tutorial-bg);
       color: white;
     }
-
     .menu {
       position: fixed;
       top: 72px;
@@ -150,20 +138,16 @@
       overflow-y: auto;
       box-shadow: var(--shadow);
     }
-
     .menu.open {
       transform: translateX(0);
     }
-
     .menu__list {
       list-style: none;
       padding: 16px 0;
     }
-
     .menu__item {
       margin: 8px 16px;
     }
-
     .menu__link {
       color: var(--text-primary);
       text-decoration: none;
@@ -176,24 +160,20 @@
       overflow: hidden;
       background: transparent;
     }
-
     .menu__link:hover {
       background: var(--tutorial-bg);
       color: white;
       transform: translateX(5px);
     }
-
     .menu__link i {
       margin-right: 12px;
       font-size: 1.25rem;
       color: var(--text-secondary);
       transition: color 0.3s ease;
     }
-
     .menu__link:hover i {
       color: white;
     }
-
     .submenu {
       margin-top: 4px;
       padding-left: 48px;
@@ -201,11 +181,9 @@
       overflow: hidden;
       transition: max-height 0.3s ease;
     }
-
     .submenu.open {
       max-height: 300px;
     }
-
     .submenu__link {
       color: var(--text-secondary);
       padding: 8px 16px;
@@ -215,12 +193,10 @@
       transition: background 0.3s ease;
       border-radius: 8px;
     }
-
     .submenu__link:hover {
       background: var(--primary);
       color: white;
     }
-
     .premium-button {
       background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
       color: white;
@@ -234,11 +210,9 @@
       transition: transform 0.2s ease;
       box-shadow: var(--shadow);
     }
-
     .premium-button:hover {
       transform: scale(1.05);
     }
-
     .notification {
       position: fixed;
       bottom: 20px;
@@ -253,55 +227,44 @@
       transition: opacity 0.3s ease, transform 0.3s ease;
       z-index: 2000;
     }
-
     .notification.show {
       opacity: 1;
       transform: translateY(0);
     }
-
     @media (max-width: 768px) {
       .menu {
         width: min(80vw, 280px);
       }
-
       .header {
         padding: 0 12px;
       }
-
       .top-bar__icon {
         padding: 8px;
       }
-
       .top-bar__icon i {
         font-size: 1.2rem;
       }
-
       .menu__link {
         padding: 10px 12px;
         font-size: 0.9rem;
       }
-
       .menu__link i {
         font-size: 1.1rem;
       }
-
       .submenu__link {
         font-size: 0.85rem;
         padding: 6px 12px;
       }
-
       .premium-button {
         padding: 10px 20px;
         font-size: 0.9rem;
       }
-
       .notification {
         right: 10px;
         bottom: 10px;
         padding: 10px 20px;
       }
     }
-
     .balance-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -310,7 +273,6 @@
       max-width: 1200px;
       padding: 1.2rem;
     }
-
     .balance-card {
       border-radius: 0;
       padding: 1.6rem;
@@ -320,32 +282,26 @@
       box-shadow: var(--shadow);
       transition: transform 0.3s ease;
     }
-
     .balance-card:hover {
       transform: translateY(-5px);
     }
-
     .balance-card.gold {
       background: linear-gradient(135deg, #f39c12, #e67e22);
     }
-
     .balance-card.reais {
       background: linear-gradient(135deg, #10b981, #059669);
     }
-
     .balance-label {
       font-size: 0.85rem;
       text-transform: uppercase;
       opacity: 0.9;
       margin-bottom: 0.4rem;
     }
-
     .balance-amount {
       font-family: 'Jura', sans-serif;
       font-size: 2rem;
       font-weight: 700;
     }
-
     .ads-section {
       width: 100%;
       max-width: 1200px;
@@ -356,20 +312,17 @@
       margin: 1rem 0;
       animation: fadeIn 0.5s ease forwards;
     }
-
     .ads-section h2 {
       font-family: 'Jura', sans-serif;
       font-size: 1.4rem;
       margin-bottom: 0.5rem;
       color: var(--text-primary);
     }
-
     .ads-section > p {
       color: var(--text-secondary);
       font-size: 0.9rem;
       margin-bottom: 1rem;
     }
-
     .carousel-container {
       overflow-x: auto;
       scroll-snap-type: x mandatory;
@@ -379,18 +332,15 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
-
     .carousel-container::-webkit-scrollbar {
       display: none;
     }
-
     .carousel-container .ad-card {
       flex: 0 0 calc(100% - 2rem);
       max-width: 100%;
       scroll-snap-align: start;
       min-height: 300px;
     }
-
     .ad-card {
       background: var(--background);
       border-radius: 0;
@@ -402,12 +352,10 @@
       display: flex;
       flex-direction: column;
     }
-
     .ad-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
-
     .ad-card h3 {
       font-family: 'Jura', sans-serif;
       font-size: 1.2rem;
@@ -415,23 +363,19 @@
       margin-bottom: 1rem;
       color: var(--text-primary);
     }
-
     .ad-card .steps-list {
       font-size: 0.85rem;
       color: var(--text-secondary);
       margin-bottom: 1rem;
       flex-grow: 1;
     }
-
     .ad-card .steps-list ul {
       list-style-type: disc;
       padding-left: 1.25rem;
     }
-
     .ad-card .steps-list li {
       margin-bottom: 0.3rem;
     }
-
     .ad-card .golds-reward {
       font-size: 0.85rem;
       color: var(--text-primary);
@@ -439,7 +383,6 @@
       border-radius: 0;
       text-align: center;
     }
-
     .ad-card .view-button {
       width: 100%;
       padding: 1rem;
@@ -453,12 +396,10 @@
       transition: all 0.3s ease;
       margin-top: auto;
     }
-
     .ad-card .view-button:hover {
       background: var(--button-hover);
       transform: scale(1.02);
     }
-
     .modal {
       display: none;
       position: fixed;
@@ -471,7 +412,6 @@
       align-items: center;
       z-index: 1000;
     }
-
     .modal-content {
       background: var(--surface);
       padding: 2rem;
@@ -482,20 +422,17 @@
       width: 500px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     }
-
     .modal-content h2 {
       font-family: 'Jura', sans-serif;
       color: var(--text-primary);
       margin-bottom: 1rem;
       font-size: 1.5rem;
     }
-
     .modal-content p {
       color: var(--text-secondary);
       margin-bottom: 1.5rem;
       font-size: 1rem;
     }
-
     .modal-content input {
       padding: 0.75rem;
       margin-bottom: 1.5rem;
@@ -505,7 +442,6 @@
       width: 100%;
       max-width: 300px;
     }
-
     .modal-content button {
       padding: 0.75rem 1.5rem;
       background: var(--button-bg);
@@ -518,15 +454,12 @@
       font-size: 1rem;
       transition: all 0.3s ease;
     }
-
     .modal-content button.cancel {
       background: var(--accent);
     }
-
     .modal-content button:hover {
       transform: scale(1.05);
     }
-
     .cookie-banner {
       position: fixed;
       bottom: 0;
@@ -544,34 +477,27 @@
       align-items: center;
       text-align: center;
     }
-
     .cookie-banner.active {
       display: flex;
     }
-
     [data-theme="dark"] .cookie-banner {
       background: var(--surface);
       border-top: 1px solid var(--border);
     }
-
     .cookie-banner .content {
       font-size: 0.875rem;
     }
-
     .cookie-banner .content a {
       color: var(--primary);
       text-decoration: underline;
     }
-
     .cookie-banner .content a:hover {
       color: var(--primary-hover);
     }
-
     .cookie-banner .buttons {
       display: flex;
       gap: 0.5rem;
     }
-
     .cookie-banner button {
       padding: 0.5rem 1rem;
       border: none;
@@ -581,27 +507,22 @@
       transition: background 0.3s ease;
       font-size: 0.875rem;
     }
-
     .cookie-banner button.accept {
       background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
       color: white;
     }
-
     .cookie-banner button.accept:hover {
       transform: scale(1.05);
     }
-
     .cookie-banner button.decline {
       background: transparent;
       color: var(--text-primary);
       border: 1px solid var(--border);
     }
-
     .cookie-banner button.decline:hover {
       background: var(--accent);
       color: white;
     }
-
     #loadingOverlay {
       position: fixed;
       top: 0;
@@ -616,7 +537,6 @@
       font-size: 18px;
       z-index: 9999;
     }
-
     #userStatus {
       background: black;
       color: lime;
@@ -627,7 +547,6 @@
       z-index: 9999;
       font-size: 12px;
     }
-
     footer#userInfoFooter {
       position: fixed;
       bottom: 0;
@@ -642,78 +561,115 @@
       z-index: 999;
       font-family: 'Ubuntu', sans-serif;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes slideIn {
       from { opacity: 0; transform: scale(0.9); }
       to { opacity: 1; transform: scale(1); }
     }
-
     @media (max-width: 600px) {
       .header {
         padding: 0.75rem;
         flex-direction: row;
         gap: 0.5rem;
       }
-
       .header h1 {
         font-size: 1.25rem;
       }
-
       .balance-cards {
         padding: 1rem;
         gap: 1rem;
       }
-
       .balance-amount {
         font-size: 1.5rem;
       }
-
       .ads-section {
         padding: 1rem;
       }
-
       .carousel-container .ad-card {
         flex: 0 0 calc(100% - 1rem);
       }
-
       .modal-content {
         padding: 1.5rem;
       }
-
       .cookie-banner .buttons {
         flex-direction: column;
         width: 100%;
       }
-
       .cookie-banner button {
         width: 100%;
       }
     }
-
     @media (min-width: 601px) and (max-width: 1024px) {
       .header h1 {
         font-size: 1.5rem;
       }
-
       .balance-cards {
         padding: 1rem;
       }
-
       .ads-section {
         padding: 1rem;
       }
+    }
+    /* Estilo para os cards de instruções */
+    .instruction-card {
+      background: var(--surface);
+      border-radius: 0;
+      padding: 1.2rem;
+      box-shadow: var(--shadow);
+      margin: 1rem 0;
+      width: 100%;
+      max-width: 1200px;
+      border-left: 4px solid var(--primary);
+      position: relative;
+    }
+    .instruction-card.links {
+      border-left-color: var(--gold);
+    }
+    .instruction-card.crypto {
+      border-left-color: var(--secondary);
+    }
+    .instruction-card.offers {
+      border-left-color: var(--accent);
+    }
+    .instruction-card h3 {
+      font-family: 'Jura', sans-serif;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .instruction-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .instruction-card .menu-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+    .instruction-card .menu-button:hover {
+      background: rgba(0, 0, 0, 0.05);
     }
   </style>
 </head>
 <body data-theme="light">
   <div id="loadingOverlay">Carregando dados do gerador...</div>
   <div id="userStatus">Usuário ativo: Carregando...</div>
-  
+
   <div class="header-menu">
     <nav aria-label="Navegação principal" class="header" role="navigation">
       <div class="top-bar__section">
@@ -771,7 +727,6 @@
   </div>
   <div class="notification" id="notification"></div>
   <div id="overlay" class="overlay"></div>
-
   <main style="width:100%;max-width:1200px;padding:0 0 100px;">
     <div class="balance-cards">
       <div class="balance-card gold">
@@ -786,23 +741,62 @@
       </div>
     </div>
 
+    <!-- Gerador de Golds via Links Curtos -->
     <section class="ads-section">
       <h2>Gerador de Golds via Links Curtos</h2>
       <p>Acesse links curtos e ganhe 150 Golds por visualização.</p>
       <div class="carousel-container" id="links-carousel"></div>
     </section>
+    <!-- Card de Instruções - Links Curtos -->
+    <div class="instruction-card links">
+      <button class="menu-button" onclick="toggleInstruction(this)">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h3><i class="fas fa-link"></i> Como funciona?</h3>
+      <p>
+        Acesse os links disponíveis no carrossel acima. Cada link aberto em uma nova aba e visualizado por pelo menos 30 segundos gera <strong>150 Golds</strong> automaticamente em sua carteira.
+        <br><br>
+        <strong>Dica:</strong> Quanto mais links você visualizar, mais Golds você acumula!
+      </p>
+    </div>
 
+    <!-- Gerador de Golds via Cripto -->
     <section class="ads-section">
       <h2>Gerador de Golds via Cripto</h2>
       <p>Realize tarefas de criptomoedas e ganhe Golds inserindo o código fornecido.</p>
       <div class="carousel-container" id="crypto-carousel"></div>
     </section>
+    <!-- Card de Instruções - Cripto -->
+    <div class="instruction-card crypto">
+      <button class="menu-button" onclick="toggleInstruction(this)">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h3><i class="fas fa-coins"></i> Como funciona?</h3>
+      <p>
+        Siga os passos descritos em cada tarefa de criptomoeda. Após concluir, insira o código fornecido no modal que abrirá ao clicar no botão.
+        <br><br>
+        <strong>Recompensa:</strong> O valor em Golds é creditado assim que o código correto for inserido.
+      </p>
+    </div>
 
+    <!-- Gerador de Golds via Offers -->
     <section class="ads-section">
       <h2>Gerador de Golds via Offers</h2>
       <p>Realize tarefas e ganhe Golds inserindo o código fornecido.</p>
       <div class="carousel-container" id="tasks-carousel"></div>
     </section>
+    <!-- Card de Instruções - Offers -->
+    <div class="instruction-card offers">
+      <button class="menu-button" onclick="toggleInstruction(this)">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h3><i class="fas fa-tasks"></i> Como funciona?</h3>
+      <p>
+        Cada tarefa possui passos específicos. Ao aceitar uma tarefa, você recebe a recompensa em Golds imediatamente.
+        <br><br>
+        <strong>Vagas limitadas:</strong> Algumas tarefas têm número limitado de participantes. Aceite enquanto houver vagas!
+      </p>
+    </div>
   </main>
 
   <div id="welcomeModal" class="modal" role="dialog">
@@ -812,7 +806,6 @@
       <button onclick="closeModal('welcomeModal')">OK</button>
     </div>
   </div>
-
   <div id="cryptoModal" class="modal" role="dialog">
     <div class="modal-content">
       <h2>Insira o Código</h2>
@@ -824,7 +817,6 @@
       </div>
     </div>
   </div>
-
   <div id="cookieBanner" class="cookie-banner">
     <div class="content">
       <p>Concordo que meu endereço IP seja coletado e enviado ao administrador para identificar atividades.</p>
@@ -834,7 +826,6 @@
       <button id="cookie-decline" class="decline" onclick="declineIPConsent()">Recusar</button>
     </div>
   </div>
-
   <footer id="userInfoFooter">
     Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
   </footer>
@@ -849,7 +840,6 @@
       messagingSenderId: "680576769517",
       appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
     };
-
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
@@ -857,12 +847,20 @@
     const db = firebase.firestore();
     window._YSHIPP_db = db;
     window._YSHIPP_auth = auth;
-
     console.log("[DEBUG] Firebase conectado. Versão:", firebase.SDK_VERSION || 'compat');
-
     const ADMIN_PHONE = "5535984072446";
 
-    // Modal control
+    // Função para alternar a visibilidade das instruções
+    function toggleInstruction(button) {
+      const card = button.closest('.instruction-card');
+      const paragraph = card.querySelector('p');
+      paragraph.style.display = paragraph.style.display === 'none' ? 'block' : 'none';
+      button.innerHTML = paragraph.style.display === 'none' ?
+        '<i class="fas fa-bars"></i>' :
+        '<i class="fas fa-times"></i>';
+    }
+
+    // Restante do seu código JavaScript...
     function showModal(modalId, message, autoClose = true, type = 'sucesso') {
       const modal = document.getElementById(modalId);
       const modalText = modal.querySelector('p');
@@ -875,23 +873,19 @@
         }, 3000);
       }
     }
-
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = 'none';
     }
-
     // IP consent
     function acceptIPConsent() {
       localStorage.setItem('ipConsent', 'true');
       document.getElementById('cookieBanner').classList.remove('active');
     }
-
     function declineIPConsent() {
       localStorage.setItem('ipConsent', 'false');
       document.getElementById('cookieBanner').classList.remove('active');
       showModal('welcomeModal', 'Você deve aceitar a coleta de IP para continuar.', false, 'erro');
     }
-
     async function getUserIP() {
       try {
         const response = await fetch('https://api.ipify.org?format=json');
@@ -902,7 +896,6 @@
         return 'IP não disponível';
       }
     }
-
     // Update UI
     function updateInterface(walletData) {
       const goldsBalance = walletData.goldsBalance || 0;
@@ -910,12 +903,10 @@
       document.getElementById('golds-balance').textContent = goldsBalance.toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${reaisBalance.toFixed(2).replace('.', ',')}`;
     }
-
     function updateUserStatus(uid) {
       const userStatus = document.getElementById("userStatus");
       if (userStatus) userStatus.textContent = `Usuário ativo: ${uid}`;
     }
-
     async function updateFooterUserName(uid) {
       try {
         const userDoc = await db.collection("wallets").doc(uid).get();
@@ -930,12 +921,11 @@
         document.getElementById("footerUserName").textContent = "Usuário Desconhecido";
       }
     }
-
     // Load carousels
     function loadLinksCarousel(links) {
       const carousel = document.getElementById('links-carousel');
       carousel.innerHTML = '';
-      links.slice(0, 5).forEach(ad => {
+      links.forEach(ad => {
         const golds = ad.golds ?? ad.reward ?? 0;
         const card = document.createElement('div');
         card.classList.add('ad-card');
@@ -954,11 +944,10 @@
         carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem">Nenhum link disponível.</p>';
       }
     }
-
     function loadCryptoCarousel(cryptoAds) {
       const carousel = document.getElementById('crypto-carousel');
       carousel.innerHTML = '';
-      cryptoAds.slice(0, 1).forEach(ad => {
+      cryptoAds.forEach(ad => {
         const golds = ad.golds ?? ad.reward ?? 0;
         const card = document.createElement('div');
         card.classList.add('ad-card');
@@ -977,11 +966,10 @@
         carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem">Nenhuma tarefa de cripto disponível.</p>';
       }
     }
-
     function loadTasksCarousel(tasks) {
       const carousel = document.getElementById('tasks-carousel');
       carousel.innerHTML = '';
-      tasks.slice(0, 6).forEach(ad => {
+      tasks.forEach(ad => {
         const reward = ad.golds ?? ad.reward ?? 0;
         const freelancersNeeded = ad.freelancersNeeded ?? ad.slots ?? null;
         const acceptedCount = (ad.acceptedBy && ad.acceptedBy.length) || 0;
@@ -1003,7 +991,6 @@
         carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem">Nenhuma task disponível.</p>';
       }
     }
-
     // Actions
     function viewAd(adId, golds) {
       const userId = auth.currentUser?.uid;
@@ -1014,7 +1001,6 @@
       sincronizarGeradorFirebase(userId, adId, golds, `Visualização de link curto ID: ${adId}`, 'receive');
       showNotification(`Você ganhou ${golds} Golds por visualizar o link!`);
     }
-
     function showCryptoModal(adId, golds, code) {
       const userId = auth.currentUser?.uid;
       if (!userId) {
@@ -1030,7 +1016,6 @@
       window.expectedCode = code;
       document.getElementById('cryptoModal').style.display = 'flex';
     }
-
     async function submitCryptoCode() {
       const userId = auth.currentUser?.uid;
       if (!userId) {
@@ -1068,7 +1053,6 @@
       }
       document.getElementById('cryptoCode').value = '';
     }
-
     async function acceptTask(adId, reward) {
       const userId = auth.currentUser?.uid;
       if (!userId) {
@@ -1145,7 +1129,6 @@
         showModal('welcomeModal', err.message || 'Erro ao aceitar tarefa. Tente novamente.', true, 'erro');
       }
     }
-
     // Synchronize generator data with Firestore
     async function sincronizarGeradorFirebase(userId, adId, golds, description, type) {
       try {
@@ -1179,11 +1162,9 @@
         showModal('welcomeModal', 'Erro ao registrar ganhos. Tente novamente.', true, 'erro');
       }
     }
-
     // Load generator data from Firestore
     async function carregarGeradorFirebase(userId) {
       console.log("[DEBUG] carregarGeradorFirebase chamado para UID:", userId);
-
       // Initialize UI with default wallet values
       const defaultWallet = {
         userId: userId,
@@ -1193,7 +1174,6 @@
         transactions: []
       };
       updateInterface(defaultWallet);
-
       try {
         // Load wallet data
         const walletDoc = await db.collection('wallets').doc(userId).get();
@@ -1214,7 +1194,6 @@
           updateInterface(defaultWallet);
           localStorage.setItem('walletData', JSON.stringify(defaultWallet));
         }
-
         // Load offers
         const querySnapshot = await db.collection('offers').where('active', '==', true).get();
         console.log('[DEBUG] Snapshot offers recebido:', querySnapshot.size, 'itens');
@@ -1235,7 +1214,6 @@
         loadLinksCarousel(links);
         loadCryptoCarousel(cryptoAds);
         loadTasksCarousel(tasks);
-
         // Hide loading overlay
         document.getElementById("loadingOverlay").style.display = "none";
       } catch (error) {
@@ -1244,7 +1222,6 @@
         document.getElementById("loadingOverlay").style.display = "none";
       }
     }
-
     // Navigation
     function navigateTo(page) {
       switch(page) {
@@ -1272,7 +1249,6 @@
           break;
       }
     }
-
     // Show notification
     function showNotification(message) {
       const notification = document.getElementById('notification');
@@ -1282,28 +1258,23 @@
         notification.classList.remove('show');
       }, 3000);
     }
-
     // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
-
     themeToggle.addEventListener('click', () => {
       const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       body.setAttribute('data-theme', currentTheme);
       localStorage.setItem('theme', currentTheme);
     });
-
     // Apply saved theme on page load
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('theme') || 'light';
       body.setAttribute('data-theme', savedTheme);
     });
-
     // Menu toggle
     const menuToggles = {
       'menu-icon': 'main-menu'
     };
-
     Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
       const toggle = document.getElementById(toggleId);
       const menu = document.getElementById(menuId);
@@ -1317,7 +1288,6 @@
         toggle.classList.toggle('active');
       });
     });
-
     document.addEventListener('click', e => {
       if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
         Object.values(menuToggles).forEach(menuId => {
@@ -1329,7 +1299,6 @@
         });
       }
     });
-
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         Object.values(menuToggles).forEach(menuId => {
@@ -1341,22 +1310,18 @@
         });
       }
     });
-
     document.getElementById("logout-button").addEventListener("click", () => {
       auth.signOut().then(() => window.location.href = "cadastro.html");
     });
-
     // Cookie banner
     function showCookieBannerOncePerDay() {
       const today = new Date().toISOString().split('T')[0];
       const lastShown = localStorage.getItem('cookieBannerLastShown');
-
       if (lastShown !== today) {
         document.getElementById('cookieBanner').classList.add('active');
         localStorage.setItem('cookieBannerLastShown', today);
       }
     }
-
     // Firebase Authentication
     document.addEventListener('DOMContentLoaded', () => {
       if (localStorage.getItem("ipConsent") === "true") {
@@ -1364,10 +1329,8 @@
       }
       showCookieBannerOncePerDay();
     });
-
     window.addEventListener('load', () => {
       console.log("[DEBUG] Aguardando autenticação...");
-
       // Check for cached UID
       const storedUID = localStorage.getItem("userUID");
       if (storedUID && !navigator.onLine) {
@@ -1379,7 +1342,6 @@
         document.getElementById("loadingOverlay").style.display = "none";
         return;
       }
-
       // Firebase authentication
       auth.onAuthStateChanged((user) => {
         if (user) {
@@ -1417,13 +1379,11 @@
         }
       });
     });
-
     // Connectivity detection
     window.addEventListener("offline", () => {
       console.log("[DEBUG] Conexão perdida.");
       showModal('welcomeModal', 'Sem conexão com a internet. Tentando reconectar...', false, 'erro');
     });
-
     window.addEventListener("online", () => {
       console.log("[DEBUG] Conexão restabelecida.");
       showModal('welcomeModal', 'Reconectado. Recarregando dados...', true, 'sucesso');
