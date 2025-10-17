@@ -5,614 +5,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Publicar serviços no Mercado de Serviços YshippCommerce">
   <title>Publicar Serviço - YshippCommerce</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@400;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
   <style>
-    :root {
-      --background: #f5f7fa;
-      --surface: #ffffff;
-      --text-primary: #1a202c;
-      --text-secondary: #4a5568;
-      --primary: #2d3748;
-      --primary-hover: #1a202c;
-      --secondary: #3182ce;
-      --secondary-hover: #2b6cb0;
-      --border: #e2e8f0;
-      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
-      --accent: #e53e3e;
-      --gold: #d69e2e;
-      --reais: #10b981;
-      --progress-bg: #edf2f7;
-      --tutorial-bg: #3498db;
-      --tutorial-hover: #2980b9;
-      --button-bg: #9ca3af;
-      --button-hover: #6b7280;
-      --nsfw-bg: #e74c3c;
-      --nsfw-hover: #c0392b;
-      --crypto: #e74c3c;
-      --tasks: #8e44ad;
-      --surveys: #27ae60;
-      --afiliado: #d69e2e;
-    }
-    [data-theme="dark"] {
-      --background: #1a202c;
-      --surface: #2d3748;
-      --text-primary: #e2e8f0;
-      --text-secondary: #a0aec0;
-      --border: #4a5568;
-      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
-      --accent: #f56565;
-      --gold: #e6a24b;
-      --reais: #059669;
-      --progress-bg: #4a5568;
-      --tutorial-bg: #1e90ff;
-      --tutorial-hover: #1c86ee;
-      --button-bg: #6b7280;
-      --button-hover: #4b5563;
-      --nsfw-bg: #c0392b;
-      --nsfw-hover: #a5281a;
-      --crypto: #c0392b;
-      --tasks: #6c3483;
-      --surveys: #1b5e20;
-      --afiliado: #b7791f;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      user-select: none;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--background);
-      color: var(--text-primary);
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: hidden;
-    }
-    .header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      padding: 1rem;
-      text-align: center;
-      width: 100%;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header h1 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .theme-button {
-      padding: 0.5rem 1rem;
-      background: var(--tutorial-bg);
-      border: none;
-      color: #fff;
-      font-size: 0.875rem;
-      font-weight: 600;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .theme-button:hover {
-      background: var(--tutorial-hover);
-      transform: scale(1.05);
-    }
-    .status-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      padding: 1rem;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      gap: 0.5rem;
-      text-align: center;
-      font-size: 0.875rem;
-      font-weight: 600;
-      width: 100%;
-      max-width: 1200px;
-      border-radius: 0.375rem;
-      margin: 1rem 0;
-    }
-    .status-bar div {
-      padding: 0.75rem;
-      background: var(--background);
-      border-radius: 0.375rem;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .status-bar div:hover {
-      background: var(--secondary);
-      color: #fff;
-      transform: translateY(-3px);
-    }
-    .status-bar span.golds-balance, .status-bar span#golds-total {
-      color: var(--gold);
-      font-size: 1.125rem;
-      font-weight: 700;
-    }
-    .status-bar span.reais-balance {
-      color: var(--reais);
-      font-size: 1.125rem;
-      font-weight: 700;
-    }
-    .wallet-section, .publish-section, .services-store-section, .services-list {
-      width: 100%;
-      max-width: 1200px;
-      padding: 1.2rem;
-      background: var(--surface);
-      border-radius: 0.5rem;
-      box-shadow: var(--shadow);
-      margin: 1rem 0;
-    }
-    .wallet-section h2, .publish-section h2, .services-store-section h2, .services-list h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.8rem;
-      color: var(--text-primary);
-    }
-    .balances-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.2rem;
-      margin-bottom: 2rem;
-    }
-    .balance-card {
-      background: var(--background);
-      border-radius: 0.5rem;
-      padding: 1.6rem;
-      text-align: center;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .balance-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-    }
-    .balance-card.golds {
-      background: linear-gradient(135deg, var(--gold), #b7791f);
-      color: #fff;
-      border-left: 4px solid var(--gold);
-    }
-    .balance-card.reais {
-      background: linear-gradient(135deg, var(--reais), #059669);
-      color: #fff;
-      border-left: 4px solid var(--reais);
-    }
-    .balance-card h3 {
-      font-size: 0.85rem;
-      color: var(--text-primary);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      opacity: 0.9;
-    }
-    .balance-card .balance-amount {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: #fff;
-    }
-    .balance-card .user-info {
-      font-size: 0.875rem;
-      color: var(--text-primary);
-      opacity: 0.9;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.3rem;
-    }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 0.4rem;
-      font-size: 0.875rem;
-      background: var(--surface);
-      color: var(--text-primary);
-      transition: border-color 0.3s ease;
-    }
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    .add-remove-buttons {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .add-remove-buttons button {
-      padding: 0.5rem;
-      background: var(--secondary);
-      color: #fff;
-      border: none;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-    .add-remove-buttons button:hover {
-      background: var(--secondary-hover);
-      transform: scale(1.05);
-    }
-    .add-remove-buttons button.remove {
-      background: var(--accent);
-    }
-    .add-remove-buttons button.remove:hover {
-      background: var(--nsfw-hover);
-    }
-    .publish-button {
-      width: 100%;
-      padding: 0.9rem;
-      background: var(--secondary);
-      color: #fff;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      margin-top: 1rem;
-    }
-    .publish-button:hover {
-      background: var(--secondary-hover);
-      transform: scale(1.05);
-    }
-    .publish-button:disabled {
-      background: var(--accent);
-      cursor: not-allowed;
-      transform: none;
-    }
-    .carousel-container {
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      display: flex;
-      gap: 1rem;
-      padding: 0 1rem 1rem;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      justify-content: center;
-    }
-    .carousel-container::-webkit-scrollbar {
-      display: none;
-    }
-    .carousel-container .service-card {
-      flex: 0 0 90%;
-      max-width: 400px;
-      scroll-snap-align: center;
-      position: relative;
-      min-height: 400px;
-    }
-    .service-card {
-      background: var(--background);
-      border-radius: 0.5rem;
-      padding: 1.25rem;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-    .service-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg);
-    }
-    .service-card.pending {
-      opacity: 0.7;
-      border-color: var(--accent);
-    }
-    .service-card.completed {
-      opacity: 0.7;
-      border-color: var(--secondary);
-    }
-    .service-card h3 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: var(--text-primary);
-    }
-    .service-card p {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-    .service-card .golds-reward {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--gold);
-      margin: 0.5rem 0;
-    }
-    .service-card .steps-list, .service-card .proofs-list {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-    .service-card .steps-list ul, .service-card .proofs-list ul {
-      list-style-type: disc;
-      padding-left: 1.25rem;
-    }
-    .service-card .action-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 0.75rem;
-      margin-top: 1rem;
-    }
-    .service-card .action-buttons button {
-      padding: 0.9rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      flex: 1;
-    }
-    .service-card .edit-button {
-      background: var(--primary);
-      color: #fff;
-    }
-    .service-card .edit-button:hover {
-      background: var(--primary-hover);
-      transform: scale(1.05);
-    }
-    .service-card .delete-button {
-      background: var(--accent);
-      color: #fff;
-    }
-    .service-card .delete-button:hover {
-      background: var(--nsfw-hover);
-      transform: scale(1.05);
-    }
-    .service-card .claim-button {
-      position: absolute;
-      bottom: 1rem;
-      left: 1rem;
-      padding: 0.75rem;
-      background: var(--secondary);
-      color: #fff;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .service-card .claim-button:hover {
-      background: var(--secondary-hover);
-      transform: scale(1.05);
-    }
-    .service-card .claim-button:disabled {
-      background: var(--accent);
-      cursor: not-allowed;
-      transform: none;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: var(--surface);
-      padding: 1.1rem;
-      border-radius: 0.6rem;
-      text-align: center;
-      animation: slideIn 0.5s ease forwards;
-      max-width: 92%;
-      width: 500px;
-      box-shadow: var(--shadow-lg);
-    }
-    .modal-content h2 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--text-primary);
-    }
-    .modal-content p {
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-      font-size: 0.875rem;
-    }
-    .modal-content input, .modal-content textarea, .modal-content select {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.5rem 0;
-      border: 1px solid var(--border);
-      border-radius: 0.4rem;
-      font-size: 0.875rem;
-      background: var(--surface);
-      color: var(--text-primary);
-    }
-    .modal-content button {
-      padding: 0.5rem 1rem;
-      background: var(--secondary);
-      border: none;
-      color: #fff;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-weight: 600;
-      margin: 0.25rem;
-      font-size: 0.875rem;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .modal-content button.cancel {
-      background: var(--accent);
-    }
-    .modal-content button.cancel:hover {
-      background: var(--nsfw-hover);
-      transform: scale(1.05);
-    }
-    .modal-content button:hover {
-      background: var(--secondary-hover);
-      transform: scale(1.05);
-    }
-    #successModal .modal-content {
-      border-left: 4px solid var(--secondary);
-    }
-    #errorModal .modal-content {
-      border-left: 4px solid var(--accent);
-    }
-    .cookie-banner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: var(--surface);
-      color: var(--text-primary);
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      border-top: 1px solid var(--border);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: center;
-      text-align: center;
-    }
-    .cookie-banner .content {
-      font-size: 0.875rem;
-    }
-    .cookie-banner .content a {
-      color: var(--primary);
-      text-decoration: underline;
-    }
-    .cookie-banner .content a:hover {
-      color: var(--primary-hover);
-    }
-    .cookie-banner .buttons {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .cookie-banner button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .cookie-banner button.accept {
-      background: var(--secondary);
-      color: #fff;
-    }
-    .cookie-banner button.accept:hover {
-      background: var(--secondary-hover);
-    }
-    .cookie-banner button.decline {
-      background: transparent;
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-    }
-    .cookie-banner button.decline:hover {
-      background: var(--accent);
-      color: #fff;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @media (max-width: 600px) {
-      .header {
-        padding: 0.75rem;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .header h1 {
-        font-size: 1.125rem;
-      }
-      .theme-button {
-        width: 100%;
-        max-width: none;
-      }
-      .status-bar {
-        font-size: 0.75rem;
-        padding: 0.5rem;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      }
-      .status-bar div {
-        padding: 0.5rem;
-      }
-      .wallet-section, .publish-section, .services-store-section, .services-list {
-        padding: 1rem 0.5rem;
-      }
-      .wallet-section h2, .publish-section h2, .services-store-section h2, .services-list h2 {
-        font-size: 1.125rem;
-      }
-      .balances-grid {
-        grid-template-columns: 1fr;
-      }
-      .carousel-container {
-        padding: 0 0.5rem 1rem;
-      }
-      .carousel-container .service-card {
-        flex: 0 0 95%;
-        max-width: 350px;
-      }
-      .modal-content {
-        padding: 1rem;
-        width: 90%;
-      }
-      .cookie-banner .buttons {
-        flex-direction: column;
-        width: 100%;
-      }
-      .cookie-banner button {
-        width: 100%;
-      }
-      .balance-amount {
-        font-size: 1.25rem;
-      }
-    }
-    @media (min-width: 601px) and (max-width: 1024px) {
-      .header h1 {
-        font-size: 1.25rem;
-      }
-      .wallet-section, .publish-section, .services-store-section, .services-list {
-        padding: 1rem;
-      }
-      .wallet-section h2, .publish-section h2, .services-store-section h2, .services-list h2 {
-        font-size: 1.25rem;
-      }
-    }
+    /* Estilos inspirados na carteira: compactos, gradients, bordas arredondadas, ações rápidas */
+    :root{--background:#f9fafb;--surface:#ffffff;--text-primary:#1f2937;--text-secondary:#6b7280;--primary:#7c3aed;--primary-hover:#6d28d9;--secondary:#10b981;--secondary-hover:#059669;--border:#e5e7eb;--shadow:0 2px 4px rgba(0,0,0,0.1);--accent:#ff6b6b;--nsfw-bg:#e74c3c;--nsfw-hover:#c0392b;--gold:#e67e22;--reais:#10b981;--progress-bg:#ecf0f1;--tutorial-bg:#3498db;--tutorial-hover:#2980b9}
+    [data-theme="dark"]{--background:#1f2937;--surface:#374151;--text-primary:#f3f4f6;--text-secondary:#9ca3af;--border:#4b5563;--shadow:0 2px 4px rgba(0,0,0,0.3);--accent:#ff8787;--nsfw-bg:#c0392b;--nsfw-hover:#a5281a;--gold:#e6a24b;--reais:#059669;--progress-bg:#4b5563;--tutorial-bg:#1e90ff;--tutorial-hover:#1c86ee}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Ubuntu',sans-serif;background:var(--background);color:var(--text-primary);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+    .header{background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--shadow);padding:1rem;text-align:center;width:100%;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center}
+    .header h1{font-family:'Jura',sans-serif;font-size:1.3rem;color:var(--text-primary);text-transform:uppercase;letter-spacing:1px}
+    .theme-button{padding:.5rem 1rem;background:var(--tutorial-bg);border:none;color:#fff;font-size:.875rem;font-weight:600;border-radius:.375rem;cursor:pointer;transition:background .3s ease,transform .2s ease}
+    .theme-button:hover{background:var(--tutorial-hover);transform:scale(1.05)}
+    .status-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));padding:1rem;background:var(--surface);box-shadow:var(--shadow);gap:.5rem;text-align:center;font-size:.875rem;font-weight:600;width:100%;max-width:1200px;border-radius:.375rem;margin:1rem 0}
+    .status-bar div{padding:.75rem;background:var(--background);border-radius:.375rem;transition:background .3s ease,transform .2s ease}
+    .status-bar div:hover{background:var(--secondary);color:#fff;transform:translateY(-3px)}
+    .status-bar span.golds-balance,.status-bar span#golds-total{color:var(--gold);font-size:1.125rem;font-weight:700}
+    .status-bar span.reais-balance{color:var(--reais);font-size:1.125rem;font-weight:700}
+    .wallet-section{width:100%;max-width:1200px;padding:1.2rem;background:var(--surface);border-radius:1rem;box-shadow:var(--shadow);margin:1rem 0}
+    .wallet-section h2{font-family:'Jura',sans-serif;font-size:1.5rem;margin-bottom:.8rem;color:var(--text-primary)}
+    .balances-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-bottom:2rem}
+    .balance-card{background:var(--background);border-radius:1rem;padding:1.6rem;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .balance-card.golds{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;border-left:4px solid var(--gold)}
+    .balance-card.reais{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-left:4px solid var(--reais)}
+    .balance-card h3{font-size:.85rem;color:var(--text-primary);margin-bottom:.5rem;text-transform:uppercase;opacity:.9}
+    .balance-card .balance-amount{font-family:'Jura',sans-serif;font-size:2rem;font-weight:700;margin-bottom:.5rem;color:#fff}
+    .balance-card .user-info{font-size:.875rem;color:var(--text-primary);opacity:.9}
+    .publish-section{width:100%;max-width:1200px;padding:1.2rem;background:var(--surface);border-radius:1rem;box-shadow:var(--shadow);margin:1.5rem 0;animation:fadeIn .5s ease forwards}
+    .publish-section h2{font-family:'Jura',sans-serif;font-size:1.5rem;margin-bottom:.8rem;color:var(--text-primary)}
+    .form-group{margin-bottom:1rem}
+    .form-group label{display:block;font-size:.875rem;font-weight:600;color:var(--text-primary);margin-bottom:.3rem}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:.75rem;border:1px solid var(--border);border-radius:.4rem;font-size:.875rem;background:var(--surface);color:var(--text-primary);transition:border-color .3s ease}
+    .form-group textarea{resize:vertical;min-height:100px}
+    .add-remove-buttons{display:flex;gap:.5rem;margin-top:.5rem}
+    .add-remove-buttons button{padding:.5rem;background:var(--secondary);color:#fff;border:none;border-radius:.375rem;cursor:pointer;transition:background .3s ease,transform .2s ease;font-size:.875rem;font-weight:600}
+    .add-remove-buttons button:hover{background:var(--secondary-hover);transform:scale(1.05)}
+    .add-remove-buttons button.remove{background:var(--accent)}
+    .add-remove-buttons button.remove:hover{background:var(--nsfw-hover)}
+    .publish-button{width:100%;padding:.9rem;background:var(--secondary);color:#fff;border:none;border-radius:.5rem;font-size:.875rem;font-weight:700;cursor:pointer;transition:background .3s ease,transform .2s ease;margin-top:1rem}
+    .publish-button:hover{background:var(--secondary-hover);transform:scale(1.05)}
+    .publish-button:disabled{background:var(--accent);cursor:not-allowed;transform:none}
+    .services-store-section{width:100%;max-width:1200px;padding:1.2rem;background:var(--surface);border-radius:1rem;box-shadow:var(--shadow);margin:1.5rem 0;animation:fadeIn .5s ease forwards}
+    .services-store-section h2{font-family:'Jura',sans-serif;font-size:1.5rem;margin-bottom:.8rem;color:var(--text-primary)}
+    .carousel-container{overflow-x:auto;scroll-snap-type:x mandatory;display:flex;gap:1rem;padding:0 1rem 1rem;scrollbar-width:none;-ms-overflow-style:none;justify-content:center}
+    .carousel-container::-webkit-scrollbar{display:none}
+    .carousel-container .service-card{flex:0 0 90%;max-width:400px;scroll-snap-align:center;position:relative;min-height:400px}
+    .services-list{width:100%;max-width:1200px;padding:1.2rem;background:var(--surface);border-radius:1rem;box-shadow:var(--shadow);margin:1.5rem 0}
+    .service-card{background:var(--background);border-radius:1rem;padding:1.25rem;box-shadow:var(--shadow);transition:transform .3s ease,box-shadow .3s ease;border:1px solid var(--border);position:relative;overflow:hidden}
+    .service-card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,0.15)}
+    .service-card.pending{opacity:.7;border-color:var(--accent)}
+    .service-card.completed{opacity:.7;border-color:var(--secondary)}
+    .service-card h3{font-family:'Jura',sans-serif;font-size:1.25rem;font-weight:600;margin-bottom:.75rem;color:var(--text-primary)}
+    .service-card p{font-size:.875rem;color:var(--text-secondary);margin-bottom:.5rem}
+    .service-card .golds-reward{font-size:1rem;font-weight:600;color:var(--gold);margin:.5rem 0}
+    .service-card .steps-list,.service-card .proofs-list{font-size:.75rem;color:var(--text-secondary);margin-bottom:.5rem}
+    .service-card .steps-list ul,.service-card .proofs-list ul{list-style-type:disc;padding-left:1.25rem}
+    .service-card .action-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-top:1rem}
+    .service-card .action-buttons button{padding:.9rem;border:none;border-radius:.5rem;font-size:.875rem;font-weight:700;cursor:pointer;transition:background .3s ease,transform .2s ease;flex:1}
+    .service-card .edit-button{background:var(--primary);color:#fff}
+    .service-card .edit-button:hover{background:var(--primary-hover);transform:scale(1.05)}
+    .service-card .delete-button{background:var(--accent);color:#fff}
+    .service-card .delete-button:hover{background:var(--nsfw-hover);transform:scale(1.05)}
+    .service-card .claim-button{position:absolute;bottom:1rem;left:1rem;padding:.75rem;background:var(--secondary);color:#fff;border:none;border-radius:.5rem;font-size:.875rem;font-weight:700;cursor:pointer;transition:background .3s ease,transform .2s ease}
+    .service-card .claim-button:hover{background:var(--secondary-hover);transform:scale(1.05)}
+    .service-card .claim-button:disabled{background:var(--accent);cursor:not-allowed;transform:none}
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);justify-content:center;align-items:center;z-index:1000}
+    .modal-content{background:var(--surface);padding:1.1rem;border-radius:.6rem;text-align:center;animation:slideIn .5s ease forwards;max-width:92%;width:500px;box-shadow:var(--shadow)}
+    .modal-content h2{font-family:'Jura',sans-serif;color:var(--text-primary);margin-bottom:.5rem;font-size:1.25rem}
+    .modal-content p{color:var(--text-secondary);margin-bottom:1rem;font-size:.875rem}
+    .modal-content input,.modal-content textarea,.modal-content select{width:100%;padding:.75rem;margin:.5rem 0;border:1px solid var(--border);border-radius:.4rem;font-size:.875rem;background:var(--surface);color:var(--text-primary)}
+    .modal-content button{padding:.5rem 1rem;background:var(--secondary);border:none;color:#fff;border-radius:.375rem;cursor:pointer;font-weight:600;margin:.25rem;font-size:.875rem;transition:background .3s ease,transform .2s ease}
+    .modal-content button.cancel{background:var(--accent)}
+    .modal-content button.cancel:hover{background:var(--nsfw-hover);transform:scale(1.05)}
+    .modal-content button:hover{background:var(--secondary-hover);transform:scale(1.05)}
+    #successModal .modal-content{border-left:4px solid var(--secondary)}
+    #errorModal .modal-content{border-left:4px solid var(--accent)}
+    .cookie-banner{position:fixed;bottom:0;left:0;width:100%;background:var(--surface);color:var(--text-primary);padding:1rem;box-shadow:var(--shadow);border-top:1px solid var(--border);z-index:1000;display:flex;flex-direction:column;gap:.5rem;align-items:center;text-align:center}
+    [data-theme="dark"] .cookie-banner{background:var(--surface);border-top:1px solid var(--border)}
+    .cookie-banner .content{font-size:.875rem}
+    .cookie-banner .content a{color:var(--primary);text-decoration:underline}
+    .cookie-banner .content a:hover{color:var(--primary-hover)}
+    .cookie-banner .buttons{display:flex;gap:.5rem}
+    .cookie-banner button{padding:.5rem 1rem;border:none;border-radius:.375rem;font-weight:600;cursor:pointer;transition:background .3s ease;font-size:.875rem}
+    .cookie-banner button.accept{background:var(--secondary);color:#fff}
+    .cookie-banner button.accept:hover{background:var(--secondary-hover)}
+    .cookie-banner button.decline{background:transparent;color:var(--text-primary);border:1px solid var(--border)}
+    .cookie-banner button.decline:hover{background:var(--accent);color:#fff}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+    @media (max-width:600px){.header{padding:.75rem;flex-direction:column;gap:.5rem}.header h1{font-size:1.25rem}.theme-button{width:100%;max-width:none}.status-bar{font-size:.75rem;padding:.5rem;grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}.status-bar div{padding:.5rem}.wallet-section,.publish-section,.services-store-section,.services-list{padding:1rem .5rem}.wallet-section h2,.publish-section h2,.services-store-section h2,.services-list h2{font-size:1.25rem}.balances-grid{grid-template-columns:1fr}.carousel-container{padding:0 .5rem 1rem}.carousel-container .service-card{flex:0 0 95%;max-width:350px}.modal-content{padding:1rem;width:90%}.cookie-banner .buttons{flex-direction:column;width:100%}.cookie-banner button{width:100%}.balance-amount{font-size:1.5rem}}
+    @media (min-width:601px) and (max-width:1024px){.header h1{font-size:1.5rem}.wallet-section,.publish-section,.services-store-section,.services-list{padding:1rem}.wallet-section h2,.publish-section h2,.services-store-section h2,.services-list h2{font-size:1.4rem}}
   </style>
 </head>
 <body data-theme="light">
   <header class="header" role="banner">
-    <h1><i class="fas fa-briefcase"></i> Publicar Serviço - YshippCommerce</h1>
+    <h1>Publicar Serviço - YshippCommerce</h1>
     <div>
       <button class="theme-button" id="theme-toggle">Alternar Tema</button>
     </div>
@@ -1070,6 +560,7 @@
     async function addServiceTaxToCard(serviceType, tax) {
       const cardId = getCardIdByServiceType(serviceType);
       if (!cardId) return;
+
       const cardRef = db.collection('serviceCards').doc(cardId);
       await db.runTransaction(async (transaction) => {
         const cardDoc = await transaction.get(cardRef);
@@ -1252,27 +743,34 @@
         type: proofInput.querySelector('.proof-type').value.trim(),
         description: proofInput.querySelector('textarea').value.trim()
       })).filter(proof => proof.description);
+
       if (!title || !zone || !serviceType || !subcategory || freelancers <= 0 || rewardGolds < rewardGoldsMin || price <= 0 || steps.length === 0 || proofs.length === 0) {
         showModal('errorModal', `⚠️ Por favor, preencha todos os campos corretamente, incluindo pelo menos um passo e uma prova. A recompensa por tarefa deve ser no mínimo ${rewardGoldsMin} Golds.`);
         return;
       }
+
       const user = auth.currentUser;
       if (!user) {
         showModal('errorModal', '⚠️ É necessário estar logado para publicar um serviço.');
         window.location.href = 'login.html';
         return;
       }
+
       const publicationFee = 20;
       const serviceTax = 10;
+
       try {
         await ensureWalletExists(userId, user.displayName || 'Usuário');
+
         await db.runTransaction(async (transaction) => {
           const walletRef = db.collection('wallets').doc(userId);
           const walletDoc = await transaction.get(walletRef);
           const currentBalance = walletDoc.exists ? walletDoc.data().goldsBalance || 0 : 0;
+
           if (currentBalance < price + publicationFee + serviceTax) {
             throw new Error('Saldo insuficiente para a taxa de publicação, custo do serviço e taxa específica.');
           }
+
           const newService = {
             ownerId: user.uid,
             ownerName: user.displayName || 'Usuário',
@@ -1288,8 +786,10 @@
             status: 'ativo',
             createdAt: new Date()
           };
+
           const serviceRef = db.collection('services').doc();
           transaction.set(serviceRef, newService);
+
           // Atualiza a carteira do usuário
           transaction.update(walletRef, {
             goldsBalance: currentBalance - (price + publicationFee + serviceTax),
@@ -1302,9 +802,11 @@
             }),
             ultimaPublicacao: firebase.firestore.FieldValue.serverTimestamp()
           });
+
           // Adiciona os 10 Golds ao card correspondente
           await addServiceTaxToCard(serviceType, serviceTax);
         });
+
         showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
         form.reset();
         calculateCost();
