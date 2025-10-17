@@ -29,7 +29,6 @@
       --tutorial-bg: #3498db;
       --tutorial-hover: #2980b9;
     }
-
     [data-theme="dark"] {
       --background: #1f2937;
       --surface: #374151;
@@ -45,7 +44,6 @@
       --tutorial-bg: #1e90ff;
       --tutorial-hover: #1c86ee;
     }
-
     * {
       margin: 0;
       padding: 0;
@@ -53,7 +51,6 @@
       user-select: none;
       -webkit-user-select: none;
     }
-
     body {
       font-family: 'Ubuntu', sans-serif;
       background: var(--background);
@@ -63,11 +60,9 @@
       padding-top: 72px;
       overflow-x: hidden;
     }
-
     .header-menu {
       font-family: 'PT Sans', sans-serif;
     }
-
     .header {
       position: fixed;
       top: 0;
@@ -83,7 +78,6 @@
       z-index: 1001;
       box-shadow: var(--shadow);
     }
-
     .header h1 {
       font-family: 'Jura', sans-serif;
       font-size: 1.3rem;
@@ -92,17 +86,14 @@
       align-items: center;
       gap: 0.5rem;
     }
-
     .header h1 i {
       color: var(--primary);
     }
-
     .top-bar__section {
       display: flex;
       align-items: center;
       gap: 16px;
     }
-
     .top-bar__icon {
       position: relative;
       color: var(--text-primary);
@@ -114,18 +105,15 @@
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
       overflow: hidden;
     }
-
     .top-bar__icon i {
       position: relative;
       font-size: 1.25rem;
     }
-
     .top-bar__icon:hover {
       transform: scale(1.1);
       background: var(--tutorial-bg);
       color: white;
     }
-
     .menu {
       position: fixed;
       top: 72px;
@@ -140,20 +128,16 @@
       overflow-y: auto;
       box-shadow: var(--shadow);
     }
-
     .menu.open {
       transform: translateX(0);
     }
-
     .menu__list {
       list-style: none;
       padding: 16px 0;
     }
-
     .menu__item {
       margin: 8px 16px;
     }
-
     .menu__link {
       color: var(--text-primary);
       text-decoration: none;
@@ -166,24 +150,20 @@
       overflow: hidden;
       background: transparent;
     }
-
     .menu__link:hover {
       background: var(--tutorial-bg);
       color: white;
       transform: translateX(5px);
     }
-
     .menu__link i {
       margin-right: 12px;
       font-size: 1.25rem;
       color: var(--text-secondary);
       transition: color 0.3s ease;
     }
-
     .menu__link:hover i {
       color: white;
     }
-
     .submenu {
       margin-top: 4px;
       padding-left: 48px;
@@ -191,11 +171,9 @@
       overflow: hidden;
       transition: max-height 0.3s ease;
     }
-
     .submenu.open {
       max-height: 300px;
     }
-
     .submenu__link {
       color: var(--text-secondary);
       padding: 8px 16px;
@@ -205,12 +183,10 @@
       transition: background 0.3s ease;
       border-radius: 8px;
     }
-
     .submenu__link:hover {
       background: var(--primary);
       color: white;
     }
-
     .premium-button {
       background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
       color: white;
@@ -224,11 +200,9 @@
       transition: transform 0.2s ease;
       box-shadow: var(--shadow);
     }
-
     .premium-button:hover {
       transform: scale(1.05);
     }
-
     .notification {
       position: fixed;
       bottom: 20px;
@@ -243,55 +217,10 @@
       transition: opacity 0.3s ease, transform 0.3s ease;
       z-index: 2000;
     }
-
     .notification.show {
       opacity: 1;
       transform: translateY(0);
     }
-
-    @media (max-width: 768px) {
-      .menu {
-        width: min(80vw, 280px);
-      }
-
-      .header {
-        padding: 0 12px;
-      }
-
-      .top-bar__icon {
-        padding: 8px;
-      }
-
-      .top-bar__icon i {
-        font-size: 1.2rem;
-      }
-
-      .menu__link {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-      }
-
-      .menu__link i {
-        font-size: 1.1rem;
-      }
-
-      .submenu__link {
-        font-size: 0.85rem;
-        padding: 6px 12px;
-      }
-
-      .premium-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-      }
-
-      .notification {
-        right: 10px;
-        bottom: 10px;
-        padding: 10px 20px;
-      }
-    }
-
     .dashboard-section {
       width: 100%;
       max-width: 1200px;
@@ -302,7 +231,6 @@
       margin: 1rem 0;
       border: 1px solid var(--border);
     }
-
     .dashboard-section h2 {
       font-family: 'Jura', sans-serif;
       font-size: 1.3rem;
@@ -313,150 +241,15 @@
       align-items: center;
       gap: 0.5rem;
     }
-
     .dashboard-section h2 i {
       color: var(--secondary);
     }
-
-    .profile-section {
-      background: linear-gradient(135deg, var(--background), var(--surface));
-      border-radius: 0rem;
-      padding: 1.6rem;
-      margin-bottom: 1.2rem;
-      border: 1px solid var(--border);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .profile-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
-
-    .profile-section h3 {
-      font-family: 'Jura', sans-serif;
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .profile-section p {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.25rem;
-    }
-
-    .profile-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 0.8rem;
-      margin-top: 1rem;
-    }
-
-    .stat-item {
-      background: var(--background);
-      padding: 1rem;
-      border-radius: 0rem;
-      border: 1px solid var(--border);
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--gold);
-    }
-
-    .stat-item:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .stat-item i {
-      font-size: 2rem;
-      color: var(--secondary);
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-
-    .stat-item h4 {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-item .stat-value {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      font-family: 'Jura', sans-serif;
-    }
-
-    .published-services-list,
-    .tasks-accepted-list {
-      margin-top: 1rem;
-      text-align: left;
-    }
-
-    .published-services-list h4,
-    .tasks-accepted-list h4 {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .published-services-list h4 i,
-    .tasks-accepted-list h4 i {
-      color: var(--primary);
-    }
-
-    .service-item,
-    .task-item {
-      background: var(--background);
-      padding: 0.8rem;
-      border-radius: 0rem;
-      margin-bottom: 0.6rem;
-      border: 1px solid var(--border);
-      font-size: 0.75rem;
-      transition: background 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .service-item:hover,
-    .task-item:hover {
-      background: var(--tutorial-bg);
-      color: white;
-    }
-
-    .service-item i,
-    .task-item i {
-      color: var(--secondary);
-    }
-
     .navigation-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.2rem;
       margin-top: 1rem;
     }
-
     .nav-card {
       background: linear-gradient(135deg, var(--background), var(--surface));
       border-radius: 0rem;
@@ -469,7 +262,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .nav-card::before {
       content: '';
       position: absolute;
@@ -479,19 +271,16 @@
       height: 4px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
-
     .nav-card:hover {
       transform: translateY(-5px);
       box-shadow: var(--shadow-lg);
     }
-
     .nav-card i {
       font-size: 3rem;
       color: var(--tutorial-bg);
       margin-bottom: 1rem;
       display: block;
     }
-
     .nav-card h3 {
       font-family: 'Jura', sans-serif;
       font-size: 1.125rem;
@@ -499,13 +288,11 @@
       margin-bottom: 0.75rem;
       color: var(--text-primary);
     }
-
     .nav-card p {
       font-size: 0.875rem;
       color: var(--text-secondary);
       margin-bottom: 1rem;
     }
-
     .nav-card .nav-button {
       width: 100%;
       padding: 0.9rem;
@@ -519,74 +306,9 @@
       transition: transform 0.2s ease;
       box-shadow: var(--shadow);
     }
-
     .nav-card .nav-button:hover {
       transform: scale(1.05);
     }
-
-    .members-profiles-section {
-      margin-top: 2rem;
-    }
-
-    .members-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .member-card {
-      background: linear-gradient(135deg, var(--background), var(--surface));
-      border-radius: 0rem;
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .member-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--accent);
-    }
-
-    .member-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .member-card .avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 0%;
-      background: var(--tutorial-bg);
-      margin: 0 auto 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.5rem;
-    }
-
-    .member-card h4 {
-      font-family: 'Jura', sans-serif;
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .member-card p {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
     .cookie-banner {
       position: fixed;
       bottom: 0;
@@ -604,34 +326,27 @@
       align-items: center;
       text-align: center;
     }
-
     .cookie-banner.active {
       display: flex;
     }
-
     [data-theme="dark"] .cookie-banner {
       background: var(--surface);
       border-top: 1px solid var(--border);
     }
-
     .cookie-banner .content {
       font-size: 0.875rem;
     }
-
     .cookie-banner .content a {
       color: var(--primary);
       text-decoration: underline;
     }
-
     .cookie-banner .content a:hover {
       color: var(--primary-hover);
     }
-
     .cookie-banner .buttons {
       display: flex;
       gap: 0.5rem;
     }
-
     .cookie-banner button {
       padding: 0.5rem 1rem;
       border: none;
@@ -641,27 +356,22 @@
       transition: background 0.3s ease;
       font-size: 0.875rem;
     }
-
     .cookie-banner button.accept {
       background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
       color: white;
     }
-
     .cookie-banner button.accept:hover {
       transform: scale(1.05);
     }
-
     .cookie-banner button.decline {
       background: transparent;
       color: var(--text-primary);
       border: 1px solid var(--border);
     }
-
     .cookie-banner button.decline:hover {
       background: var(--accent);
       color: white;
     }
-
     .wallet-card {
       background: linear-gradient(135deg, #f39c12, #e67e22);
       border-radius: 0rem;
@@ -676,7 +386,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .wallet-card::before {
       content: '';
       position: absolute;
@@ -686,32 +395,27 @@
       height: 4px;
       background: linear-gradient(135deg, #f39c12, #e67e22);
     }
-
     .wallet-card:hover {
       transform: translateY(-5px);
       box-shadow: var(--shadow-lg);
     }
-
     .wallet-card i {
       font-size: 1rem;
       margin-bottom: 0.1rem;
       display: block;
       opacity: 0.9;
     }
-
     .wallet-card h3 {
       font-family: 'Jura', sans-serif;
       font-size: 1.125rem;
       font-weight: 700;
       margin-bottom: 0.75rem;
     }
-
     .wallet-card p {
       font-size: 0.875rem;
       opacity: 0.85;
       margin-bottom: 1rem;
     }
-
     .wallet-card .nav-button {
       width: 100%;
       padding: 0.9rem;
@@ -725,101 +429,207 @@
       transition: background 0.3s ease, transform 0.2s ease;
       backdrop-filter: blur(10px);
     }
-
     .wallet-card .nav-button:hover {
       background: rgba(255, 255, 255, 0.3);
       transform: scale(1.05);
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .fade-in {
       animation: fadeIn 0.6s ease-out forwards;
     }
-
+    .company-card {
+      position: relative;
+    }
+    .company-stats {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: var(--background);
+      border-radius: 0rem;
+      border: 1px solid var(--border);
+    }
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .stat-value {
+      font-size: 1rem;
+      color: var(--primary);
+      font-weight: 700;
+      font-family: 'Jura', sans-serif;
+    }
+    .nivel-progress {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: var(--progress-bg);
+      border-radius: 0rem;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-hover));
+      transition: width 0.5s ease;
+    }
+    .progress-text {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .company-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .action-button {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+    .action-button:hover {
+      background: var(--background);
+      transform: scale(1.05);
+    }
+    .action-button i {
+      font-size: 1rem;
+    }
+    @media (max-width: 768px) {
+      .menu {
+        width: min(80vw, 280px);
+      }
+      .header {
+        padding: 0 12px;
+      }
+      .top-bar__icon {
+        padding: 8px;
+      }
+      .top-bar__icon i {
+        font-size: 1.2rem;
+      }
+      .menu__link {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+      .menu__link i {
+        font-size: 1.1rem;
+      }
+      .submenu__link {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+      }
+      .premium-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+      .notification {
+        right: 10px;
+        bottom: 10px;
+        padding: 10px 20px;
+      }
+    }
     @media (max-width: 600px) {
       .header {
         padding: 0.75rem;
         flex-direction: row;
         gap: 0.5rem;
       }
-
       .header h1 {
         font-size: 1.25rem;
       }
-
       .dashboard-section {
         padding: 1rem 0.5rem;
       }
-
       .dashboard-section h2 {
         font-size: 1.25rem;
       }
-
       .navigation-grid {
         grid-template-columns: 1fr;
       }
-
       .nav-card {
         padding: 1rem;
       }
-
       .nav-card h3 {
         font-size: 1rem;
       }
-
       .nav-card i {
         font-size: 2.5rem;
       }
-
-      .members-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .profile-stats {
-        grid-template-columns: 1fr;
-      }
-
       .cookie-banner .buttons {
         flex-direction: column;
         width: 100%;
       }
-
       .cookie-banner button {
         width: 100%;
       }
-
       .wallet-card {
         padding: 1rem;
         max-width: 100%;
       }
-
       .wallet-card i {
         font-size: 2.5rem;
       }
+      .company-stats {
+        padding: 0.75rem;
+      }
+      .stat-item {
+        padding: 0.4rem 0;
+      }
+      .stat-label {
+        font-size: 0.8rem;
+      }
+      .stat-value {
+        font-size: 0.9rem;
+      }
+      .action-button {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+      }
+      .action-button i {
+        font-size: 0.9rem;
+      }
     }
-
     @media (min-width: 601px) and (max-width: 1024px) {
       .header h1 {
         font-size: 1.5rem;
       }
-
       .dashboard-section {
         padding: 1rem;
       }
-
       .dashboard-section h2 {
         font-size: 1.4rem;
       }
-
       .wallet-card {
         max-width: 300px;
       }
     }
-
     footer#userInfoFooter {
       position: fixed;
       bottom: 0;
@@ -840,7 +650,7 @@
   <div class="header-menu">
     <nav aria-label="Navegação principal" class="header" role="navigation">
       <div class="top-bar__section">
-        <h1><i class="fas fa-rocket"></i>Painel inicial        YshippCommerce</h1>
+        <h1><i class="fas fa-rocket"></i>Painel inicial YshippCommerce</h1>
       </div>
       <div class="top-bar__section">
         <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
@@ -894,7 +704,6 @@
   </div>
   <div class="notification" id="notification"></div>
   <div id="overlay" class="overlay"></div>
-
   <main style="width:100%; max-width:1200px; padding:0 1rem 140px; margin:0 auto;">
     <div id="wallet-card" class="wallet-card fade-in">
       <i class="fas fa-wallet"></i>
@@ -902,96 +711,378 @@
       <p>Gerencie seus Golds, transações e histórico de saldo.</p>
       <button class="nav-button" onclick="navigateTo('wallet')">Acessar Carteira</button>
     </div>
-
     <section id="dashboard-section" class="dashboard-section fade-in">
-      <h2><i class="fas fa-user"></i>Perfil de Membro</h2>
-      <div class="profile-section" id="profileSection">
-        <h3 id="profileName">Bem-vindo, Usuário!</h3>
-        <p>ID de Membro: <span id="userIdDisplay"></span></p>
-        <p>Data de Cadastro: <span id="registrationDate"></span></p>
-        <p>Nível: <span id="userLevel">Iniciante</span></p>
-
-        <div class="profile-stats">
-          <div class="stat-item">
-            <i class="fas fa-briefcase"></i>
-            <h4>Serviços Publicados</h4>
-            <div class="stat-value" id="servicesPublishedCount">0</div>
-          </div>
-          <div class="stat-item">
-            <i class="fas fa-check-circle"></i>
-            <h4>Tarefas Aceitas</h4>
-            <div class="stat-value" id="tasksAcceptedCount">0</div>
-          </div>
-          <div class="stat-item">
-            <i class="fas fa-coins"></i>
-            <h4>Golds Ganhos</h4>
-            <div class="stat-value" id="goldsEarned">0</div>
-          </div>
-          <div class="stat-item">
-            <i class="fas fa-ticket-alt"></i>
-            <h4>Bilhetes Ganhos</h4>
-            <div class="stat-value" id="ticketsEarned">0</div>
-          </div>
-        </div>
-
-        <div class="published-services-list" id="publishedServicesList">
-          <h4><i class="fas fa-list"></i>Serviços Publicados Recentemente</h4>
-          <div id="servicesListContainer">
-            <div class="service-item">
-              <i class="fas fa-briefcase"></i>
-              Carregando serviços...
-            </div>
-          </div>
-        </div>
-
-        <div class="tasks-accepted-list" id="tasksAcceptedList">
-          <h4><i class="fas fa-tasks"></i>Tarefas Realizadas Recentemente</h4>
-          <div id="tasksListContainer">
-            <div class="task-item">
-              <i class="fas fa-check"></i>
-              Carregando tarefas...
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="navigationSection">
-        <h2><i class="fas fa-compass"></i>Painel de Navegação</h2>
-        <p style="margin-bottom: 1rem; color: var(--text-secondary);">Acesse rapidamente as principais seções da YshippCommerce. Todas as ações serão vinculadas ao seu ID de usuário.</p>
+      <div id="empresasSection">
+        <h2><i class="fas fa-building"></i>Empresas Parceiras</h2>
+        <p style="margin-bottom: 1rem; color: var(--text-secondary);">Conheça nossas empresas parceiras e acompanhe seu progresso na plataforma.</p>
         <div class="navigation-grid">
-          <div class="nav-card fade-in">
-            <i class="fas fa-magic"></i>
-            <h3>Gerador de Bilhetes e Golds</h3>
-            <p>Crie bilhetes e ganhe Golds participando de sorteios.</p>
-            <button class="nav-button" onclick="navigateTo('generator')">Acessar</button>
+          <!-- Card Facebook -->
+          <div class="nav-card company-card fade-in">
+            <i class="fab fa-facebook" style="color: #1877f2;"></i>
+            <h3>Micro Influenciador do Facebook</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="facebook-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="facebook-nivel">Iniciante de Campanha</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Seguidores</span>
+                <span class="stat-value" id="facebook-seguidores">0</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="facebook-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="facebook-progress-text">0 / 250.000</span>
+            </div>
           </div>
-        </div>
-
-        <div class="members-profiles-section">
-          <h2><i class="fas fa-users"></i>Perfis de Membros Destacados</h2>
-          <p style="margin-bottom: 1rem; color: var(--text-secondary);">Veja outros membros ativos na comunidade.</p>
-          <div class="members-grid" id="membersGrid">
-            <div class="member-card fade-in">
-              <div class="avatar"><i class="fas fa-user"></i></div>
-              <h4>João Silva</h4>
-              <p>Nível Pro</p>
+          <!-- Card Instagram -->
+          <div class="nav-card company-card fade-in">
+            <i class="fab fa-instagram" style="color: #e4405f;"></i>
+            <h3>Micro Influenciador do Instagram</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
             </div>
-            <div class="member-card fade-in">
-              <div class="avatar"><i class="fas fa-user"></i></div>
-              <h4>Maria Santos</h4>
-              <p>Nível Elite</p>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="instagram-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="instagram-nivel">Estagiário de Conteúdo</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Seguidores</span>
+                <span class="stat-value" id="instagram-seguidores">0</span>
+              </div>
             </div>
-            <div class="member-card fade-in">
-              <div class="avatar"><i class="fas fa-user"></i></div>
-              <h4>Pedro Oliveira</h4>
-              <p>Nível Iniciante</p>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="instagram-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="instagram-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card Aplicativo Móvel -->
+          <div class="nav-card company-card fade-in">
+            <i class="fas fa-mobile-alt" style="color: #4CAF50;"></i>
+            <h3>Aplicativo Móvel</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Total de Instalações</span>
+                <span class="stat-value" id="mobile-instalacoes">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="mobile-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="mobile-nivel">Programador Iniciante</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="mobile-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="mobile-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card Telegram -->
+          <div class="nav-card company-card fade-in">
+            <i class="fab fa-telegram" style="color: #0088cc;"></i>
+            <h3>Telegram</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Canais Ativos</span>
+                <span class="stat-value" id="telegram-canais">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="telegram-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="telegram-nivel">Criador de Grupo</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="telegram-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="telegram-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card TikTok -->
+          <div class="nav-card company-card fade-in">
+            <i class="fab fa-tiktok" style="color: #000000;"></i>
+            <h3>TikTok</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Curtidas Recebidas</span>
+                <span class="stat-value" id="tiktok-curtidas">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="tiktok-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="tiktok-nivel">Criador Iniciante</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="tiktok-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="tiktok-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card Marketing de Vídeo -->
+          <div class="nav-card company-card fade-in">
+            <i class="fas fa-video" style="color: #FF0000;"></i>
+            <h3>Marketing de Vídeo</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Campanhas Publicadas</span>
+                <span class="stat-value" id="video-campanhas">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="video-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="video-nivel">Editor Júnior</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="video-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="video-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card Discord -->
+          <div class="nav-card company-card fade-in">
+            <i class="fab fa-discord" style="color: #7289DA;"></i>
+            <h3>Discord</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Servidores Ativos</span>
+                <span class="stat-value" id="discord-servidores">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="discord-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="discord-nivel">Moderador Iniciante</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="discord-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="discord-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card Comente em outros Blogs -->
+          <div class="nav-card company-card fade-in">
+            <i class="fas fa-blog" style="color: #FF9800;"></i>
+            <h3>Comente em outros Blogs</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Comentários Publicados</span>
+                <span class="stat-value" id="blog-comentarios">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="blog-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="blog-nivel">Leitor Participativo</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="blog-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="blog-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card Reddit -->
+          <div class="nav-card company-card fade-in">
+            <i class="fab fa-reddit" style="color: #FF4500;"></i>
+            <h3>Reddit</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Upvotes Recebidos</span>
+                <span class="stat-value" id="reddit-upvotes">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="reddit-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="reddit-nivel">Explorador de Tópicos</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="reddit-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="reddit-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card SEO, Promover Conteúdo, Pesquisar, Engajar -->
+          <div class="nav-card company-card fade-in">
+            <i class="fas fa-search" style="color: #4285F4;"></i>
+            <h3>SEO, Promover Conteúdo</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Palavras-chave Otimizadas</span>
+                <span class="stat-value" id="seo-palavras">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="seo-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="seo-nivel">Analista de Busca</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="seo-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="seo-progress-text">0 / 250.000</span>
+            </div>
+          </div>
+          <!-- Card Inscrever-se -->
+          <div class="nav-card company-card fade-in">
+            <i class="fas fa-rss" style="color: #FF9800;"></i>
+            <h3>Inscrever-se</h3>
+            <div class="company-actions">
+              <button class="action-button">
+                <i class="fas fa-user-plus"></i> Seguir
+              </button>
+              <button class="action-button">
+                <i class="fas fa-heart"></i> Curtir
+              </button>
+            </div>
+            <div class="company-stats">
+              <div class="stat-item">
+                <span class="stat-label">Inscrições Ativas</span>
+                <span class="stat-value" id="inscricoes-ativas">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Golds Acumulados</span>
+                <span class="stat-value" id="inscricoes-golds">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Nível Global</span>
+                <span class="stat-value" id="inscricoes-nivel">Membro Iniciante</span>
+              </div>
+            </div>
+            <div class="nivel-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="inscricoes-progress" style="width: 0%"></div>
+              </div>
+              <span class="progress-text" id="inscricoes-progress-text">0 / 250.000</span>
             </div>
           </div>
         </div>
       </div>
     </section>
   </main>
-
   <div id="cookieBanner" class="cookie-banner">
     <div class="content">
       <p>Este site utiliza cookies para garantir o funcionamento do site, medir o tráfego e otimizar o conteúdo da página. Ao utilizar nosso site, você concorda com o uso de cookies para esses fins. <a href="#" target="_blank">Você pode ler mais sobre cookies, incluindo como desativá-los, em nossa política de privacidade e cookies.</a></p>
@@ -1001,15 +1092,12 @@
       <button id="cookie-decline" class="decline">Recusar</button>
     </div>
   </div>
-
   <footer id="userInfoFooter">
     Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
   </footer>
-
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
-
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Inicializa o Firebase
@@ -1021,37 +1109,26 @@
         messagingSenderId: "680576769517",
         appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
       };
-
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
       const auth = firebase.auth();
-
       auth.onAuthStateChanged(user => {
         if (user) {
           carregarDadosUsuario(user);
-          carregarEstatisticas(user.uid, db);
-          carregarServicosPublicados(user.uid, db);
-          carregarTarefasAceitas(user.uid, db);
         } else {
           document.getElementById("footerUserName").textContent = "Nenhum usuário ativo";
           document.getElementById("footerUserId").textContent = "---";
           window.location.href = "cadastro.html";
         }
       });
-
       function carregarDadosUsuario(user) {
         const userId = user.uid;
         db.collection("wallets").where("userId", "==", userId).limit(1).get()
           .then(snapshot => {
             if (!snapshot.empty) {
               const data = snapshot.docs[0].data();
-              document.getElementById("profileName").textContent = `Bem-vindo, ${data.name || "Usuário"}!`;
-              document.getElementById("userIdDisplay").textContent = userId;
               document.getElementById("footerUserName").textContent = data.name || "Usuário";
               document.getElementById("footerUserId").textContent = userId;
-              document.getElementById("registrationDate").textContent =
-                data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : "N/D";
-              document.getElementById("userLevel").textContent = data.nivel || "Iniciante";
             } else {
               console.warn("⚠️ Documento do usuário não encontrado no Firestore.");
               document.getElementById("footerUserName").textContent = "Usuário";
@@ -1063,88 +1140,44 @@
             document.getElementById("footerUserName").textContent = "Usuário";
             document.getElementById("footerUserId").textContent = userId;
           });
-      }
 
-      function carregarEstatisticas(userId, db) {
-        // Supondo coleções 'services', 'tasks', 'transactions' para estatísticas
-        Promise.all([
-          db.collection("services").where("userId", "==", userId).get(),
-          db.collection("tasks").where("userId", "==", userId).where("status", "==", "accepted").get(),
-          db.collection("transactions").where("userId", "==", userId).where("type", "==", "earn_gold").get(),
-          db.collection("tickets").where("userId", "==", userId).get()
-        ]).then(([servicesSnap, tasksSnap, goldsSnap, ticketsSnap]) => {
-          document.getElementById("servicesPublishedCount").textContent = servicesSnap.size;
-          document.getElementById("tasksAcceptedCount").textContent = tasksSnap.size;
-          const totalGolds = goldsSnap.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
-          document.getElementById("goldsEarned").textContent = totalGolds.toLocaleString();
-          document.getElementById("ticketsEarned").textContent = ticketsSnap.size;
-        }).catch(error => {
-          console.error("❌ Erro ao carregar estatísticas:", error);
-          showNotification("Erro ao carregar estatísticas. Tente novamente.");
+        // Carrega os dados dos cards
+        carregarDadosCards();
+      }
+      function carregarDadosCards() {
+        const cardIds = [
+          "facebook", "instagram", "mobile", "telegram",
+          "tiktok", "video", "discord", "blog", "reddit", "seo", "inscricoes"
+        ];
+
+        cardIds.forEach(cardId => {
+          db.collection("serviceCards").doc(cardId).onSnapshot((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              const goldsElement = document.getElementById(`${cardId}-golds`);
+              if (goldsElement) {
+                goldsElement.textContent = data.golds || 0;
+              }
+            }
+          });
         });
       }
-
-      function carregarServicosPublicados(userId, db) {
-        db.collection("services").where("userId", "==", userId).orderBy("createdAt", "desc").limit(5).get()
-          .then(snapshot => {
-            const container = document.getElementById("servicesListContainer");
-            if (snapshot.empty) {
-              container.innerHTML = '<div class="service-item"><i class="fas fa-briefcase"></i>Nenhum serviço publicado ainda.</div>';
-              return;
-            }
-            container.innerHTML = snapshot.docs.map(doc => {
-              const data = doc.data();
-              return `<div class="service-item">
-                <i class="fas fa-briefcase"></i>
-                <span>${data.title || "Serviço sem título"} - ${data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : "N/D"}</span>
-              </div>`;
-            }).join('');
-          }).catch(error => {
-            console.error("❌ Erro ao carregar serviços:", error);
-            document.getElementById("servicesListContainer").innerHTML = '<div class="service-item"><i class="fas fa-exclamation-triangle"></i>Erro ao carregar serviços.</div>';
-          });
-      }
-
-      function carregarTarefasAceitas(userId, db) {
-        db.collection("tasks").where("userId", "==", userId).where("status", "==", "completed").orderBy("completedAt", "desc").limit(5).get()
-          .then(snapshot => {
-            const container = document.getElementById("tasksListContainer");
-            if (snapshot.empty) {
-              container.innerHTML = '<div class="task-item"><i class="fas fa-check"></i>Nenhuma tarefa realizada ainda.</div>';
-              return;
-            }
-            container.innerHTML = snapshot.docs.map(doc => {
-              const data = doc.data();
-              return `<div class="task-item">
-                <i class="fas fa-check"></i>
-                <span>${data.title || "Tarefa sem título"} - ${data.completedAt?.seconds ? new Date(data.completedAt.seconds * 1000).toLocaleDateString('pt-BR') : "N/D"}</span>
-              </div>`;
-            }).join('');
-          }).catch(error => {
-            console.error("❌ Erro ao carregar tarefas:", error);
-            document.getElementById("tasksListContainer").innerHTML = '<div class="task-item"><i class="fas fa-exclamation-triangle"></i>Erro ao carregar tarefas.</div>';
-          });
-      }
-
       const menuToggles = {
         'menu-icon': 'main-menu'
       };
       const themeToggle = document.getElementById('theme-toggle');
       const body = document.body;
-
       // Theme toggle functionality from original index.html
       themeToggle.addEventListener('click', () => {
         const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         body.setAttribute('data-theme', currentTheme);
         localStorage.setItem('theme', currentTheme);
       });
-
       // Apply saved theme on page load
       window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         body.setAttribute('data-theme', savedTheme);
       });
-
       Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
         const toggle = document.getElementById(toggleId);
         const menu = document.getElementById(menuId);
@@ -1158,7 +1191,6 @@
           toggle.classList.toggle('active');
         });
       });
-
       document.addEventListener('click', e => {
         if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
           Object.values(menuToggles).forEach(menuId => {
@@ -1170,7 +1202,6 @@
           });
         }
       });
-
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
           Object.values(menuToggles).forEach(menuId => {
@@ -1182,11 +1213,9 @@
           });
         }
       });
-
       document.getElementById("logout-button").addEventListener("click", () => {
         auth.signOut().then(() => window.location.href = "cadastro.html");
       });
-
       function showNotification(message) {
         const notification = document.getElementById('notification');
         notification.textContent = message;
@@ -1196,38 +1225,6 @@
         }, 3000);
       }
     });
-
-    var gk_isXlsx = false;
-    var gk_xlsxFileLookup = {};
-    var gk_fileData = {};
-    function filledCell(cell) {
-      return cell !== '' && cell != null;
-    }
-    function loadFileData(filename) {
-      if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-        try {
-          var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-          var firstSheetName = workbook.SheetNames[0];
-          var worksheet = workbook.Sheets[firstSheetName];
-          var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-          var filteredData = jsonData.filter(row => row.some(filledCell));
-          var headerRowIndex = filteredData.findIndex((row, index) =>
-            row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-          );
-          if (headerRowIndex === -1 || headerRowIndex > 25) {
-            headerRowIndex = 0;
-          }
-          var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-          csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-          return csv;
-        } catch (e) {
-          console.error(e);
-          return "";
-        }
-      }
-      return gk_fileData[filename] || "";
-    }
-
     function navigateTo(page) {
       switch(page) {
         case 'wallet':
@@ -1254,29 +1251,23 @@
           break;
       }
     }
-
     const cookieBanner = document.getElementById('cookieBanner');
     const cookieAccept = document.getElementById('cookie-accept');
     const cookieDecline = document.getElementById('cookie-decline');
-
     function showCookieBannerOncePerDay() {
       const today = new Date().toISOString().split('T')[0];
       const lastShown = localStorage.getItem('cookieBannerLastShown');
-
       if (lastShown !== today) {
         cookieBanner.classList.add('active');
         localStorage.setItem('cookieBannerLastShown', today);
       }
     }
-
     cookieAccept.addEventListener('click', () => {
       cookieBanner.classList.remove('active');
     });
-
     cookieDecline.addEventListener('click', () => {
       cookieBanner.classList.remove('active');
     });
-
     window.addEventListener('DOMContentLoaded', () => {
       showCookieBannerOncePerDay();
     });
