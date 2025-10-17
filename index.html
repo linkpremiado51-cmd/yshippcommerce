@@ -518,6 +518,14 @@
       background: var(--background);
       transform: scale(1.05);
     }
+    .action-button.following {
+      background: var(--secondary);
+      color: white;
+    }
+    .action-button.liked {
+      background: var(--accent);
+      color: white;
+    }
     .action-button i {
       font-size: 1rem;
     }
@@ -721,11 +729,11 @@
             <i class="fab fa-facebook" style="color: #1877f2;"></i>
             <h3>Micro Influenciador do Facebook</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('facebook')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('facebook')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -754,11 +762,11 @@
             <i class="fab fa-instagram" style="color: #e4405f;"></i>
             <h3>Micro Influenciador do Instagram</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('instagram')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('instagram')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -787,11 +795,11 @@
             <i class="fas fa-mobile-alt" style="color: #4CAF50;"></i>
             <h3>Aplicativo Móvel</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('mobile')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('mobile')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -820,11 +828,11 @@
             <i class="fab fa-telegram" style="color: #0088cc;"></i>
             <h3>Telegram</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('telegram')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('telegram')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -853,11 +861,11 @@
             <i class="fab fa-tiktok" style="color: #000000;"></i>
             <h3>TikTok</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('tiktok')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('tiktok')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -886,11 +894,11 @@
             <i class="fas fa-video" style="color: #FF0000;"></i>
             <h3>Marketing de Vídeo</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('video')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('video')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -919,11 +927,11 @@
             <i class="fab fa-discord" style="color: #7289DA;"></i>
             <h3>Discord</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('discord')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('discord')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -952,11 +960,11 @@
             <i class="fas fa-blog" style="color: #FF9800;"></i>
             <h3>Comente em outros Blogs</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('blog')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('blog')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -985,11 +993,11 @@
             <i class="fab fa-reddit" style="color: #FF4500;"></i>
             <h3>Reddit</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('reddit')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('reddit')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -1018,11 +1026,11 @@
             <i class="fas fa-search" style="color: #4285F4;"></i>
             <h3>SEO, Promover Conteúdo</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('seo')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('seo')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -1051,11 +1059,11 @@
             <i class="fas fa-rss" style="color: #FF9800;"></i>
             <h3>Inscrever-se</h3>
             <div class="company-actions">
-              <button class="action-button">
-                <i class="fas fa-user-plus"></i> Seguir
+              <button class="action-button" onclick="followCard('inscricoes')">
+                <i class="fas fa-user-plus"></i> <span>Seguir</span>
               </button>
-              <button class="action-button">
-                <i class="fas fa-heart"></i> Curtir
+              <button class="action-button" onclick="likeCard('inscricoes')">
+                <i class="fas fa-heart"></i> <span>Curtir</span>
               </button>
             </div>
             <div class="company-stats">
@@ -1099,6 +1107,9 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
   <script>
+    // Variável global para armazenar o ID do usuário
+    let currentUserId = null;
+
     document.addEventListener('DOMContentLoaded', function() {
       // Inicializa o Firebase
       const firebaseConfig = {
@@ -1112,15 +1123,19 @@
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
       const auth = firebase.auth();
+
       auth.onAuthStateChanged(user => {
         if (user) {
+          currentUserId = user.uid;
           carregarDadosUsuario(user);
+          loadCardsData(user.uid);
         } else {
           document.getElementById("footerUserName").textContent = "Nenhum usuário ativo";
           document.getElementById("footerUserId").textContent = "---";
           window.location.href = "cadastro.html";
         }
       });
+
       function carregarDadosUsuario(user) {
         const userId = user.uid;
         db.collection("wallets").where("userId", "==", userId).limit(1).get()
@@ -1140,44 +1155,208 @@
             document.getElementById("footerUserName").textContent = "Usuário";
             document.getElementById("footerUserId").textContent = userId;
           });
-
-        // Carrega os dados dos cards
-        carregarDadosCards();
       }
-      function carregarDadosCards() {
+
+      // Função para seguir um card
+      async function followCard(cardId) {
+        if (!currentUserId) {
+          showNotification("Você precisa estar logado para seguir.");
+          return;
+        }
+
+        const cardRef = db.collection('serviceCards').doc(cardId);
+        const button = document.querySelector(`#${cardId} .action-button:first-child`);
+
+        await db.runTransaction(async (transaction) => {
+          const cardDoc = await transaction.get(cardRef);
+          if (!cardDoc.exists) {
+            console.error(`Documento ${cardId} não encontrado.`);
+            return;
+          }
+
+          const cardData = cardDoc.data();
+          const userFollows = cardData.userFollows || {};
+          const isFollowing = !!userFollows[currentUserId];
+
+          if (isFollowing) {
+            delete userFollows[currentUserId];
+            transaction.update(cardRef, {
+              followers: cardData.followers - 1,
+              userFollows: userFollows,
+            });
+            button.classList.remove('following');
+            button.innerHTML = `<i class="fas fa-user-plus"></i> <span>Seguir</span>`;
+          } else {
+            userFollows[currentUserId] = true;
+            transaction.update(cardRef, {
+              followers: cardData.followers + 1,
+              userFollows: userFollows,
+            });
+            button.classList.add('following');
+            button.innerHTML = `<i class="fas fa-check"></i> <span>Seguindo</span>`;
+          }
+        });
+      }
+
+      // Função para curtir um card
+      async function likeCard(cardId) {
+        if (!currentUserId) {
+          showNotification("Você precisa estar logado para curtir.");
+          return;
+        }
+
+        const cardRef = db.collection('serviceCards').doc(cardId);
+        const button = document.querySelector(`#${cardId} .action-button:last-child`);
+
+        await db.runTransaction(async (transaction) => {
+          const cardDoc = await transaction.get(cardRef);
+          if (!cardDoc.exists) {
+            console.error(`Documento ${cardId} não encontrado.`);
+            return;
+          }
+
+          const cardData = cardDoc.data();
+          const userLikes = cardData.userLikes || {};
+          const isLiked = !!userLikes[currentUserId];
+
+          if (isLiked) {
+            delete userLikes[currentUserId];
+            transaction.update(cardRef, {
+              likes: cardData.likes - 1,
+              userLikes: userLikes,
+            });
+            button.classList.remove('liked');
+            button.innerHTML = `<i class="fas fa-heart"></i> <span>Curtir</span>`;
+          } else {
+            userLikes[currentUserId] = true;
+            transaction.update(cardRef, {
+              likes: cardData.likes + 1,
+              userLikes: userLikes,
+            });
+            button.classList.add('liked');
+            button.innerHTML = `<i class="fas fa-heart"></i> <span>Curtido</span>`;
+          }
+        });
+      }
+
+      // Função para atualizar os dados de um card específico
+      async function updateCardData(cardId) {
+        const cardRef = db.collection('serviceCards').doc(cardId);
+
+        cardRef.onSnapshot((doc) => {
+          if (doc.exists) {
+            const cardData = doc.data();
+            document.getElementById(`${cardId}-golds`).textContent = cardData.golds || 0;
+            document.getElementById(`${cardId}-nivel`).textContent = cardData.level || "Iniciante de Campanha";
+            document.getElementById(`${cardId}-seguidores`).textContent = cardData.followers || 0;
+            document.getElementById(`${cardId}-curtidas`).textContent = cardData.likes || 0;
+            updateProgressBar(cardId, cardData.golds, cardData.goal);
+          }
+        });
+      }
+
+      // Função para atualizar a barra de progresso
+      function updateProgressBar(cardId, golds, goal) {
+        const progressBar = document.getElementById(`${cardId}-progress`);
+        const progressText = document.getElementById(`${cardId}-progress-text`);
+        const progressPercentage = Math.min((golds / goal) * 100, 100);
+
+        progressBar.style.width = `${progressPercentage}%`;
+        progressText.textContent = `${golds} / ${goal}`;
+
+        updateLevel(cardId, progressPercentage);
+      }
+
+      // Função para atualizar o nível
+      function updateLevel(cardId, progressPercentage) {
+        const levelElement = document.getElementById(`${cardId}-nivel`);
+        const levelsMap = {
+          facebook: ["Iniciante de Campanha", "Promotor de Conteúdo", "Gestor de Campanhas", "Diretor de Marketing", "Embaixador Global"],
+          instagram: ["Estagiário de Conteúdo", "Criador de Conteúdo", "Influenciador", "Gestor de Marca", "Embaixador Global"],
+          mobile: ["Programador Iniciante", "Desenvolvedor de Interface", "Arquiteto de Aplicações", "Diretor Mobile", "Visionário Global de Tecnologia"],
+          telegram: ["Criador de Grupo", "Gestor de Comunidade", "Curador de Conteúdo", "Diretor de Comunicação Digital", "Embaixador Global de Conexões"],
+          tiktok: ["Criador Iniciante", "Influenciador Emergente", "Gestor de Tendências", "Diretor de Conteúdo Viral", "Ícone Global de Criatividade"],
+          video: ["Editor Júnior", "Gestor de Campanha", "Produtor Audiovisual", "Diretor de Estratégia Visual", "Mestre Global de Conteúdo"],
+          discord: ["Moderador Iniciante", "Gestor de Servidor", "Líder de Comunidade", "Diretor de Ecossistema Digital", "Executivo Global de Interação"],
+          blog: ["Leitor Participativo", "Colaborador Ativo", "Embaixador de Discussões", "Diretor de Comunidades Digitais", "Crítico Global de Conteúdo"],
+          reddit: ["Explorador de Tópicos", "Criador de Discussões", "Líder de Subcomunidade", "Diretor de Engajamento Global", "Mestre Mundial de Interação"],
+          seo: ["Analista de Busca", "Gestor de Tráfego", "Diretor de Performance", "Estrategista Global de Marketing", "Arquiteto Supremo de Engajamento"],
+          inscricoes: ["Membro Iniciante", "Participante Dedicado", "Colaborador Premium", "Líder de Comunidade", "Sócio Global Yshipp"]
+        };
+
+        const levels = levelsMap[cardId] || ["Iniciante"];
+        const thresholds = [0, 20, 40, 60, 80, 100];
+        let levelIndex = 0;
+
+        thresholds.forEach((threshold, index) => {
+          if (progressPercentage >= threshold) {
+            levelIndex = index;
+          }
+        });
+
+        levelElement.textContent = levels[Math.min(levelIndex, levels.length - 1)];
+      }
+
+      // Função para carregar os dados dos cards
+      function loadCardsData(userId) {
         const cardIds = [
           "facebook", "instagram", "mobile", "telegram",
           "tiktok", "video", "discord", "blog", "reddit", "seo", "inscricoes"
         ];
 
         cardIds.forEach(cardId => {
-          db.collection("serviceCards").doc(cardId).onSnapshot((doc) => {
+          updateCardData(cardId);
+
+          // Atualiza o estado dos botões de seguir e curtir
+          const cardRef = db.collection('serviceCards').doc(cardId);
+          cardRef.onSnapshot((doc) => {
             if (doc.exists) {
-              const data = doc.data();
-              const goldsElement = document.getElementById(`${cardId}-golds`);
-              if (goldsElement) {
-                goldsElement.textContent = data.golds || 0;
+              const cardData = doc.data();
+              const isFollowing = cardData.userFollows && cardData.userFollows[userId];
+              const isLiked = cardData.userLikes && cardData.userLikes[userId];
+
+              const followButton = document.querySelector(`#${cardId} .action-button:first-child`);
+              const likeButton = document.querySelector(`#${cardId} .action-button:last-child`);
+
+              if (isFollowing) {
+                followButton.classList.add('following');
+                followButton.innerHTML = `<i class="fas fa-check"></i> <span>Seguindo</span>`;
+              } else {
+                followButton.classList.remove('following');
+                followButton.innerHTML = `<i class="fas fa-user-plus"></i> <span>Seguir</span>`;
+              }
+
+              if (isLiked) {
+                likeButton.classList.add('liked');
+                likeButton.innerHTML = `<i class="fas fa-heart"></i> <span>Curtido</span>`;
+              } else {
+                likeButton.classList.remove('liked');
+                likeButton.innerHTML = `<i class="fas fa-heart"></i> <span>Curtir</span>`;
               }
             }
           });
         });
       }
+
       const menuToggles = {
         'menu-icon': 'main-menu'
       };
       const themeToggle = document.getElementById('theme-toggle');
       const body = document.body;
-      // Theme toggle functionality from original index.html
+
+      // Theme toggle functionality
       themeToggle.addEventListener('click', () => {
         const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         body.setAttribute('data-theme', currentTheme);
         localStorage.setItem('theme', currentTheme);
       });
+
       // Apply saved theme on page load
       window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'light';
         body.setAttribute('data-theme', savedTheme);
       });
+
       Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
         const toggle = document.getElementById(toggleId);
         const menu = document.getElementById(menuId);
@@ -1191,6 +1370,7 @@
           toggle.classList.toggle('active');
         });
       });
+
       document.addEventListener('click', e => {
         if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
           Object.values(menuToggles).forEach(menuId => {
@@ -1202,6 +1382,7 @@
           });
         }
       });
+
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
           Object.values(menuToggles).forEach(menuId => {
@@ -1213,9 +1394,11 @@
           });
         }
       });
+
       document.getElementById("logout-button").addEventListener("click", () => {
         auth.signOut().then(() => window.location.href = "cadastro.html");
       });
+
       function showNotification(message) {
         const notification = document.getElementById('notification');
         notification.textContent = message;
@@ -1225,6 +1408,7 @@
         }, 3000);
       }
     });
+
     function navigateTo(page) {
       switch(page) {
         case 'wallet':
@@ -1251,9 +1435,11 @@
           break;
       }
     }
+
     const cookieBanner = document.getElementById('cookieBanner');
     const cookieAccept = document.getElementById('cookie-accept');
     const cookieDecline = document.getElementById('cookie-decline');
+
     function showCookieBannerOncePerDay() {
       const today = new Date().toISOString().split('T')[0];
       const lastShown = localStorage.getItem('cookieBannerLastShown');
@@ -1262,12 +1448,15 @@
         localStorage.setItem('cookieBannerLastShown', today);
       }
     }
+
     cookieAccept.addEventListener('click', () => {
       cookieBanner.classList.remove('active');
     });
+
     cookieDecline.addEventListener('click', () => {
       cookieBanner.classList.remove('active');
     });
+
     window.addEventListener('DOMContentLoaded', () => {
       showCookieBannerOncePerDay();
     });
