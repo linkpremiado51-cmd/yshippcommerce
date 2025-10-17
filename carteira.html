@@ -5,51 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Carteira - YshippCommerce">
   <title>Carteira - YshippCommerce</title>
-  <!-- Firebase compat (mantendo a versão 10.12.0 conforme original) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=PT+Sans&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --background: #f9fafb;
+      --background: #f5f7fa;
       --surface: #ffffff;
-      --text-primary: #1f2937;
-      --text-secondary: #6b7280;
-      --primary: #7c3aed;
-      --primary-hover: #6d28d9;
-      --secondary: #10b981;
-      --secondary-hover: #059669;
-      --border: #e5e7eb;
-      --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      --accent: #ff6b6b;
-      --nsfw-bg: #e74c3c;
-      --nsfw-hover: #c0392b;
-      --gold: #e67e22;
-      --progress-bg: #ecf0f1;
-      --tutorial-bg: #3498db;
-      --tutorial-hover: #2980b9;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --primary: #2d3748;
+      --primary-hover: #1a202c;
+      --secondary: #3182ce;
+      --secondary-hover: #2b6cb0;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --accent: #e53e3e;
+      --gold: #d69e2e;
+      --progress-bg: #edf2f7;
       --reais: #10b981;
     }
-
     [data-theme="dark"] {
-      --background: #1f2937;
-      --surface: #374151;
-      --text-primary: #f3f4f6;
-      --text-secondary: #9ca3af;
-      --border: #4b5563;
-      --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      --accent: #ff8787;
-      --nsfw-bg: #c0392b;
-      --nsfw-hover: #a5281a;
-      --progress-bg: #4b5563;
-      --tutorial-bg: #1e90ff;
-      --tutorial-hover: #1c86ee;
+      --background: #1a202c;
+      --surface: #2d3748;
+      --text-primary: #e2e8f0;
+      --text-secondary: #a0aec0;
+      --border: #4a5568;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --accent: #f56565;
+      --progress-bg: #4a5568;
       --reais: #059669;
     }
-
     * {
       margin: 0;
       padding: 0;
@@ -57,235 +45,485 @@
       user-select: none;
       -webkit-user-select: none;
     }
-
     body {
-      font-family: 'Ubuntu', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--background);
       color: var(--text-primary);
-      line-height: 1.6;
+      line-height: 1.5;
       min-height: 100vh;
-      padding-top: 72px;
+      padding-top: 60px;
       overflow-x: hidden;
     }
-
-    .header-menu {
-      font-family: 'PT Sans', sans-serif;
-    }
-
     .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 72px;
+      height: 60px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 24px;
+      padding: 0 16px;
       z-index: 1001;
       box-shadow: var(--shadow);
     }
-
+    .header h1 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header h1 i {
+      color: var(--primary);
+    }
     .top-bar__section {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
-
     .top-bar__icon {
-      position: relative;
       color: var(--text-primary);
       background: none;
       border: none;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
+      transition: background-color 0.2s ease;
     }
-
     .top-bar__icon i {
-      position: relative;
-      font-size: 1.25rem;
+      font-size: 1.125rem;
     }
-
     .top-bar__icon:hover {
-      transform: scale(1.1);
+      background: var(--primary);
+      color: white;
     }
-
     .menu {
       position: fixed;
-      top: 72px;
+      top: 60px;
       left: 0;
-      width: 280px;
-      height: calc(100vh - 72px);
+      width: 240px;
+      height: calc(100vh - 60px);
       background: var(--surface);
       border-right: 1px solid var(--border);
       transform: translateX(-100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s ease;
       z-index: 1000;
       overflow-y: auto;
       box-shadow: var(--shadow);
     }
-
     .menu.open {
       transform: translateX(0);
     }
-
     .menu__list {
       list-style: none;
-      padding: 16px 0;
+      padding: 12px 0;
     }
-
     .menu__item {
-      margin: 8px 16px;
+      margin: 4px 12px;
     }
-
     .menu__link {
       color: var(--text-primary);
       text-decoration: none;
-      padding: 12px 16px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
-      border-radius: 12px;
-      transition: none;
-      position: relative;
-      overflow: hidden;
+      border-radius: 4px;
+      transition: background 0.2s ease;
       background: transparent;
     }
-
+    .menu__link:hover {
+      background: var(--primary);
+      color: white;
+    }
     .menu__link i {
-      margin-right: 12px;
-      font-size: 1.25rem;
+      margin-right: 8px;
+      font-size: 1.125rem;
       color: var(--text-secondary);
+      transition: color 0.2s ease;
     }
-
-    .submenu {
-      margin-top: 4px;
-      padding-left: 48px;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
+    .menu__link:hover i {
+      color: white;
     }
-
-    .submenu.open {
-      max-height: 300px;
-    }
-
-    .submenu__link {
-      color: var(--text-secondary);
-      padding: 8px 16px;
-      font-size: 0.9375rem;
-      display: block;
-      text-decoration: none;
-      transition: none;
-    }
-
-    .premium-button {
-      background: var(--secondary);
-      color: var(--text-primary);
-      border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
-      cursor: pointer;
-      width: calc(100% - 32px);
-      margin: 16px;
-      font-weight: 500;
-      transition: none;
-    }
-
     .notification {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 12px 24px;
+      bottom: 16px;
+      right: 16px;
+      padding: 8px 16px;
       background: var(--surface);
       color: var(--text-primary);
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+      box-shadow: var(--shadow-lg);
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(16px);
       transition: opacity 0.3s ease, transform 0.3s ease;
       z-index: 2000;
     }
-
     .notification.show {
       opacity: 1;
       transform: translateY(0);
     }
-
+    .balance-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 1000px;
+      padding: 0.75rem;
+      margin: 0 auto;
+    }
+    .balance-card {
+      border-radius: 8px;
+      padding: 1rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .balance-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .balance-card.gold {
+      background: linear-gradient(135deg, var(--gold), #b7791f);
+    }
+    .balance-card.reais {
+      background: linear-gradient(135deg, var(--reais), #059669);
+    }
+    .balance-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    .balance-amount {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .balance-desc {
+      font-size: 0.8rem;
+      opacity: 0.85;
+      margin-top: 0.3rem;
+    }
+    .wallet-section {
+      width: 100%;
+      max-width: 1000px;
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem auto;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .wallet-section h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .wallet-section h2 i {
+      color: var(--secondary);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem;
+    }
+    .stat-item {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      text-align: center;
+      background: var(--background);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .stat-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .action-btn {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .action-btn.withdraw {
+      background: var(--primary);
+      color: white;
+    }
+    .action-btn.transfer {
+      background: #3b82f6;
+      color: white;
+    }
+    .action-btn.default {
+      background: var(--secondary);
+      color: white;
+    }
+    .action-btn:hover {
+      background: var(--secondary-hover);
+    }
+    .action-btn i {
+      font-size: 0.9rem;
+    }
+    .transaction-list {
+      max-height: 360px;
+      overflow-y: auto;
+      margin-top: 0.5rem;
+    }
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.5rem;
+      background: var(--background);
+    }
+    .transaction-type {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .transaction-desc {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+    .transaction-date {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+    .transaction-amount {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .transaction-amount.receive {
+      color: var(--secondary);
+    }
+    .transaction-amount.send {
+      color: var(--accent);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-content h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .form-group {
+      margin-bottom: 0.75rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .modal-buttons button {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    #loadingOverlay {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+      z-index: 10000;
+    }
+    footer#userInfoFooter {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 0.3rem;
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      z-index: 999;
+      font-family: 'Inter', sans-serif;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
     @media (max-width: 768px) {
       .menu {
-        width: min(80vw, 280px);
+        width: min(80vw, 240px);
       }
-
       .header {
         padding: 0 12px;
       }
-
       .top-bar__icon {
-        padding: 8px;
+        padding: 6px;
       }
-
       .top-bar__icon i {
-        font-size: 1.2rem;
+        font-size: 1rem;
       }
-
       .menu__link {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-      }
-
-      .menu__link i {
-        font-size: 1.1rem;
-      }
-
-      .submenu__link {
+        padding: 8px 10px;
         font-size: 0.85rem;
-        padding: 6px 12px;
       }
-
-      .premium-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+      .menu__link i {
+        font-size: 1rem;
       }
-
       .notification {
-        right: 10px;
-        bottom: 10px;
-        padding: 10px 20px;
+        right: 8px;
+        bottom: 8px;
+        padding: 8px 12px;
+      }
+      .balance-cards {
+        padding: 0.5rem;
+      }
+      .balance-card {
+        padding: 0.75rem;
+      }
+      .balance-amount {
+        font-size: 1.25rem;
+      }
+      .wallet-section {
+        padding: 0.75rem;
+      }
+      .wallet-section h2 {
+        font-size: 1.125rem;
+      }
+      .stats-grid {
+        gap: 0.5rem;
+      }
+      .stat-item {
+        padding: 0.5rem;
+      }
+      .stat-label {
+        font-size: 0.7rem;
+      }
+      .stat-value {
+        font-size: 0.8rem;
+      }
+      .action-btn {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+      }
+      .action-btn i {
+        font-size: 0.8rem;
+      }
+      .transaction-item {
+        padding: 0.5rem;
+      }
+      .transaction-type,
+      .transaction-amount {
+        font-size: 0.8rem;
+      }
+      .transaction-desc,
+      .transaction-date {
+        font-size: 0.75rem;
+      }
+      .modal-content {
+        width: 95%;
+        padding: 0.75rem;
+      }
+      .modal-content h3 {
+        font-size: 1rem;
+      }
+      .form-group label {
+        font-size: 0.8rem;
+      }
+      .form-group input,
+      .form-group select {
+        font-size: 0.8rem;
+        padding: 0.4rem;
+      }
+      .modal-buttons button {
+        font-size: 0.8rem;
       }
     }
-
-    .balance-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;width:100%;max-width:1200px;padding:1.2rem}
-    .balance-card{border-radius:1rem;padding:1.6rem;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow)}
-    .balance-card.gold{background:linear-gradient(135deg,#f39c12,#e67e22)}
-    .balance-card.reais{background:linear-gradient(135deg,#10b981,#059669)}
-    .balance-label{font-size:.85rem;text-transform:uppercase;opacity:.9;margin-bottom:.4rem}
-    .balance-amount{font-family:'Jura',sans-serif;font-size:2rem;font-weight:700}
-    .wallet-section{width:100%;max-width:1200px;background:var(--surface);padding:1rem;border-radius:.5rem;margin:1rem 0;box-shadow:var(--shadow)}
-    .wallet-section h2{font-family:'Jura',sans-serif;margin-bottom:.8rem}
-    .action-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1rem}
-    .action-btn{padding:.9rem;border-radius:.5rem;border:0;font-weight:700;cursor:pointer}
-    .action-btn.withdraw{background:var(--primary);color:#fff}
-    .action-btn.transfer{background:#3b82f6;color:#fff}
-    .action-btn.default{background:var(--secondary);color:#fff}
-    .transaction-list{max-height:420px;overflow-y:auto}
-    .transaction-item{display:flex;justify-content:space-between;align-items:center;padding:.8rem;border-radius:.5rem;border:1px solid var(--border);margin-bottom:.6rem;background:var(--background)}
-    .transaction-type{font-weight:700}
-    .transaction-desc{color:var(--text-secondary);font-size:.9rem}
-    .transaction-date{color:var(--text-secondary);font-size:.8rem}
-    .transaction-amount{font-weight:800}
-    footer#userInfoFooter{position:fixed;bottom:0;left:0;width:100%;background:#0d1117;color:#00ffaa;text-align:center;padding:.4rem;font-size:13px;border-top:1px solid #00ffaa;z-index:9999;font-family:'Ubuntu',sans-serif}
-    .modal{display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:9999}
-    .modal-content{background:var(--surface);padding:1.1rem;border-radius:.6rem;width:92%;max-width:520px}
-    .form-group{margin-bottom:.8rem}
-    .form-group label{display:block;margin-bottom:.3rem;font-weight:700}
-    .form-group input,.form-group select{width:100%;padding:.6rem;border:1px solid var(--border);border-radius:.4rem}
-    #loadingOverlay{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;z-index:10000}
-    @media(max-width:600px){.balance-amount{font-size:1.5rem}}
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .header h1 {
+        font-size: 1.125rem;
+      }
+      .balance-cards {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+      .wallet-section {
+        padding: 0.75rem;
+      }
+      .wallet-section h2 {
+        font-size: 1.25rem;
+      }
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -293,7 +531,7 @@
   <div class="header-menu">
     <nav aria-label="Navegação principal" class="header" role="navigation">
       <div class="top-bar__section">
-        <h1>Centro de Comando - YshippCommerce</h1>
+        <h1><i class="fas fa-wallet"></i>Carteira - YshippCommerce</h1>
       </div>
       <div class="top-bar__section">
         <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
@@ -309,37 +547,43 @@
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('home')">
             <i class="fas fa-home"></i>
-            <span class="bold-text">Página Principal</span>
+            <span>Página Principal</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('yshippcommerce')">
+            <i class="fas fa-store"></i>
+            <span>YshippCommerce</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('market')">
             <i class="fas fa-briefcase"></i>
-            <span class="bold-text">Mercado de Serviços</span>
+            <span>Mercado de Serviços</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('store')">
             <i class="fas fa-shopping-cart"></i>
-            <span class="bold-text">Loja</span>
+            <span>Loja</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('generator')">
             <i class="fas fa-ticket-alt"></i>
-            <span class="bold-text">Gerador de Bilhetes</span>
+            <span>Gerador de Bilhetes</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('wallet')">
             <i class="fas fa-wallet"></i>
-            <span class="bold-text">Carteira</span>
+            <span>Carteira</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" id="logout-button">
             <i class="fas fa-sign-out-alt"></i>
-            <span class="bold-text">Sair</span>
+            <span>Sair</span>
           </button>
         </li>
       </ul>
@@ -347,164 +591,168 @@
   </div>
   <div class="notification" id="notification"></div>
   <div id="overlay" class="overlay"></div>
-
-  <main style="width:100%;max-width:1200px;padding:0 1rem 140px;">
+  <main style="width:100%; max-width:1000px; padding:0 0.75rem 120px; margin:0 auto;">
     <div class="balance-cards">
-      <div class="balance-card gold">
+      <div class="balance-card gold fade-in">
         <div class="balance-label">Saldo em Golds</div>
         <div id="golds-balance" class="balance-amount">0</div>
-        <div style="opacity:.85">Moeda virtual do sistema</div>
+        <div class="balance-desc">Moeda virtual do sistema</div>
       </div>
-      <div class="balance-card reais">
+      <div class="balance-card reais fade-in">
         <div class="balance-label">Saldo em Reais</div>
         <div id="reais-balance" class="balance-amount">R$ 0,00</div>
-        <div style="opacity:.85">Saldo disponível para saque</div>
+        <div class="balance-desc">Saldo disponível para saque</div>
       </div>
     </div>
-
-    <section class="wallet-section">
-      <h2>Estatísticas</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem">
-        <div style="padding:.8rem;border-radius:.5rem;border:1px solid var(--border);text-align:center">
-          <div style="font-size:.8rem;color:var(--text-secondary)">Total Recebido</div>
-          <div id="total-received" style="font-weight:800;font-family:'Jura',sans-serif">0</div>
+    <section class="wallet-section fade-in">
+      <h2><i class="fas fa-chart-bar"></i>Estatísticas</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">Total Recebido</div>
+          <div id="total-received" class="stat-value">0</div>
         </div>
-        <div style="padding:.8rem;border-radius:.5rem;border:1px solid var(--border);text-align:center">
-          <div style="font-size:.8rem;color:var(--text-secondary)">Total Enviado</div>
-          <div id="total-sent" style="font-weight:800;font-family:'Jura',sans-serif">0</div>
+        <div class="stat-item">
+          <div class="stat-label">Total Enviado</div>
+          <div id="total-sent" class="stat-value">0</div>
         </div>
-        <div style="padding:.8rem;border-radius:.5rem;border:1px solid var(--border);text-align:center">
-          <div style="font-size:.8rem;color:var(--text-secondary)">Transações</div>
-          <div id="total-transactions" style="font-weight:800;font-family:'Jura',sans-serif">0</div>
+        <div class="stat-item">
+          <div class="stat-label">Transações</div>
+          <div id="total-transactions" class="stat-value">0</div>
         </div>
-        <div style="padding:.8rem;border-radius:.5rem;border:1px solid var(--border);text-align:center">
-          <div style="font-size:.8rem;color:var(--text-secondary)">Último Saque</div>
-          <div id="last-withdrawal" style="font-weight:800;font-family:'Jura',sans-serif">-</div>
+        <div class="stat-item">
+          <div class="stat-label">Último Saque</div>
+          <div id="last-withdrawal" class="stat-value">-</div>
         </div>
       </div>
     </section>
-
-    <section class="wallet-section">
-      <h2>Ações Rápidas</h2>
-      <div class="action-buttons" style="margin-top:.8rem">
-        <button class="action-btn default action-btn" onclick="openDepositModal()">📥 Depositar</button>
-        <button class="action-btn withdraw" onclick="openWithdrawModal()">📤 Sacar</button>
-        <button class="action-btn transfer" onclick="openTransferModal()">💸 Transferir</button>
-        <button class="action-btn default" onclick="openConvertModal()">🔄 Converter</button>
+    <section class="wallet-section fade-in">
+      <h2><i class="fas fa-bolt"></i>Ações Rápidas</h2>
+      <div class="action-buttons">
+        <button class="action-btn default" onclick="openDepositModal()"><i class="fas fa-arrow-down"></i>Depositar</button>
+        <button class="action-btn withdraw" onclick="openWithdrawModal()"><i class="fas fa-arrow-up"></i>Sacar</button>
+        <button class="action-btn transfer" onclick="openTransferModal()"><i class="fas fa-exchange-alt"></i>Transferir</button>
+        <button class="action-btn default" onclick="openConvertModal()"><i class="fas fa-sync-alt"></i>Converter</button>
       </div>
     </section>
-
-    <section class="wallet-section">
-      <h2>Histórico de Transações</h2>
-      <div id="transaction-list" class="transaction-list" style="margin-top:.6rem">
-        <div style="text-align:center;color:var(--text-secondary);padding:1.5rem">Carregando transações...</div>
+    <section class="wallet-section fade-in">
+      <h2><i class="fas fa-history"></i>Histórico de Transações</h2>
+      <div id="transaction-list" class="transaction-list">
+        <div style="text-align:center; color:var(--text-secondary); padding:1rem">Carregando transações...</div>
       </div>
     </section>
   </main>
-
-  <!-- Modais -->
-  <div id="depositModal" class="modal"><div class="modal-content">
-    <h3>💰 Depositar</h3>
-    <div class="form-group"><label>Método</label><select id="deposit-method"><option value="pix">PIX</option><option value="boleto">Boleto</option><option value="card">Cartão</option></select></div>
-    <div class="form-group"><label>Valor (R$)</label><input id="deposit-amount" type="number" min="1" step="0.01"></div>
-    <div style="display:flex;gap:.6rem"><button class="action-btn default" onclick="processDeposit()">Confirmar</button><button class="action-btn" onclick="closeModal('depositModal')" style="background:#fff;color:#000;border:1px solid var(--border)">Cancelar</button></div>
-  </div></div>
-
-  <div id="withdrawModal" class="modal"><div class="modal-content">
-    <h3>📤 Saque</h3>
-    <div class="form-group"><label>Moeda</label><select id="withdraw-currency"><option value="reais">Reais</option><option value="golds">Golds</option></select></div>
-    <div class="form-group"><label>Valor</label><input id="withdraw-amount" type="number" min="1" step="0.01"></div>
-    <div class="form-group"><label>Chave PIX (destino)</label><input id="pix-key" type="text"></div>
-    <div style="display:flex;gap:.6rem"><button class="action-btn withdraw" onclick="processWithdrawal()">Solicitar Saque</button><button class="action-btn" onclick="closeModal('withdrawModal')" style="background:#fff;color:#000;border:1px solid var(--border)">Cancelar</button></div>
-  </div></div>
-
-  <div id="transferModal" class="modal"><div class="modal-content">
-    <h3>💸 Transferir</h3>
-    <div class="form-group"><label>ID do destinatário</label><input id="recipient-id" type="text"></div>
-    <div class="form-group"><label>Moeda</label><select id="transfer-currency"><option value="golds">Golds</option><option value="reais">Reais</option></select></div>
-    <div class="form-group"><label>Valor</label><input id="transfer-amount" type="number" min="1" step="0.01"></div>
-    <div style="display:flex;gap:.6rem"><button class="action-btn transfer" onclick="processTransfer()">Enviar</button><button class="action-btn" onclick="closeModal('transferModal')" style="background:#fff;color:#000;border:1px solid var(--border)">Cancelar</button></div>
-  </div></div>
-
-  <div id="convertModal" class="modal"><div class="modal-content">
-    <h3>🔄 Converter</h3>
-    <div class="form-group"><label>Converter</label><select id="convert-from"><option value="golds">Golds</option><option value="reais">Reais</option></select></div>
-    <div class="form-group"><label>Valor</label><input id="convert-amount" type="number" min="1" step="1"></div>
-    <div class="form-group"><label>Para</label><select id="convert-to"><option value="reais">Reais</option><option value="golds">Golds</option></select></div>
-    <div style="display:flex;gap:.6rem"><button class="action-btn default" onclick="processConversion()">Confirmar Conversão</button><button class="action-btn" onclick="closeModal('convertModal')" style="background:#fff;color:#000;border:1px solid var(--border)">Cancelar</button></div>
-  </div></div>
-
-  <!-- Notification -->
-  <div id="notificationModal" class="modal"><div class="modal-content">
-    <h3 id="notification-title">Notificação</h3>
-    <p id="notification-message" style="color:var(--text-secondary)"></p>
-    <div style="display:flex;gap:.6rem"><button class="action-btn default" onclick="closeModal('notificationModal')">OK</button></div>
-  </div></div>
-
-  <footer id="userInfoFooter" style="
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #0d1117;
-    color: #00ffaa;
-    text-align: center;
-    font-size: 13px;
-    padding: 6px;
-    border-top: 1px solid #00ffaa;
-    z-index: 9999;
-    font-family: 'Ubuntu', sans-serif;">
+  <div id="depositModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-arrow-down"></i>Depositar</h3>
+      <div class="form-group">
+        <label>Método</label>
+        <select id="deposit-method">
+          <option value="pix">PIX</option>
+          <option value="boleto">Boleto</option>
+          <option value="card">Cartão</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valor (R$)</label>
+        <input id="deposit-amount" type="number" min="1" step="0.01">
+      </div>
+      <div class="modal-buttons">
+        <button class="action-btn default" onclick="processDeposit()">Confirmar</button>
+        <button class="action-btn" onclick="closeModal('depositModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div id="withdrawModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-arrow-up"></i>Saque</h3>
+      <div class="form-group">
+        <label>Moeda</label>
+        <select id="withdraw-currency">
+          <option value="reais">Reais</option>
+          <option value="golds">Golds</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valor</label>
+        <input id="withdraw-amount" type="number" min="1" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Chave PIX (destino)</label>
+        <input id="pix-key" type="text">
+      </div>
+      <div class="modal-buttons">
+        <button class="action-btn withdraw" onclick="processWithdrawal()">Solicitar Saque</button>
+        <button class="action-btn" onclick="closeModal('withdrawModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div id="transferModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-exchange-alt"></i>Transferir</h3>
+      <div class="form-group">
+        <label>ID do destinatário</label>
+        <input id="recipient-id" type="text">
+      </div>
+      <div class="form-group">
+        <label>Moeda</label>
+        <select id="transfer-currency">
+          <option value="golds">Golds</option>
+          <option value="reais">Reais</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valor</label>
+        <input id="transfer-amount" type="number" min="1" step="0.01">
+      </div>
+      <div class="modal-buttons">
+        <button class="action-btn transfer" onclick="processTransfer()">Enviar</button>
+        <button class="action-btn" onclick="closeModal('transferModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div id="convertModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-sync-alt"></i>Converter</h3>
+      <div class="form-group">
+        <label>Converter</label>
+        <select id="convert-from">
+          <option value="golds">Golds</option>
+          <option value="reais">Reais</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valor</label>
+        <input id="convert-amount" type="number" min="1" step="1">
+      </div>
+      <div class="form-group">
+        <label>Para</label>
+        <select id="convert-to">
+          <option value="reais">Reais</option>
+          <option value="golds">Golds</option>
+        </select>
+      </div>
+      <div class="modal-buttons">
+        <button class="action-btn default" onclick="processConversion()">Confirmar Conversão</button>
+        <button class="action-btn" onclick="closeModal('convertModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div id="notificationModal" class="modal">
+    <div class="modal-content">
+      <h3 id="notification-title"><i class="fas fa-bell"></i>Notificação</h3>
+      <p id="notification-message" style="color:var(--text-secondary); font-size:0.85rem"></p>
+      <div class="modal-buttons">
+        <button class="action-btn default" onclick="closeModal('notificationModal')">OK</button>
+      </div>
+    </div>
+  </div>
+  <footer id="userInfoFooter">
     Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
   </footer>
-
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const menuToggles = {
-        'menu-icon': 'main-menu'
-      };
-
-      Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
-        const toggle = document.getElementById(toggleId);
-        const menu = document.getElementById(menuId);
-        if (!toggle || !menu) {
-          console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`);
-          return;
-        }
-        toggle.addEventListener('click', e => {
-          e.stopPropagation();
-          menu.classList.toggle('open');
-          toggle.classList.toggle('active');
-        });
-      });
-
-      document.addEventListener('click', e => {
-        if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
-          Object.values(menuToggles).forEach(menuId => {
-            const menu = document.getElementById(menuId);
-            if (menu) menu.classList.remove('open');
-          });
-          document.querySelectorAll('.top-bar__icon').forEach(icon => {
-            if (icon) icon.classList.remove('active');
-          });
-        }
-      });
-
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          Object.values(menuToggles).forEach(menuId => {
-            const menu = document.getElementById(menuId);
-            if (menu) menu.classList.remove('open');
-          });
-          document.querySelectorAll('.top-bar__icon').forEach(icon => {
-            if (icon) icon.classList.remove('active');
-          });
-        }
-      });
-    });
-
-    // -------------------------
-    // Configuração Firebase
-    // -------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
       authDomain: "yshippcommerce.firebaseapp.com",
@@ -513,58 +761,38 @@
       messagingSenderId: "680576769517",
       appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
     };
-
-    try {
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-        console.log('Firebase carregado.');
-      } else {
-        console.log('Firebase já inicializado.');
-      }
-    } catch (e) {
-      console.error('Erro inicializando Firebase:', e);
-      showNotification('Erro', 'Erro ao inicializar Firebase. Verifique as credenciais.');
-    }
-
+    firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-
-    // Mantém a sessão do usuário salva mesmo após fechar o navegador ou sair
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => {
-        console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar.");
-      })
-      .catch((error) => {
-        console.error("❌ Erro configurando persistência:", error);
-      });
-
     const db = firebase.firestore();
-
     let currentUser = null;
     let walletData = null;
-    const GOLD_TO_REAL_RATE = 1000; // 1000 Golds = R$1
+    const GOLD_TO_REAL_RATE = 1000;
 
-    // -------------------------
-    // UI helpers
-    // -------------------------
-    function openModal(id){document.getElementById(id).style.display='flex'}
-    function closeModal(id){document.getElementById(id).style.display='none'}
-    function showNotification(title,message){document.getElementById('notification-title').textContent=title;document.getElementById('notification-message').textContent=message;openModal('notificationModal')}
-
-    // Theme
-    function loadTheme(){
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+    function showNotification(title, message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+    function loadTheme() {
       const saved = localStorage.getItem('theme') || 'light';
       document.body.dataset.theme = saved;
     }
-    document.getElementById('theme-toggle').addEventListener('click',()=>{
-      const newTheme = document.body.dataset.theme==='light' ? 'dark' : 'light';
-      document.body.dataset.theme = newTheme; localStorage.setItem('theme', newTheme);
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const newTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+      document.body.dataset.theme = newTheme;
+      localStorage.setItem('theme', newTheme);
     });
     loadTheme();
-
-    // -------------------------
-    // Autenticação e carregamento de carteira
-    // -------------------------
-    async function ensureAnonymousSignIn(){
+    async function ensureAnonymousSignIn() {
       try {
         console.warn('Nenhum usuário logado. Tentando login anônimo...');
         const res = await auth.signInAnonymously();
@@ -574,8 +802,6 @@
         showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`);
       }
     }
-
-    // Observador de estado de autenticação
     auth.onAuthStateChanged(async user => {
       console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário');
       if (!user) {
@@ -586,14 +812,10 @@
       document.getElementById('footerUserId').textContent = user.uid;
       document.getElementById('footerUserName').textContent = user.displayName || (user.isAnonymous ? 'Anônimo' : (user.email || 'Usuário'));
       console.log('Usuário ativo:', user.uid);
-
-      // [GROCK EDIT]: Sincronização de carteira existente no re-login
       try {
         const walletRef = db.collection('wallets').doc(user.uid);
         const walletSnap = await walletRef.get();
-
         if (!walletSnap.exists) {
-          // [GROCK EDIT 2]: Padronização de timestamps com serverTimestamp()
           await walletRef.set({
             userId: user.uid,
             name: user.displayName || (user.isAnonymous ? 'Anônimo' : 'Usuário'),
@@ -602,29 +824,24 @@
             transactions: [],
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-          console.log('[GROCK EDIT] Carteira nova criada (usuário sem histórico)');
+          console.log('Carteira nova criada (usuário sem histórico)');
         } else {
-          // Sincroniza dados da carteira existente
           walletData = walletSnap.data();
-          console.log('[GROCK EDIT] Carteira existente sincronizada:', walletData);
+          console.log('Carteira existente sincronizada:', walletData);
           atualizarInterfaceCarteira(walletData);
         }
       } catch (error) {
-        console.error('[GROCK EDIT] Erro ao sincronizar carteira:', error);
+        console.error('Erro ao sincronizar carteira:', error);
         showNotification('Erro', `Erro ao sincronizar carteira: ${error.message}`);
       }
-
       await loadWalletData(user.uid);
       document.getElementById('loadingOverlay').style.display = 'none';
     });
-
-    // Carregar/ Inicializar carteira no Firestore
-    async function loadWalletData(uid){
+    async function loadWalletData(uid) {
       try {
         const ref = db.collection('wallets').doc(uid);
         const snap = await ref.get();
         if (!snap.exists) {
-          // [GROCK EDIT 2]: Padronização de timestamps com serverTimestamp()
           const initial = {
             userId: uid,
             name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'),
@@ -647,33 +864,10 @@
         showNotification('Erro', 'Não foi possível carregar os dados da carteira. Veja console.');
       }
     }
-
-    // Atualiza a UI com dados da carteira local (walletData)
-    function renderWallet(){
+    function renderWallet() {
       if (!walletData) return;
       document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
-      document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.',',')}`;
-
-      const txs = walletData.transactions || [];
-      document.getElementById('total-transactions').textContent = txs.length;
-      let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
-      txs.forEach(tx=>{
-        if (tx.type === 'receive') totalReceived += (tx.amount || 0);
-        if (tx.type === 'send' || tx.type === 'withdraw') totalSent += (tx.amount || 0);
-        if (tx.type === 'withdraw') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
-      });
-      document.getElementById('total-received').textContent = totalReceived.toLocaleString();
-      document.getElementById('total-sent').textContent = totalSent.toLocaleString();
-      document.getElementById('last-withdrawal').textContent = lastWithdrawal;
-
-      renderTransactions();
-    }
-
-    // [GROCK EDIT]: Atualiza interface com dados de carteira existentes
-    function atualizarInterfaceCarteira(walletData) {
-      document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
       document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.', ',')}`;
-
       const txs = walletData.transactions || [];
       document.getElementById('total-transactions').textContent = txs.length;
       let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
@@ -685,80 +879,88 @@
       document.getElementById('total-received').textContent = totalReceived.toLocaleString();
       document.getElementById('total-sent').textContent = totalSent.toLocaleString();
       document.getElementById('last-withdrawal').textContent = lastWithdrawal;
-
       renderTransactions();
     }
-
-    function renderTransactions(){
+    function atualizarInterfaceCarteira(walletData) {
+      document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString();
+      document.getElementById('reais-balance').textContent = `R$ ${(walletData.reaisBalance || 0).toFixed(2).replace('.', ',')}`;
+      const txs = walletData.transactions || [];
+      document.getElementById('total-transactions').textContent = txs.length;
+      let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
+      txs.forEach(tx => {
+        if (tx.type === 'receive') totalReceived += (tx.amount || 0);
+        if (tx.type === 'send' || tx.type === 'withdraw') totalSent += (tx.amount || 0);
+        if (tx.type === 'withdraw') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
+      });
+      document.getElementById('total-received').textContent = totalReceived.toLocaleString();
+      document.getElementById('total-sent').textContent = totalSent.toLocaleString();
+      document.getElementById('last-withdrawal').textContent = lastWithdrawal;
+      renderTransactions();
+    }
+    function renderTransactions() {
       const listEl = document.getElementById('transaction-list');
       const txs = (walletData && walletData.transactions) ? walletData.transactions.slice().reverse() : [];
       if (!txs.length) {
-        listEl.innerHTML = `<div style="text-align:center;padding:1.2rem;color:var(--text-secondary)"><svg viewBox="0 0 24 24" width="48" height="48" style="opacity:.6"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg><div>Nenhuma transação ainda</div></div>`;
+        listEl.innerHTML = `
+          <div style="text-align:center; padding:1rem; color:var(--text-secondary)">
+            <i class="fas fa-inbox" style="font-size:1.5rem; opacity:0.6"></i>
+            <div style="margin-top:0.5rem; font-size:0.85rem">Nenhuma transação ainda</div>
+          </div>`;
         return;
       }
       listEl.innerHTML = txs.map(tx => {
         const typeMap = { receive: 'Recebido', send: 'Enviado', withdraw: 'Saque', deposit: 'Depósito', conversion: 'Conversão' };
-        const amountLabel = tx.currency === 'golds' ? `${tx.amount} Golds` : `R$ ${Number(tx.amount).toFixed(2).replace('.',',')}`;
-        const sign = (tx.type === 'receive' ? '+' : '-') ;
+        const amountLabel = tx.currency === 'golds' ? `${tx.amount} Golds` : `R$ ${Number(tx.amount).toFixed(2).replace('.', ',')}`;
+        const sign = (tx.type === 'receive' ? '+' : '-');
         const amountClass = tx.type === 'receive' ? 'transaction-amount receive' : 'transaction-amount send';
         const when = new Date(tx.date).toLocaleString('pt-BR');
         const desc = tx.description || '';
         return `
           <div class="transaction-item">
-            <div style="flex:1;min-width:0">
+            <div style="flex:1; min-width:0">
               <div class="transaction-type">${typeMap[tx.type] || tx.type}</div>
               <div class="transaction-desc">${desc}</div>
               <div class="transaction-date">${when}</div>
             </div>
-            <div style="margin-left:1rem;text-align:right">
+            <div style="margin-left:0.75rem; text-align:right">
               <div class="${amountClass}">${sign} ${amountLabel}</div>
             </div>
           </div>
         `;
       }).join('');
     }
-
-    // -------------------------
-    // Helpers para atualizar Firestore
-    // -------------------------
-    async function saveWallet(updated){
+    async function saveWallet(updated) {
       if (!currentUser || !currentUser.uid) throw new Error('Usuário não autenticado');
       try {
         await db.collection('wallets').doc(currentUser.uid).set(updated, { merge: true });
-        walletData = {...walletData, ...updated};
+        walletData = { ...walletData, ...updated };
         renderWallet();
-      } catch(err){
+      } catch (err) {
         console.error('Erro salvando wallet:', err);
         throw err;
       }
     }
-
-    async function pushTransaction(tx){
+    async function pushTransaction(tx) {
       if (!walletData) walletData = {};
       const arr = Array.isArray(walletData.transactions) ? walletData.transactions : [];
       arr.push(tx);
       await saveWallet({ transactions: arr });
     }
-
-    // -------------------------
-    // Ações (Deposit / Withdraw / Transfer / Convert)
-    // -------------------------
-    async function processDeposit(){
+    async function processDeposit() {
       const amount = Number(document.getElementById('deposit-amount').value);
       if (!amount || amount <= 0) { showNotification('Erro', 'Informe um valor válido para depósito.'); return; }
       try {
         const newReais = (walletData.reaisBalance || 0) + amount;
         await saveWallet({ reaisBalance: newReais });
-        await pushTransaction({ type:'deposit', amount, currency:'reais', description:'Depósito via método selecionado', date: new Date().toISOString() });
+        await pushTransaction({ type: 'deposit', amount, currency: 'reais', description: 'Depósito via método selecionado', date: new Date().toISOString() });
         closeModal('depositModal');
-        showNotification('Sucesso', `Depósito de R$ ${amount.toFixed(2)} registrado.`);
-      } catch(err){
+        showNotification('Sucesso', `Depósito de R$ ${amount.toFixed(2).replace('.', ',')} registrado.`);
+      } catch (err) {
         console.error('Erro depositar:', err);
         showNotification('Erro', 'Erro ao processar depósito. Veja console.');
       }
     }
-
-    async function processWithdrawal(){
+    async function processWithdrawal() {
       const currency = document.getElementById('withdraw-currency').value;
       const amount = Number(document.getElementById('withdraw-amount').value);
       if (!amount || amount <= 0) { showNotification('Erro', 'Valor inválido para saque.'); return; }
@@ -767,10 +969,10 @@
         const newReais = (walletData.reaisBalance || 0) - amount;
         try {
           await saveWallet({ reaisBalance: newReais });
-          await pushTransaction({ type:'withdraw', amount, currency:'reais', description:'Saque para conta (PIX)', date:new Date().toISOString() });
+          await pushTransaction({ type: 'withdraw', amount, currency: 'reais', description: 'Saque para conta (PIX)', date: new Date().toISOString() });
           closeModal('withdrawModal');
-          showNotification('Solicitação enviada', `Saque de R$ ${amount.toFixed(2)} solicitado.`);
-        } catch(err){
+          showNotification('Solicitação enviada', `Saque de R$ ${amount.toFixed(2).replace('.', ',')} solicitado.`);
+        } catch (err) {
           console.error('Erro saque:', err);
           showNotification('Erro', 'Não foi possível solicitar saque.');
         }
@@ -779,25 +981,23 @@
         const goldsToRemove = amount;
         const reaisEquivalent = amount / GOLD_TO_REAL_RATE;
         try {
-          await saveWallet({ goldsBalance: (walletData.goldsBalance || 0) - goldsToRemove, reaisBalance: (walletData.reaisBalance||0) + 0 });
-          await pushTransaction({ type:'withdraw', amount:amount, currency:'golds', description:`Saque de ${amount} Golds (equiv. R$ ${reaisEquivalent.toFixed(2)})`, date:new Date().toISOString() });
+          await saveWallet({ goldsBalance: (walletData.goldsBalance || 0) - goldsToRemove, reaisBalance: (walletData.reaisBalance || 0) + 0 });
+          await pushTransaction({ type: 'withdraw', amount: amount, currency: 'golds', description: `Saque de ${amount} Golds (equiv. R$ ${reaisEquivalent.toFixed(2).replace('.', ',')})`, date: new Date().toISOString() });
           closeModal('withdrawModal');
           showNotification('Solicitação enviada', `Saque de ${amount} Golds solicitado.`);
-        } catch(err){
+        } catch (err) {
           console.error('Erro saque golds:', err);
           showNotification('Erro', 'Não foi possível solicitar saque em Golds.');
         }
       }
     }
-
-    async function processTransfer(){
+    async function processTransfer() {
       const recipientId = document.getElementById('recipient-id').value.trim();
       const currency = document.getElementById('transfer-currency').value;
       const amount = Number(document.getElementById('transfer-amount').value);
       if (!recipientId) { showNotification('Erro', 'Informe o ID do destinatário.'); return; }
       if (!amount || amount <= 0) { showNotification('Erro', 'Valor inválido.'); return; }
       if (recipientId === (currentUser && currentUser.uid)) { showNotification('Erro', 'Não é possível transferir para si mesmo.'); return; }
-
       try {
         const recipientRef = db.collection('wallets').doc(recipientId);
         const recipientSnap = await recipientRef.get();
@@ -805,53 +1005,50 @@
           showNotification('Erro', 'Destinatário não encontrado.');
           return;
         }
-
         if (currency === 'reais') {
           if ((walletData.reaisBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Reais.'); return; }
           const batch = db.batch();
           const senderRef = db.collection('wallets').doc(currentUser.uid);
           batch.update(senderRef, {
             reaisBalance: (walletData.reaisBalance || 0) - amount,
-            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'send', amount, currency:'reais', description:`Transferência para ${recipientId}`, date:new Date().toISOString(), to:recipientId })
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'reais', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId })
           });
           batch.update(recipientRef, {
             reaisBalance: (recipientSnap.data().reaisBalance || 0) + amount,
-            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'receive', amount, currency:'reais', description:`Recebido de ${currentUser.uid}`, date:new Date().toISOString(), from:currentUser.uid })
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'receive', amount, currency: 'reais', description: `Recebido de ${currentUser.uid}`, date: new Date().toISOString(), from: currentUser.uid })
           });
           await batch.commit();
           await loadWalletData(currentUser.uid);
           closeModal('transferModal');
-          showNotification('Sucesso', `Transferência de R$ ${amount.toFixed(2)} enviada.`);
+          showNotification('Sucesso', `Transferência de R$ ${amount.toFixed(2).replace('.', ',')} enviada.`);
         } else {
           if ((walletData.goldsBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Golds.'); return; }
           const batch = db.batch();
           const senderRef = db.collection('wallets').doc(currentUser.uid);
           batch.update(senderRef, {
             goldsBalance: (walletData.goldsBalance || 0) - amount,
-            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'send', amount, currency:'golds', description:`Transferência para ${recipientId}`, date:new Date().toISOString(), to:recipientId })
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'golds', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId })
           });
           batch.update(recipientRef, {
             goldsBalance: (recipientSnap.data().goldsBalance || 0) + amount,
-            transactions: firebase.firestore.FieldValue.arrayUnion({ type:'receive', amount, currency:'golds', description:`Recebido de ${currentUser.uid}`, date:new Date().toISOString(), from:currentUser.uid })
+            transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'receive', amount, currency: 'golds', description: `Recebido de ${currentUser.uid}`, date: new Date().toISOString(), from: currentUser.uid })
           });
           await batch.commit();
           await loadWalletData(currentUser.uid);
           closeModal('transferModal');
           showNotification('Sucesso', `Transferência de ${amount} Golds enviada.`);
         }
-      } catch(err){
+      } catch (err) {
         console.error('Erro transferir:', err);
         showNotification('Erro', 'Falha ao processar transferência. Veja console.');
       }
     }
-
-    async function processConversion(){
+    async function processConversion() {
       const from = document.getElementById('convert-from').value;
       const to = document.getElementById('convert-to').value;
       const amount = Number(document.getElementById('convert-amount').value);
       if (!amount || amount <= 0) { showNotification('Erro', 'Valor inválido.'); return; }
       if (from === to) { showNotification('Erro', 'Escolha moedas diferentes.'); return; }
-
       try {
         if (from === 'golds' && to === 'reais') {
           if ((walletData.goldsBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Golds.'); return; }
@@ -859,33 +1056,30 @@
           const newGolds = (walletData.goldsBalance || 0) - amount;
           const newReais = (walletData.reaisBalance || 0) + reais;
           await saveWallet({ goldsBalance: newGolds, reaisBalance: newReais });
-          await pushTransaction({ type:'conversion', amount, currency:'golds', description:`Conversão ${amount} Golds → R$ ${reais.toFixed(2)}`, date: new Date().toISOString() });
+          await pushTransaction({ type: 'conversion', amount, currency: 'golds', description: `Conversão ${amount} Golds → R$ ${reais.toFixed(2).replace('.', ',')}`, date: new Date().toISOString() });
           closeModal('convertModal');
-          showNotification('Conversão', `Convertido ${amount} Golds para R$ ${reais.toFixed(2)}`);
+          showNotification('Conversão', `Convertido ${amount} Golds para R$ ${reais.toFixed(2).replace('.', ',')}`);
         } else if (from === 'reais' && to === 'golds') {
           if ((walletData.reaisBalance || 0) < amount) { showNotification('Erro', 'Saldo insuficiente em Reais.'); return; }
           const golds = Math.floor(amount * GOLD_TO_REAL_RATE);
           const newReais = (walletData.reaisBalance || 0) - amount;
           const newGolds = (walletData.goldsBalance || 0) + golds;
           await saveWallet({ reaisBalance: newReais, goldsBalance: newGolds });
-          await pushTransaction({ type:'conversion', amount: golds, currency:'golds', description:`Conversão R$ ${amount.toFixed(2)} → ${golds} Golds`, date: new Date().toISOString() });
+          await pushTransaction({ type: 'conversion', amount: golds, currency: 'golds', description: `Conversão R$ ${amount.toFixed(2).replace('.', ',')} → ${golds} Golds`, date: new Date().toISOString() });
           closeModal('convertModal');
-          showNotification('Conversão', `Convertido R$ ${amount.toFixed(2)} para ${golds} Golds`);
+          showNotification('Conversão', `Convertido R$ ${amount.toFixed(2).replace('.', ',')} para ${golds} Golds`);
         }
-      } catch(err){
+      } catch (err) {
         console.error('Erro conversão:', err);
         showNotification('Erro', 'Falha ao converter. Veja console.');
       }
     }
-
-    // [GROCK EDIT 2]: Definidas funções dos modais ausentes
     function openDepositModal() { openModal('depositModal'); }
     function openWithdrawModal() { openModal('withdrawModal'); }
     function openTransferModal() { openModal('transferModal'); }
     function openConvertModal() { openModal('convertModal'); }
-
     function navigateTo(page) {
-      switch(page) {
+      switch (page) {
         case 'wallet':
           window.location.href = "carteira.html";
           break;
@@ -898,11 +1092,8 @@
         case 'store':
           window.location.href = "loja.html";
           break;
-        case 'service':
-          window.location.href = "servicos.html";
-          break;
-        case 'raffles':
-          window.location.href = "sorteios.html";
+        case 'yshippcommerce':
+          window.location.href = "yshippcommerce.html";
           break;
         case 'home':
         default:
@@ -910,8 +1101,6 @@
           break;
       }
     }
-
-    // Expor funções para botões inline
     window.openDepositModal = openDepositModal;
     window.openWithdrawModal = openWithdrawModal;
     window.openTransferModal = openTransferModal;
@@ -923,11 +1112,57 @@
     window.closeModal = closeModal;
     window.showNotification = showNotification;
     window.navigateTo = navigateTo;
-
-    // -------------------------
-    // Inicialização
-    // -------------------------
-    (function init(){
+    document.addEventListener('DOMContentLoaded', function () {
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+          console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar.");
+        })
+        .catch((error) => {
+          console.error("❌ Erro configurando persistência:", error);
+        });
+      const menuToggles = {
+        'menu-icon': 'main-menu'
+      };
+      Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
+        const toggle = document.getElementById(toggleId);
+        const menu = document.getElementById(menuId);
+        if (!toggle || !menu) {
+          console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`);
+          return;
+        }
+        toggle.addEventListener('click', e => {
+          e.stopPropagation();
+          menu.classList.toggle('open');
+          toggle.classList.toggle('active');
+        });
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+      document.getElementById("logout-button").addEventListener("click", () => {
+        auth.signOut().then(() => window.location.href = "cadastro.html");
+      });
+    });
+    (function init() {
       document.getElementById('loadingOverlay').style.display = 'flex';
       console.log('Aguardando autenticação...');
     })();
