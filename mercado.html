@@ -86,6 +86,8 @@
     .cookie-banner{position:fixed;bottom:0;left:0;width:100%;background:var(--surface);color:var(--text-primary);padding:1rem;box-shadow:var(--shadow);border-top:1px solid var(--border);z-index:1000;display:flex;flex-direction:column;gap:.5rem;align-items:center;text-align:center}
     [data-theme="dark"] .cookie-banner{background:var(--surface);border-top:1px solid var(--border)}
     .cookie-banner .content{font-size:.875rem}
+    .cookie-banner .content a{color:var(--primary);text-decoration:underline}
+    .cookie-banner .content a:hover{color:var(--primary-hover)}
     .cookie-banner .buttons{display:flex;gap:.5rem}
     .cookie-banner button{padding:.5rem 1rem;border:none;border-radius:.375rem;font-weight:600;cursor:pointer;transition:background .3s ease;font-size:.875rem}
     .cookie-banner button.accept{background:var(--secondary);color:#fff}
@@ -109,8 +111,6 @@
     <div class="status-bar" role="region" aria-label="Resumo de Saldo">
       <div>SALDO EM GOLDS <span class="golds-balance" id="golds-balance">0</span></div>
       <div>SALDO EM REAIS <span class="reais-balance" id="reais-balance">R$ 0,00</span></div>
-      <!-- [GROCK EDIT]: Campo "Golds Totais" desativado por redundância -->
-      <!-- <div>GOLDS TOTAIS <span id="golds-total">900</span></div> -->
     </div>
     <section class="wallet-section">
       <h2>Gerencie Sua Carteira</h2>
@@ -218,6 +218,7 @@
       <p style="margin-bottom: 1rem; color: var(--text-secondary);">Visualize e gerencie os serviços que você publicou.</p>
       <div class="services-list-content"></div>
     </section>
+    <!-- Modais -->
     <div id="editModal" class="modal" role="dialog" aria-labelledby="editMessage">
       <div class="modal-content">
         <h2 id="editMessage">Editar Serviço</h2>
@@ -346,21 +347,12 @@
       appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
     };
     firebase.initializeApp(firebaseConfig);
-
     // Firebase Authentication and Firestore
     const auth = firebase.auth();
     const db = firebase.firestore();
-
-    // IMPORTANT: Firestore Index Creation
-    // To support the query in carregarMercadoFirebase with .orderBy("createdAt", "desc"),
-    // ensure a Firestore index exists for the 'services' collection on the 'createdAt' field.
-    // If you see a console error with a link to create the index, follow it to the Firebase console
-    // and create the index for 'services' with 'createdAt' in descending order.
-
     // Global variables to store claim details
     let currentServiceId, currentOwnerId, currentRewardGolds;
     let currentServicesLimit = 20;
-
     // Structured service categories
     const serviceCategories = {
       "Inscrever-se": [
@@ -475,17 +467,14 @@
         { name: "SEO + Promover conteúdo + Tarefas 5x extensas", golds: 7000, difficulty: "Complexo" }
       ]
     };
-
     // Theme toggle functionality
     function loadTheme() {
       const savedTheme = localStorage.getItem('theme') || 'light';
       document.body.dataset.theme = savedTheme;
     }
-
     function saveTheme(theme) {
       localStorage.setItem('theme', theme);
     }
-
     // Modal control
     function showModal(modalId, message, autoClose = true) {
       const modal = document.getElementById(modalId);
@@ -495,14 +484,11 @@
         setTimeout(() => modal.style.display = 'none', 4000);
       }
     }
-
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = 'none';
     }
-
     // Update local balance display
     function updateBalanceDisplay(goldsBalance, reaisBalance) {
-      // [GROCK EDIT]: Sincronização direta com Firestore implementada — valores agora refletem em tempo real
       const goldsBalanceElement = document.getElementById('golds-balance');
       const goldsBalanceDisplayElement = document.getElementById('golds-balance-display');
       const reaisBalanceElement = document.getElementById('reais-balance');
@@ -512,7 +498,6 @@
       reaisBalanceElement.textContent = `R$ ${reaisBalance?.toFixed(2) || '0,00'}`;
       reaisBalanceDisplayElement.textContent = `R$ ${reaisBalance?.toFixed(2) || '0,00'}`;
     }
-
     // Calculate total cost dynamically
     function calculateCost() {
       const freelancers = parseInt(document.getElementById('freelancers').value) || 0;
@@ -523,13 +508,11 @@
         totalCostElement.textContent = `${total} Golds`;
       }
     }
-
     // Update subcategories based on service type
     function updateSubcategories(selectId = 'subcategory', rewardId = 'rewardGolds', difficultyId = 'difficultyInfo', typeSelectId = 'serviceType') {
       const category = document.getElementById(typeSelectId).value;
       const subcategorySelect = document.getElementById(selectId);
       subcategorySelect.innerHTML = '<option value="" disabled selected>Selecione uma subcategoria</option>';
-
       if (category && serviceCategories[category]) {
         serviceCategories[category].forEach(sub => {
           const option = document.createElement('option');
@@ -538,13 +521,11 @@
           subcategorySelect.appendChild(option);
         });
       }
-
       // Reset reward and difficulty on category change
       document.getElementById(rewardId).value = '';
       document.getElementById(rewardId).min = '1';
       document.getElementById(difficultyId).textContent = '';
     }
-
     // Handle subcategory selection to update reward and difficulty
     function handleSubcategoryChange(selectId = 'subcategory', rewardId = 'rewardGolds', difficultyId = 'difficultyInfo', typeSelectId = 'serviceType') {
       const category = document.getElementById(typeSelectId).value;
@@ -561,7 +542,6 @@
         }
       }
     }
-
     // Ensure wallet exists
     async function ensureWalletExists(userId, displayName = 'Usuário') {
       const ref = db.collection('wallets').doc(userId);
@@ -576,19 +556,47 @@
         });
       }
     }
+    // Add service tax to the corresponding card
+    async function addServiceTaxToCard(serviceType, tax) {
+      const cardId = getCardIdByServiceType(serviceType);
+      if (!cardId) return;
 
+      const cardRef = db.collection('serviceCards').doc(cardId);
+      await db.runTransaction(async (transaction) => {
+        const cardDoc = await transaction.get(cardRef);
+        const currentGolds = cardDoc.exists ? (cardDoc.data().golds || 0) : 0;
+        transaction.set(cardRef, {
+          golds: currentGolds + tax,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      });
+    }
+    // Get card ID by service type
+    function getCardIdByServiceType(serviceType) {
+      const cardMap = {
+        "Microinfluenciador do Facebook": "facebook",
+        "Microinfluenciador do Instagram": "instagram",
+        "Aplicativo móvel": "mobile",
+        "Telegrama": "telegram",
+        "TikTok": "tiktok",
+        "Marketing de vídeo": "video",
+        "Discord": "discord",
+        "Comente em outros blogs": "blog",
+        "Reddit": "reddit",
+        "SEO, Promover Conteúdo, Pesquisar, Engajar": "seo",
+        "Inscrever-se": "inscricoes"
+      };
+      return cardMap[serviceType];
+    }
     // Load market data from Firestore
     function carregarMercadoFirebase(userId) {
       console.log("🔗 Carregando dados do mercado para:", userId);
-
       // Update user info
       const user = auth.currentUser;
       if (user) {
         document.getElementById('user-info').textContent = `${user.displayName || 'Usuário'} (ID: ${user.uid})`;
       }
-
       // Load user's wallet balance
-      // [GROCK EDIT]: Sincronização direta com Firestore implementada — valores agora refletem em tempo real
       db.collection('wallets').doc(userId).onSnapshot((doc) => {
         if (doc.exists) {
           const data = doc.data();
@@ -597,7 +605,6 @@
           updateBalanceDisplay(0, 0);
         }
       });
-
       // Load user's services
       db.collection("services")
         .where("ownerId", "==", userId)
@@ -608,11 +615,9 @@
           });
           renderUserServices(userServices, userId);
         });
-
-      // [GROCK EDIT]: Ajuste da query para garantir que serviços ativos sejam listados corretamente
+      // Load public services
       loadPublicServices(userId);
     }
-
     function loadPublicServices(userId) {
       db.collection("services")
         .orderBy("createdAt", "desc")
@@ -621,16 +626,13 @@
           const publicServices = [];
           snapshot.forEach((doc) => {
             const service = { id: doc.id, ...doc.data() };
-            // Inclui apenas serviços realmente ativos e remove variações de capitalização
             if (service.status?.toLowerCase().trim() !== "ativo") return;
-            // Oculta serviços do próprio dono
             if (service.ownerId === userId) return;
             publicServices.push(service);
           });
           renderPublicServices(publicServices, userId);
         });
     }
-
     // Render user-specific services
     function renderUserServices(services, userId) {
       const container = document.querySelector("#userServices .services-list-content");
@@ -671,7 +673,6 @@
           </div>`).join("")
         : "<p>Nenhum serviço publicado ainda.</p>";
     }
-
     // Render public services in carousel
     function renderPublicServices(services, userId) {
       const container = document.querySelector("#carousel");
@@ -703,7 +704,6 @@
           </div>`).join("")
         : "<p>Nenhum serviço disponível.</p>";
     }
-
     // Open claim modal with service details
     function openClaimModal(serviceId, ownerId, rewardGolds) {
       currentServiceId = serviceId;
@@ -712,7 +712,6 @@
       document.getElementById('claimDetails').textContent = `Você está prestes a reivindicar este serviço por ${rewardGolds} Golds.`;
       document.getElementById('claimModal').style.display = 'flex';
     }
-
     // Open proof submission modal
     function openProofModal(serviceId) {
       currentServiceId = serviceId;
@@ -725,7 +724,6 @@
       `;
       document.getElementById('proofModal').style.display = 'flex';
     }
-
     // Publish service to Firestore
     async function publicarServicoFirebase(userId) {
       const form = document.getElementById('publishForm');
@@ -759,15 +757,18 @@
       }
 
       const publicationFee = 20;
+      const serviceTax = 10;
+
       try {
         await ensureWalletExists(userId, user.displayName || 'Usuário');
+
         await db.runTransaction(async (transaction) => {
           const walletRef = db.collection('wallets').doc(userId);
           const walletDoc = await transaction.get(walletRef);
           const currentBalance = walletDoc.exists ? walletDoc.data().goldsBalance || 0 : 0;
 
-          if (currentBalance < price + publicationFee) {
-            throw new Error('Saldo insuficiente para a taxa de publicação e custo do serviço.');
+          if (currentBalance < price + publicationFee + serviceTax) {
+            throw new Error('Saldo insuficiente para a taxa de publicação, custo do serviço e taxa específica.');
           }
 
           const newService = {
@@ -783,19 +784,18 @@
             price,
             rewardGolds,
             status: 'ativo',
-            createdAt: new Date() // [GROCK EDIT]: Mudado para Date() para indexar imediatamente
+            createdAt: new Date()
           };
 
           const serviceRef = db.collection('services').doc();
           transaction.set(serviceRef, newService);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // [GROCK EDIT]: Delay para Firestore indexar o novo serviço
 
-          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
+          // Atualiza a carteira do usuário
           transaction.update(walletRef, {
-            goldsBalance: currentBalance - (price + publicationFee),
+            goldsBalance: currentBalance - (price + publicationFee + serviceTax),
             transactions: firebase.firestore.FieldValue.arrayUnion({
               type: 'service_publication',
-              amount: -(price + publicationFee),
+              amount: -(price + publicationFee + serviceTax),
               currency: 'golds',
               description: `Publicação do serviço: ${title}`,
               date: new Date()
@@ -803,17 +803,19 @@
             ultimaPublicacao: firebase.firestore.FieldValue.serverTimestamp()
           });
 
-          showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
-          form.reset();
-          calculateCost(); // Reset total cost display
-          updateSubcategories(); // Reset subcategory dropdown
+          // Adiciona os 10 Golds ao card correspondente
+          await addServiceTaxToCard(serviceType, serviceTax);
         });
+
+        showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
+        form.reset();
+        calculateCost();
+        updateSubcategories();
       } catch (error) {
         console.error('Erro ao publicar serviço:', error);
         showModal('errorModal', `❌ Ocorreu um erro: ${error.message}`);
       }
     }
-
     // Claim a service
     async function claimServiceFirebase(serviceId, ownerId, rewardGolds) {
       const user = auth.currentUser;
@@ -826,14 +828,13 @@
         showModal('errorModal', '⚠️ Você não pode reivindicar seu próprio serviço.');
         return;
       }
-
       try {
         await ensureWalletExists(user.uid, user.displayName || 'Usuário');
         await ensureWalletExists(ownerId);
         await sincronizarMercadoFirebase(user.uid, serviceId, {
           rewardGolds,
           type: 'service_claim',
-          description: `Reivindicou serviço ID: ${serviceId}` // [GROK MODIFICAÇÃO]: Descrição base, mas será enriquecida com serviceType na função
+          description: `Reivindicou serviço ID: ${serviceId}`
         });
         showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
       } catch (error) {
@@ -847,7 +848,6 @@
         showModal('errorModal', errorMessage);
       }
     }
-
     // Confirm claim
     async function confirmClaim(serviceId, ownerId, rewardGolds) {
       try {
@@ -856,15 +856,12 @@
           showModal('errorModal', 'Você precisa estar logado para reivindicar um serviço.');
           return;
         }
-
         const userId = user.uid;
-
         await sincronizarMercadoFirebase(userId, serviceId, {
           rewardGolds,
           type: 'service_claim',
-          description: `Reivindicou serviço ID: ${serviceId}` // [GROK MODIFICAÇÃO]: Descrição base, enriquecida na função
+          description: `Reivindicou serviço ID: ${serviceId}`
         });
-
         showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
         closeModal('claimModal');
         carregarMercadoFirebase(userId);
@@ -873,7 +870,6 @@
         showModal('errorModal', '❌ Ocorreu um erro ao concluir o serviço. Tente novamente.');
       }
     }
-
     // Edit a service
     async function editService(serviceId) {
       const user = auth.currentUser;
@@ -882,7 +878,6 @@
         window.location.href = 'login.html';
         return;
       }
-
       try {
         const serviceRef = db.collection('services').doc(serviceId);
         const serviceDoc = await serviceRef.get();
@@ -895,18 +890,16 @@
           showModal('errorModal', '⚠️ Você não tem permissão para editar este serviço.');
           return;
         }
-
         // Populate edit form
         const editForm = document.getElementById('editForm');
         document.getElementById('editServiceName').value = service.title || '';
         document.getElementById('editZone').value = service.zone || '';
         document.getElementById('editServiceType').value = service.serviceType || '';
-        updateSubcategories('editSubcategory', 'editRewardGolds', 'editDifficultyInfo', 'editServiceType'); // Populate subcategories based on serviceType
+        updateSubcategories('editSubcategory', 'editRewardGolds', 'editDifficultyInfo', 'editServiceType');
         document.getElementById('editSubcategory').value = service.subcategory || '';
-        handleSubcategoryChange('editSubcategory', 'editRewardGolds', 'editDifficultyInfo', 'editServiceType'); // Update reward and difficulty
+        handleSubcategoryChange('editSubcategory', 'editRewardGolds', 'editDifficultyInfo', 'editServiceType');
         document.getElementById('editFreelancers').value = service.freelancers || 1;
         document.getElementById('editRewardGolds').value = service.rewardGolds || 1;
-
         const editStepsContainer = document.getElementById('editStepsContainer');
         editStepsContainer.innerHTML = '<label>Passos do Serviço</label>';
         service.steps.forEach(step => {
@@ -915,7 +908,6 @@
           stepInput.innerHTML = `<textarea required>${step}</textarea>`;
           editStepsContainer.appendChild(stepInput);
         });
-
         const editProofsContainer = document.getElementById('editProofsContainer');
         editProofsContainer.innerHTML = '<label>Provas Necessárias</label>';
         service.proofs.forEach(proof => {
@@ -930,10 +922,8 @@
           `;
           editProofsContainer.appendChild(proofInput);
         });
-
         // Show edit modal
         document.getElementById('editModal').style.display = 'flex';
-
         // Handle edit form submission
         editForm.onsubmit = async (e) => {
           e.preventDefault();
@@ -944,7 +934,6 @@
         showModal('errorModal', '❌ Ocorreu um erro ao carregar o serviço.');
       }
     }
-
     // Submit edited service
     async function editarServicoFirebase(serviceId) {
       const user = auth.currentUser;
@@ -953,7 +942,6 @@
         window.location.href = 'login.html';
         return;
       }
-
       const editForm = document.getElementById('editForm');
       const title = editForm.querySelector('#editServiceName').value.trim();
       const zone = editForm.querySelector('#editZone').value.trim();
@@ -971,12 +959,10 @@
         type: proofInput.querySelector('.proof-type').value.trim(),
         description: proofInput.querySelector('textarea').value.trim()
       })).filter(proof => proof.description);
-
       if (!title || !zone || !serviceType || !subcategory || freelancers <= 0 || rewardGolds < rewardGoldsMin || price <= 0 || steps.length === 0 || proofs.length === 0) {
         showModal('errorModal', `⚠️ Por favor, preencha todos os campos corretamente, incluindo pelo menos um passo e uma prova. A recompensa por tarefa deve ser no mínimo ${rewardGoldsMin} Golds.`);
         return;
       }
-
       try {
         await sincronizarMercadoFirebase(user.uid, serviceId, {
           title,
@@ -999,7 +985,6 @@
         showModal('errorModal', `❌ Ocorreu um erro: ${error.message}`);
       }
     }
-
     // Delete a service
     async function deleteService(serviceId) {
       const user = auth.currentUser;
@@ -1008,7 +993,6 @@
         window.location.href = 'login.html';
         return;
       }
-
       try {
         const serviceRef = db.collection('services').doc(serviceId);
         const serviceDoc = await serviceRef.get();
@@ -1020,7 +1004,6 @@
           showModal('errorModal', '⚠️ Você não tem permissão para excluir este serviço.');
           return;
         }
-
         await serviceRef.delete();
         showModal('successModal', '✅ Operação concluída com sucesso! Clique em OK para continuar.', false);
         carregarMercadoFirebase(user.uid);
@@ -1029,29 +1012,23 @@
         showModal('errorModal', `❌ Ocorreu um erro: ${error.message}`);
       }
     }
-
     // Synchronize market data with Firestore
     async function sincronizarMercadoFirebase(userId, serviceId, data) {
       await db.runTransaction(async (transaction) => {
         const serviceRef = db.collection('services').doc(serviceId);
         const serviceDoc = await transaction.get(serviceRef);
-
         if (!serviceDoc.exists) {
           throw new Error('Serviço não encontrado.');
         }
-
         const serviceData = serviceDoc.data();
-
         // Padroniza formato de transações
         const makeTransactionObj = (type, amount, description) => ({
           type,
           amount,
           currency: 'golds',
           description,
-          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           date: new Date()
         });
-
         // CLAIM: pagar recompensas — debitar dono e creditar claimant
         if (data.type === 'service_claim') {
           if (serviceData.status !== 'ativo') {
@@ -1060,32 +1037,24 @@
           if (!serviceData.ownerId) {
             throw new Error('Serviço sem dono definido.');
           }
-
           const ownerRef = db.collection('wallets').doc(serviceData.ownerId);
           const claimantRef = db.collection('wallets').doc(userId);
-
           const ownerDoc = await transaction.get(ownerRef);
           const claimantDoc = await transaction.get(claimantRef);
-
           const ownerBalance = ownerDoc.exists ? (ownerDoc.data().goldsBalance || 0) : 0;
           const claimantBalance = claimantDoc.exists ? (claimantDoc.data().goldsBalance || 0) : 0;
           const reward = Number(data.rewardGolds || 0);
-
           if (ownerBalance < reward) {
             throw new Error('Saldo do dono insuficiente para pagar a recompensa.');
           }
-
-          // [GROK MODIFICAÇÃO]: Adiciona o serviceType à descrição das transações para maior especificidade no histórico da carteira
           const ownerTxDesc = `Pagamento por serviço ${serviceData.serviceType || 'desconhecido'} ID: ${serviceId}`;
           const claimantTxDesc = `Reivindicou serviço ${serviceData.serviceType || 'desconhecido'} ID: ${serviceId}`;
-
           // Atualiza serviço
           transaction.update(serviceRef, {
             status: 'concluído',
             claimedBy: userId,
             claimedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-
           // Debita dono
           transaction.update(ownerRef, {
             goldsBalance: ownerBalance - reward,
@@ -1093,7 +1062,6 @@
               makeTransactionObj('service_payout', -reward, ownerTxDesc)
             )
           });
-
           // Credita claimant
           transaction.update(claimantRef, {
             goldsBalance: claimantBalance + reward,
@@ -1101,10 +1069,8 @@
               makeTransactionObj('service_claim', reward, claimantTxDesc)
             )
           });
-
-          return; // fim do fluxo claim
+          return;
         }
-
         // EDIT: atualização de campos (apenas proprietario)
         if (data.type === 'service_edit') {
           if (serviceData.ownerId !== userId) {
@@ -1123,16 +1089,12 @@
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
           };
           transaction.update(serviceRef, updateData);
-
-          // (Opcional) registrar uma transação de edição se quiser cobrar algo
           return;
         }
-
         // outros tipos...
         throw new Error('Tipo de sincronização não tratado.');
       });
     }
-
     // Submit proofs
     async function submitProofs(serviceId) {
       const userId = auth.currentUser?.uid;
@@ -1140,10 +1102,8 @@
         showModal('errorModal', 'Usuário não autenticado. Faça login novamente.');
         return;
       }
-
       await enviarProvasFirebase(serviceId, userId);
     }
-
     // Handle IP consent
     async function acceptIPConsent() {
       localStorage.setItem('ipConsent', 'true');
@@ -1162,7 +1122,6 @@
       }
       document.getElementById('cookieBanner').style.display = 'none';
     }
-
     async function declineIPConsent() {
       localStorage.setItem('ipConsent', 'false');
       const user = auth.currentUser;
@@ -1180,7 +1139,6 @@
       }
       document.getElementById('cookieBanner').style.display = 'none';
     }
-
     // === ENVIAR PROVAS DE EXECUÇÃO ===
     async function enviarProvasFirebase(serviceId, userId) {
       const proofText = document.getElementById('proofText')?.value.trim();
@@ -1188,14 +1146,11 @@
         showModal('errorModal', 'Por favor, envie uma descrição ou evidência válida.');
         return;
       }
-
       const serviceRef = db.collection('services').doc(serviceId);
       const walletRef = db.collection('wallets').doc(userId);
-
       try {
         const serviceDoc = await serviceRef.get();
         if (!serviceDoc.exists) throw new Error('Serviço não encontrado.');
-
         const serviceData = serviceDoc.data();
         if (serviceData.claimedBy !== userId) {
           throw new Error('Você não é o responsável por este serviço.');
@@ -1203,34 +1158,27 @@
         if (serviceData.status !== 'concluído') {
           throw new Error('O serviço ainda não foi concluído.');
         }
-
         // Atualiza serviço com prova
         await serviceRef.update({
           proof: {
             proofText,
             userId,
-            // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
             date: new Date()
           },
           status: 'aguardando_confirmação',
           proofDate: firebase.firestore.FieldValue.serverTimestamp()
         });
-
         // Adiciona transação temporária na carteira
         const walletDoc = await walletRef.get();
         const walletData = walletDoc.data() || { transactions: [] };
         const transactions = walletData.transactions || [];
-
         transactions.push({
           type: 'aguardando_confirmação',
           description: `Prova enviada para serviço: ${serviceData.title}`,
           amount: serviceData.rewardGolds,
-          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           date: new Date()
         });
-
         await walletRef.update({ transactions });
-
         showModal('successModal', '✅ Prova enviada com sucesso! Aguardando confirmação do anunciante.', false);
         closeModal('proofModal');
         carregarMercadoFirebase(userId);
@@ -1239,19 +1187,15 @@
         showModal('errorModal', `❌ Erro ao enviar prova: ${error.message}`);
       }
     }
-
     // === CONFIRMAR PROVA ===
     async function confirmarProvaFirebase(serviceId, claimantId) {
       const serviceRef = db.collection('services').doc(serviceId);
       const walletRef = db.collection('wallets').doc(claimantId);
       const ownerId = auth.currentUser?.uid;
-
       try {
         if (!ownerId) throw new Error('Usuário não autenticado.');
-
         const serviceDoc = await serviceRef.get();
         if (!serviceDoc.exists) throw new Error('Serviço não encontrado.');
-
         const serviceData = serviceDoc.data();
         if (serviceData.ownerId !== ownerId) {
           throw new Error('Você não tem permissão para confirmar este serviço.');
@@ -1262,17 +1206,13 @@
         if (serviceData.claimedBy !== claimantId) {
           throw new Error('Reivindicador inválido.');
         }
-
-        // [GROK MODIFICAÇÃO]: Adiciona o serviceType à descrição da transação de conclusão para maior especificidade no histórico
         const claimantTxDesc = `Serviço concluído: ${serviceData.serviceType || 'desconhecido'} - ${serviceData.title}`;
-
         // Atualiza serviço
         await serviceRef.update({
           status: 'finalizado',
           confirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
           finalizedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
         // Atualiza carteira do usuário
         const walletDoc = await walletRef.get();
         const walletData = walletDoc.data() || { goldsBalance: 0, transactions: [] };
@@ -1281,12 +1221,9 @@
           type: 'entrada',
           description: claimantTxDesc,
           amount: serviceData.rewardGolds,
-          // [GROCK EDIT]: serverTimestamp() removido de arrayUnion — substituído por new Date() para compatibilidade com Firestore
           date: new Date()
         });
-
         await walletRef.update({ transactions });
-
         showModal('successModal', '✅ Prova confirmada! Transação registrada.', false);
         carregarMercadoFirebase(ownerId);
       } catch (error) {
@@ -1294,7 +1231,6 @@
         showModal('errorModal', `❌ Falha ao confirmar prova: ${error.message}`);
       }
     }
-
     // Firebase Authentication
     auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -1305,7 +1241,6 @@
         window.location.href = 'login.html';
       }
     });
-
     // Theme toggle event listener
     const themeToggleBtn = document.getElementById('theme-toggle');
     themeToggleBtn.addEventListener('click', () => {
@@ -1314,13 +1249,11 @@
       body.dataset.theme = newTheme;
       saveTheme(newTheme);
     });
-
     // Ver Mais button
     document.getElementById('verMais').addEventListener('click', () => {
       currentServicesLimit += 20;
       loadPublicServices(auth.currentUser.uid);
     });
-
     // Add step functionality
     function addStep(containerId = 'stepsContainer') {
       const container = document.getElementById(containerId);
@@ -1334,14 +1267,12 @@
       `;
       container.appendChild(newStepDiv);
     }
-
     // Remove step functionality
     function removeStep(button) {
       if (document.querySelectorAll('#stepsContainer .step-input').length > 1) {
         button.closest('.step-input').remove();
       }
     }
-
     // Add proof functionality
     function addProof(containerId = 'proofsContainer') {
       const container = document.getElementById(containerId);
@@ -1359,14 +1290,12 @@
       `;
       container.appendChild(newProofDiv);
     }
-
     // Remove proof functionality
     function removeProof(button) {
       if (document.querySelectorAll('#proofsContainer .proof-input').length > 1) {
         button.closest('.proof-input').remove();
       }
     }
-
     // Publish form submit listener
     document.getElementById('publishForm').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -1378,13 +1307,11 @@
         window.location.href = 'login.html';
       }
     });
-
     // Proof form submit listener
     document.getElementById('proofForm').addEventListener('submit', (e) => {
       e.preventDefault();
       submitProofs(currentServiceId);
     });
-
     // Load theme and initialize dynamic fields
     window.addEventListener('DOMContentLoaded', () => {
       loadTheme();
@@ -1398,18 +1325,16 @@
       // Initialize dynamic subcategories
       document.getElementById('serviceType')?.addEventListener('change', () => {
         updateSubcategories();
-        handleSubcategoryChange(); // Reset on type change
+        handleSubcategoryChange();
       });
       document.getElementById('subcategory')?.addEventListener('change', handleSubcategoryChange);
-      updateSubcategories(); // Initial call to set default state
-
+      updateSubcategories();
       // For edit modal
       document.getElementById('editServiceType')?.addEventListener('change', () => {
         updateSubcategories('editSubcategory', 'editRewardGolds', 'editDifficultyInfo', 'editServiceType');
         handleSubcategoryChange('editSubcategory', 'editRewardGolds', 'editDifficultyInfo', 'editServiceType');
       });
       document.getElementById('editSubcategory')?.addEventListener('change', () => handleSubcategoryChange('editSubcategory', 'editRewardGolds', 'editDifficultyInfo', 'editServiceType'));
-
       // Event delegation for add/remove buttons
       document.addEventListener('click', (e) => {
         if (e.target.classList.contains('add-step')) {
@@ -1421,8 +1346,6 @@
         }
       });
     });
-
-    // [GROCK EDIT CONFIRMADO]: Correções aplicadas para arrayUnion, sincronização de saldos, remoção de Golds Totais e indexação imediata
   </script>
 </body>
 </html>
