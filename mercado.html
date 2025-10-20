@@ -456,18 +456,35 @@
       z-index: 2000;
       align-items: center;
       justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
+    .modal.active {
+        display: flex;
+        opacity: 1;
+    }
+    /* Estilos para o novo modal de fluxo guiado */
+    #guidedPublishModal .modal-content {
+      /* Largura 100% do container (max-width) e centralizado */
+      width: 90%; 
+      max-width: 500px;
+      /* Altura fixa 350px (card centralizado) */
+      height: 350px; 
+      /* Altura e largura proporcionais às informações (ajustado no JS) */
+      transition: width 0.3s ease, height 0.3s ease; 
+      overflow: hidden; /* Esconde conteúdo extra se o JS falhar no ajuste */
+      padding: 1rem;
+    }
+    
     .modal-content {
       background: var(--surface);
-      padding: 1.5rem;
       border-radius: 8px;
-      max-width: 500px;
-      width: 90%;
       box-shadow: var(--shadow-lg);
       position: relative;
     }
+    
     .modal-content h2 {
-      font-size: 1.25rem;
+      font-size: 1.125rem;
       font-weight: 600;
       margin-bottom: 1rem;
       color: var(--text-primary);
@@ -487,13 +504,14 @@
       border: 1px solid var(--border);
       border-radius: 4px;
       font-size: 0.9rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       background: var(--background);
       color: var(--text-primary);
+      outline: none;
     }
     .modal-content textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 50px;
     }
     .modal-content input[readonly] {
       background: var(--progress-bg);
@@ -530,6 +548,110 @@
       margin-bottom: 1rem;
       display: none;
     }
+
+    /* Estilos das Etapas */
+    .step {
+        display: none;
+        height: 100%; /* Força a etapa a ocupar a altura do modal-content */
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding-bottom: 40px; /* Espaço para o controle de navegação */
+        overflow-y: auto;
+    }
+    .step.active {
+        display: block;
+        opacity: 1;
+    }
+    .fade-in-step {
+        opacity: 1 !important;
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+    .step-navigation {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .step-navigation button {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+    .step-navigation .back {
+        background: var(--text-secondary);
+    }
+    .step-navigation .back:hover {
+        background: var(--text-primary);
+    }
+    .step-indicator {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Estilos para a lista de passos (Etapa 2) */
+    .step-list-container {
+        margin-bottom: 0.5rem;
+        max-height: 150px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+    .step-item {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .step-item input {
+        margin-bottom: 0;
+        flex-grow: 1;
+    }
+    .step-item button {
+        width: auto;
+        padding: 0.25rem 0.5rem;
+        background: var(--accent);
+    }
+    .add-step-button {
+        background: var(--secondary);
+        color: white;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Estilos para o Resumo (Etapa 4) */
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.3rem 0;
+        font-size: 0.9rem;
+        border-bottom: 1px dashed var(--border);
+    }
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+    .summary-item .label {
+        color: var(--text-secondary);
+    }
+    .summary-item .value {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+    .summary-final-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--secondary);
+        margin-top: 0.5rem;
+        border-top: 2px solid var(--secondary);
+        padding-top: 0.5rem;
+    }
+
     @media (max-width: 768px) {
       .menu {
         width: min(80vw, 240px);
@@ -564,9 +686,22 @@
         min-width: 100%;
         max-width: 100%;
       }
-      .modal-content {
+      /* Ajuste no modal para telas pequenas */
+      #guidedPublishModal .modal-content {
+        height: auto; /* Deixa a altura flexível em telas pequenas */
+        max-height: 90vh;
+        overflow-y: auto;
+        min-height: 350px;
         width: 95%;
         padding: 1rem;
+      }
+      .step-navigation {
+          position: sticky;
+          bottom: -1rem; /* Ajusta para parecer fixo dentro do modal scrollável */
+          padding: 0.5rem 1rem;
+      }
+      .step-navigation button {
+          padding: 0.75rem;
       }
     }
     @media (max-width: 600px) {
@@ -718,28 +853,116 @@
     </nav>
   </div>
   <div class="notification" id="notification"></div>
-  <div id="publishServiceModal" class="modal">
-    <div class="modal-content">
+  
+  <div id="guidedPublishModal" class="modal">
+    <div class="modal-content" id="modalContent">
       <button class="close" onclick="closeModal()">×</button>
-      <h2>Publicar Serviço - <span id="modalCompanyName"></span></h2>
+      <h2 id="modalTitle">Publicar Serviço - <span id="modalCompanyName"></span></h2>
       <div id="errorMessage" class="error"></div>
-      <label for="serviceName">Nome do Serviço</label>
-      <input type="text" id="serviceName" required>
-      <label for="serviceDescription">Descrição Rápida</label>
-      <textarea id="serviceDescription" required></textarea>
-      <label for="reward">Recompensa por Tarefa (Golds)</label>
-      <input type="number" id="reward" min="1" required>
-      <label for="freelancers">Quantidade de Freelancers</label>
-      <input type="number" id="freelancers" min="1" required>
-      <label for="subcategory">Subcategoria</label>
-      <select id="subcategory" required>
-        <option value="" disabled selected>Selecione uma subcategoria</option>
-      </select>
-      <label for="difficulty">Nível de Dificuldade</label>
-      <input type="text" id="difficulty" readonly>
-      <label for="publicationFee">Taxa de Publicação</label>
-      <input type="text" id="publicationFee" readonly>
-      <button onclick="publishService()">Publicar Serviço</button>
+      
+      <p class="step-indicator">Etapa <span id="currentStepNumber">1</span> de 4</p>
+
+      <div id="step-1" class="step active">
+        <label for="subcategory">1. Selecione a Categoria do Serviço</label>
+        <select id="subcategory" required onchange="calculateDifficultyAndProof()">
+            <option value="" disabled selected>Escolha uma subcategoria</option>
+            </select>
+        
+        <label for="serviceDifficulty">Nível de Dificuldade</label>
+        <input type="text" id="serviceDifficulty" readonly value="Aguardando seleção...">
+
+        <label for="freelancers">2. Quantidade de Freelancers Necessários</label>
+        <input type="number" id="freelancers" min="1" required placeholder="Ex: 50" oninput="prepareSummary()">
+
+        <label for="serviceDescription">3. Descrição Rápida do Serviço</label>
+        <textarea id="serviceDescription" required placeholder="Ex: Preciso de 50 pessoas para curtir minha foto mais recente."></textarea>
+      </div>
+
+      <div id="step-2" class="step">
+        <label>1. Defina os Passos do Serviço (Máx. 5)</label>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">O preço base é <span id="basePriceDisplay">150 Golds</span> e aumenta com cada passo.</p>
+        
+        <div id="serviceStepsContainer" class="step-list-container">
+            <div class="step-item" data-step-id="1">
+                <input type="text" placeholder="Passo 1 (Obrigatório)" class="service-step-input" required oninput="updateStepDescription(1, this.value)">
+                <button class="bg-red-500 hover:bg-red-700 text-white" style="display: none;" onclick="removeStep(1)"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+        
+        <button class="add-step-button" onclick="addStep()" id="addStepButton"><i class="fas fa-plus"></i> Adicionar Passo (Total: <span id="stepCount">1</span>)</button>
+        
+        <div style="margin-top: 1rem;">
+          <label for="calculatedReward">Recompensa Total Estimada por Freelancer</label>
+          <input type="text" id="calculatedReward" readonly value="150 Golds (Base)">
+        </div>
+      </div>
+
+      <div id="step-3" class="step">
+        <label>1. Descreva a Prova de Execução do Serviço</label>
+        <textarea id="proofDescription" required placeholder="Ex: Enviar captura de tela da curtida no perfil."></textarea>
+        
+        <label>2. Tipos de Prova Exigidos (Mínimo: <span id="minProofCount">1</span>)</label>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="proofImage" value="Imagem" checked> Imagem
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="proofText" value="Texto"> Texto
+          </label>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+          *O número mínimo de provas aumenta com a complexidade do serviço.
+        </p>
+      </div>
+
+      <div id="step-4" class="step">
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <h3 class="text-xl font-bold" style="color: var(--secondary);">Resumo e Confirmação</h3>
+          <p id="summaryUserMessage" style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Seu serviço será publicado. Você confirma isso, <span id="summaryUserName">...</span> (<span id="summaryUserId">...</span>)?
+          </p>
+        </div>
+        
+        <div style="background: var(--background); padding: 0.75rem; border-radius: 4px;">
+            <div class="summary-item">
+                <span class="label">Nível de Dificuldade</span>
+                <span class="value" id="summaryDifficulty">...</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Recompensa por Tarefa (Golds)</span>
+                <span class="value" id="summaryReward">...</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Quantidade de Freelancers</span>
+                <span class="value" id="summaryFreelancers">...</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Custo Total Bruto (Golds)</span>
+                <span class="value" id="summaryGrossCost">...</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Taxa da Empresa (1% + 50 Golds)</span>
+                <span class="value" id="summaryFee">...</span>
+            </div>
+            <div class="summary-final-value">
+                <span class="label">Valor Final Total (Golds)</span>
+                <span class="value" id="summaryFinalCost">...</span>
+            </div>
+        </div>
+
+        <p id="summaryWarning" class="error" style="display: none; margin-top: 0.75rem; text-align: center;">Saldo insuficiente em Golds!</p>
+        <button onclick="publishService()" id="confirmPublishButton" style="margin-top: 1rem;">Confirmar Publicação</button>
+      </div>
+
+      <div class="step-navigation">
+        <button class="back" id="backButton" onclick="prevStep()" style="display: none;">
+          <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+        <button class="next" id="nextButton" onclick="nextStep()">
+          Avançar <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
     </div>
   </div>
   <main style="width:100%; max-width:1000px; padding:0 0.75rem 120px; margin:0 auto;">
@@ -755,7 +978,6 @@
         <p style="margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 0.85rem;">Conheça nossas parceiras e acompanhe seu progresso.</p>
         <div class="carousel-container">
           <div class="carousel" id="company-carousel">
-            <!-- Card Facebook -->
             <div class="nav-card company-card fade-in" data-card-id="facebook">
               <i class="fab fa-facebook" style="color: #1877f2;"></i>
               <h3>Micro Influenciador do Facebook</h3>
@@ -806,7 +1028,6 @@
                 <span class="progress-text" id="facebook-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Instagram -->
             <div class="nav-card company-card fade-in" data-card-id="instagram">
               <i class="fab fa-instagram" style="color: #e4405f;"></i>
               <h3>Micro Influenciador do Instagram</h3>
@@ -857,7 +1078,6 @@
                 <span class="progress-text" id="instagram-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Aplicativo Móvel -->
             <div class="nav-card company-card fade-in" data-card-id="mobile">
               <i class="fas fa-mobile-alt" style="color: #4CAF50;"></i>
               <h3>Aplicativo Móvel</h3>
@@ -908,7 +1128,6 @@
                 <span class="progress-text" id="mobile-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Telegram -->
             <div class="nav-card company-card fade-in" data-card-id="telegram">
               <i class="fab fa-telegram" style="color: #0088cc;"></i>
               <h3>Telegram</h3>
@@ -959,7 +1178,6 @@
                 <span class="progress-text" id="telegram-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card TikTok -->
             <div class="nav-card company-card fade-in" data-card-id="tiktok">
               <i class="fab fa-tiktok" style="color: #000000;"></i>
               <h3>TikTok</h3>
@@ -1010,7 +1228,6 @@
                 <span class="progress-text" id="tiktok-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Marketing de Vídeo -->
             <div class="nav-card company-card fade-in" data-card-id="video">
               <i class="fas fa-video" style="color: #FF0000;"></i>
               <h3>Marketing de Vídeo</h3>
@@ -1061,7 +1278,6 @@
                 <span class="progress-text" id="video-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Discord -->
             <div class="nav-card company-card fade-in" data-card-id="discord">
               <i class="fab fa-discord" style="color: #7289DA;"></i>
               <h3>Discord</h3>
@@ -1112,7 +1328,6 @@
                 <span class="progress-text" id="discord-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Comente em outros Blogs -->
             <div class="nav-card company-card fade-in" data-card-id="blog">
               <i class="fas fa-blog" style="color: #FF9800;"></i>
               <h3>Comente em outros Blogs</h3>
@@ -1163,7 +1378,6 @@
                 <span class="progress-text" id="blog-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Reddit -->
             <div class="nav-card company-card fade-in" data-card-id="reddit">
               <i class="fab fa-reddit" style="color: #FF4500;"></i>
               <h3>Reddit</h3>
@@ -1214,7 +1428,6 @@
                 <span class="progress-text" id="reddit-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card SEO, Promover Conteúdo -->
             <div class="nav-card company-card fade-in" data-card-id="seo">
               <i class="fas fa-search" style="color: #4285F4;"></i>
               <h3>SEO, Promover Conteúdo</h3>
@@ -1265,7 +1478,6 @@
                 <span class="progress-text" id="seo-progress-text">0 / 250.000</span>
               </div>
             </div>
-            <!-- Card Serviços Internacionais -->
             <div class="nav-card company-card fade-in" data-card-id="inscricoes">
               <i class="fas fa-rss" style="color: #FF9800;"></i>
               <h3>Serviços Internacionais</h3>
@@ -1337,6 +1549,7 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
   <script>
+  let selectedCompanyId = null;
     // Inicializa o Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
@@ -1349,6 +1562,45 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
+
+    // Variáveis globais (devem ficar fora de qualquer função)
+    let currentUser = null;
+    let walletData = { goldsBalance: 0, reaisBalance: 0, name: "Usuário", id: "..." };
+
+    // Constante para formatação de Golds (R$ padrão brasileiro com separador de milhar como ponto)
+    const GOLD_FORMAT = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    const GOLD_FORMAT_NO_DECIMAL = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+    /**
+     * Função auxiliar para formatar Golds
+     * @param {number} value
+     * @param {boolean} includeDecimals
+     * @returns {string}
+     */
+    function formatGold(value, includeDecimals = true) {
+        if (value === undefined || value === null) return "0";
+        const numericValue = parseFloat(value);
+        if (isNaN(numericValue)) return "0";
+        return includeDecimals ? GOLD_FORMAT.format(numericValue) : GOLD_FORMAT_NO_DECIMAL.format(numericValue);
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUser = user;
+        const walletRef = db.collection('wallets').doc(user.uid);
+        const snap = await walletRef.get();
+        if (snap.exists) {
+          walletData = { ...snap.data(), id: user.uid };
+          console.log("💰 Carteira carregada:", walletData);
+        } else {
+          console.warn("⚠️ Nenhuma carteira encontrada para este usuário.");
+          walletData = { goldsBalance: 0, reaisBalance: 0, name: "Usuário", id: user.uid };
+        }
+      } else {
+        console.warn("❌ Nenhum usuário autenticado.");
+        walletData = { goldsBalance: 0, reaisBalance: 0, name: "Usuário", id: "..." };
+      }
+    });
 
     // Definição dos níveis globais e metas para cada card
     const niveisGlobais = {
@@ -1433,258 +1685,655 @@
 
     // Definição das subcategorias e dificuldades
     const subcategorias = {
-      inscricoes: [
-        { nome: "Somente envio de e-mail", goldsBase: 150, dificuldade: "Simples" },
-        { nome: "Cadastro simples", goldsBase: 300, dificuldade: "Simples" },
-        { nome: "Inscrição complexa", goldsBase: 1000, dificuldade: "Intermediário" }
-      ],
-      facebook: [
-        { nome: "Curtir no Facebook", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Curtidas no Facebook (mais de 50 amigos)", goldsBase: 1200, dificuldade: "Intermediário" },
-        { nome: "Curtidas no Facebook (mais de 100 amigos)", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Curtidas no Facebook (mais de 300 amigos)", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Adicionar comentário à conversa existente", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Adicione-me como amigo", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Junte-se a um grupo", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Mude sua foto de perfil (por 1 semana)", goldsBase: 3000, dificuldade: "Intermediário" },
-        { nome: "Postar no Mural", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Publique no seu mural (mais de 50 amigos)", goldsBase: 2500, dificuldade: "Intermediário" },
-        { nome: "Publique no seu mural (mais de 100 amigos)", goldsBase: 3000, dificuldade: "Intermediário" },
-        { nome: "Publique no seu mural (mais de 300 amigos)", goldsBase: 3500, dificuldade: "Intermediário" },
-        { nome: "Curtir + Publicar no mural (mais de 50 amigos)", goldsBase: 3000, dificuldade: "Intermediário" },
-        { nome: "Curtir + Publicar no mural (mais de 100 amigos)", goldsBase: 3500, dificuldade: "Intermediário" },
-        { nome: "Curtir + Publicar no mural (mais de 300 amigos)", goldsBase: 4000, dificuldade: "Intermediário" },
-        { nome: "Curtir + Comentar + Publicar no Mural", goldsBase: 5000, dificuldade: "Intermediário" }
-      ],
-      instagram: [
-        { nome: "Seguir", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Curtir", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Comentário", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Seguir + Curtir", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Curtir + Comentário", goldsBase: 2500, dificuldade: "Intermediário" },
-        { nome: "Seguir + Curtir + Comentar", goldsBase: 3500, dificuldade: "Intermediário" },
-        { nome: "Compartilhe uma publicação", goldsBase: 3000, dificuldade: "Intermediário" },
-        { nome: "Seguir + Curtir + Comentar + Compartilhar", goldsBase: 5000, dificuldade: "Intermediário" }
-      ],
-      mobile: [
-        { nome: "Somente download", goldsBase: 500, dificuldade: "Simples" },
-        { nome: "Baixar + Instalar", goldsBase: 700, dificuldade: "Simples" },
-        { nome: "Baixar + Instalar + Testar + Revisão de 25 palavras", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Baixar + Instalar + Cadastrar + KYC", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Baixar + Instalar + Reproduzir/Engajar (até 5 min)", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Baixar + Instalar + Reproduzir/Engajar (até 15 min)", goldsBase: 1500, dificuldade: "Intermediário" }
-      ],
-      telegram: [
-        { nome: "Bot Junte-se", goldsBase: 500, dificuldade: "Simples" },
-        { nome: "Junte-se ao grupo", goldsBase: 700, dificuldade: "Simples" },
-        { nome: "Airdrop simples", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Lançamento aéreo complexo", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Bot Join (Usuários Premium)", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Ingresso em grupo (usuários premium)", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Airdrop simples (usuários premium)", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Airdrop complexo (usuários premium)", goldsBase: 3000, dificuldade: "Intermediário" }
-      ],
-      tiktok: [
-        { nome: "Crie um vídeo (até 15s)", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Crie um vídeo (até 1 min)", goldsBase: 3000, dificuldade: "Intermediário" },
-        { nome: "Crie um vídeo (até 3 min)", goldsBase: 5000, dificuldade: "Complexo" },
-        { nome: "Assista a um vídeo (até 1 min)", goldsBase: 500, dificuldade: "Simples" },
-        { nome: "Assista a um vídeo (até 3 min)", goldsBase: 1000, dificuldade: "Simples" },
-        { nome: "Curtir / Seguir", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Comente um vídeo", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Compartilhe um vídeo", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Assistir + Curtir + Comentar + Compartilhar", goldsBase: 4000, dificuldade: "Intermediário" }
-      ],
-      video: [
-        { nome: "Assista ao vídeo (3 min)", goldsBase: 500, dificuldade: "Simples" },
-        { nome: "Assista ao vídeo (6 min)", goldsBase: 1000, dificuldade: "Simples" },
-        { nome: "Assista ao vídeo (9 min)", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Assista ao vídeo (12 min)", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Assista ao vídeo (15+ min)", goldsBase: 2500, dificuldade: "Intermediário" },
-        { nome: "Curtir um vídeo", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Comentário", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Inscreva-se no canal", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Quaisquer 2 tarefas", goldsBase: 2500, dificuldade: "Intermediário" },
-        { nome: "Quaisquer 3 tarefas", goldsBase: 3500, dificuldade: "Intermediário" },
-        { nome: "Quaisquer 4 tarefas", goldsBase: 4500, dificuldade: "Intermediário" },
-        { nome: "1x Curtir Compartilhar, Comentário Inscrever + Assistir vídeo (6 min)", goldsBase: 4000, dificuldade: "Intermediário" },
-        { nome: "1x Curtir Compartilhar, Comentário Inscrever + Assistir vídeo (9 min)", goldsBase: 4500, dificuldade: "Intermediário" },
-        { nome: "1x Curtir Compartilhar, Comentário Inscrever + Assistir vídeo (12 min)", goldsBase: 5000, dificuldade: "Intermediário" }
-      ],
-      discord: [
-        { nome: "Junte-se a um canal", goldsBase: 700, dificuldade: "Simples" },
-        { nome: "Ingresso no servidor", goldsBase: 1000, dificuldade: "Intermediário" }
-      ],
-      blog: [
-        { nome: "Comentário curto", goldsBase: 500, dificuldade: "Simples" },
-        { nome: "Comentário curto 2x", goldsBase: 1000, dificuldade: "Simples" },
-        { nome: "Comentário curto 3x", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Comentário curto com Link", goldsBase: 700, dificuldade: "Simples" },
-        { nome: "Comentário curto 2x com Link", goldsBase: 1200, dificuldade: "Intermediário" }
-      ],
-      reddit: [
-        { nome: "Votar positivamente em uma postagem", goldsBase: 1000, dificuldade: "Intermediário" },
-        { nome: "Pesquisar + votar positivamente em uma postagem", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Comentar uma postagem", goldsBase: 1500, dificuldade: "Intermediário" },
-        { nome: "Votar positivamente + comentar uma postagem", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "Votar positivamente em uma postagem (NSFW)", goldsBase: 1200, dificuldade: "Intermediário" },
-        { nome: "Pesquisar + votar positivamente em uma postagem (NSFW)", goldsBase: 1700, dificuldade: "Intermediário" },
-        { nome: "Comentar uma postagem (NSFW)", goldsBase: 1700, dificuldade: "Intermediário" },
-        { nome: "Votar positivamente + comentar uma postagem (NSFW)", goldsBase: 2200, dificuldade: "Intermediário" }
-      ],
-      seo: [
-        { nome: "SEO + Promover conteúdo + Engajar 1x", goldsBase: 2000, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Engajar 2x", goldsBase: 3000, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Engajar 3x", goldsBase: 4000, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Pesquisar + Engajar 1x", goldsBase: 2500, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Pesquisar + Engajar 2x", goldsBase: 3500, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Pesquisar + Engajar 3x", goldsBase: 4500, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Pesquisar 2x + Engajar 2x", goldsBase: 4000, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Pesquisar 3x + Engajar 3x", goldsBase: 5000, dificuldade: "Intermediário" },
-        { nome: "SEO + Promover conteúdo + Tarefas 4x extensas", goldsBase: 6000, dificuldade: "Complexo" },
-        { nome: "SEO + Promover conteúdo + Tarefas 5x extensas", goldsBase: 7000, dificuldade: "Complexo" }
-      ]
+        inscricoes: [
+            { nome: "Somente envio de e-mail", goldsBase: 150, dificuldade: "Simples" },
+            { nome: "Cadastro simples", goldsBase: 300, dificuldade: "Simples" },
+            { nome: "Inscrição complexa", goldsBase: 1000, dificuldade: "Intermediário" }
+        ],
+        facebook: [
+            { nome: "Curtir no Facebook", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Curtidas no Facebook (mais de 50 amigos)", goldsBase: 1200, dificuldade: "Intermediário" },
+            { nome: "Curtidas no Facebook (mais de 100 amigos)", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Curtidas no Facebook (mais de 300 amigos)", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Adicionar comentário à conversa existente", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Adicione-me como amigo", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Junte-se a um grupo", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Mude sua foto de perfil (por 1 semana)", goldsBase: 3000, dificuldade: "Intermediário" },
+            { nome: "Postar no Mural", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Publique no seu mural (mais de 50 amigos)", goldsBase: 2500, dificuldade: "Intermediário" },
+            { nome: "Publique no seu mural (mais de 100 amigos)", goldsBase: 3000, dificuldade: "Intermediário" },
+            { nome: "Publique no seu mural (mais de 300 amigos)", goldsBase: 3500, dificuldade: "Intermediário" },
+            { nome: "Curtir + Publicar no mural (mais de 50 amigos)", goldsBase: 3000, dificuldade: "Intermediário" },
+            { nome: "Curtir + Publicar no mural (mais de 100 amigos)", goldsBase: 3500, dificuldade: "Intermediário" },
+            { nome: "Curtir + Publicar no mural (mais de 300 amigos)", goldsBase: 4000, dificuldade: "Intermediário" },
+            { nome: "Curtir + Comentar + Publicar no Mural", goldsBase: 5000, dificuldade: "Intermediário" }
+        ],
+        instagram: [
+            { nome: "Seguir", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Curtir", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Comentário", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Seguir + Curtir", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Curtir + Comentário", goldsBase: 2500, dificuldade: "Intermediário" },
+            { nome: "Seguir + Curtir + Comentar", goldsBase: 3500, dificuldade: "Intermediário" },
+            { nome: "Compartilhe uma publicação", goldsBase: 3000, dificuldade: "Intermediário" },
+            { nome: "Seguir + Curtir + Comentar + Compartilhar", goldsBase: 5000, dificuldade: "Intermediário" }
+        ],
+        mobile: [
+            { nome: "Somente download", goldsBase: 500, dificuldade: "Simples" },
+            { nome: "Baixar + Instalar", goldsBase: 700, dificuldade: "Simples" },
+            { nome: "Baixar + Instalar + Testar + Revisão de 25 palavras", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Baixar + Instalar + Cadastrar + KYC", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Baixar + Instalar + Reproduzir/Engajar (até 5 min ou menos)", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Baixar + Instalar + Reproduzir/Engajar (até 15 min + US$ 0,05 para cada 10 min)", goldsBase: 1500, dificuldade: "Intermediário" }
+        ],
+        telegram: [
+            { nome: "Bot Junte-se", goldsBase: 500, dificuldade: "Simples" },
+            { nome: "Junte-se ao grupo", goldsBase: 700, dificuldade: "Simples" },
+            { nome: "Airdrop simples", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Lançamento aéreo complexo", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Bot Join (Usuários Premium)", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Ingresso em grupo (usuários premium)", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Airdrop simples (usuários premium)", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Airdrop complexo (usuários premium)", goldsBase: 3000, dificuldade: "Intermediário" }
+        ],
+        tiktok: [
+            { nome: "Crie um vídeo (até 15s)", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Crie um vídeo (até 1 min)", goldsBase: 3000, dificuldade: "Intermediário" },
+            { nome: "Crie um vídeo (até 3 min)", goldsBase: 5000, dificuldade: "Complexo" },
+            { nome: "Assista a um vídeo (até 1 min)", goldsBase: 500, dificuldade: "Simples" },
+            { nome: "Assista a um vídeo (até 3 min)", goldsBase: 1000, dificuldade: "Simples" },
+            { nome: "Curtir / Seguir", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Comente um vídeo", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Compartilhe um vídeo", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Assistir + Curtir + Comentar + Compartilhar", goldsBase: 4000, dificuldade: "Intermediário" }
+        ],
+        video: [
+            { nome: "Assista ao vídeo (3 min)", goldsBase: 500, dificuldade: "Simples" },
+            { nome: "Assista ao vídeo (6 min)", goldsBase: 1000, dificuldade: "Simples" },
+            { nome: "Assista ao vídeo (9 min)", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Assista ao vídeo (12 min)", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Assista ao vídeo (15+ min)", goldsBase: 2500, dificuldade: "Intermediário" },
+            { nome: "Curtir um vídeo", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Comentário", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Inscreva-se no canal", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Quaisquer 2 tarefas", goldsBase: 2500, dificuldade: "Intermediário" },
+            { nome: "Quaisquer 3 tarefas", goldsBase: 3500, dificuldade: "Intermediário" },
+            { nome: "Quaisquer 4 tarefas", goldsBase: 4500, dificuldade: "Intermediário" },
+            { nome: "1x Curtir Compartilhar, Comentário Inscrever + Assistir vídeo (6 min)", goldsBase: 4000, dificuldade: "Intermediário" },
+            { nome: "1x Curtir Compartilhar, Comentário Inscrever + Assistir vídeo (9 min)", goldsBase: 4500, dificuldade: "Intermediário" },
+            { nome: "1x Curtir Compartilhar, Comentário Inscrever + Assistir vídeo (12 min)", goldsBase: 5000, dificuldade: "Intermediário" }
+        ],
+        discord: [
+            { nome: "Junte-se a um canal", goldsBase: 700, dificuldade: "Simples" },
+            { nome: "Ingresso no servidor", goldsBase: 1000, dificuldade: "Intermediário" }
+        ],
+        blog: [
+            { nome: "Comentário curto", goldsBase: 500, dificuldade: "Simples" },
+            { nome: "Comentário curto 2x", goldsBase: 1000, dificuldade: "Simples" },
+            { nome: "Comentário curto 3x", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Comentário curto com Link", goldsBase: 700, dificuldade: "Simples" },
+            { nome: "Comentário curto 2x com Link", goldsBase: 1200, dificuldade: "Intermediário" }
+        ],
+        reddit: [
+            { nome: "Votar positivamente em uma postagem", goldsBase: 1000, dificuldade: "Intermediário" },
+            { nome: "Pesquisar + votar positivamente em uma postagem", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Comentar uma postagem", goldsBase: 1500, dificuldade: "Intermediário" },
+            { nome: "Votar positivamente + comentar uma postagem", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "Votar positivamente em uma postagem (NSFW)", goldsBase: 1200, dificuldade: "Intermediário" },
+            { nome: "Pesquisar + votar positivamente em uma postagem (NSFW)", goldsBase: 1700, dificuldade: "Intermediário" },
+            { nome: "Comentar uma postagem (NSFW)", goldsBase: 1700, dificuldade: "Intermediário" },
+            { nome: "Votar positivamente + comentar uma postagem (NSFW)", goldsBase: 2200, dificuldade: "Intermediário" }
+        ],
+        seo: [
+            { nome: "SEO + Promover conteúdo + Engajar 1x", goldsBase: 2000, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Engajar 2x", goldsBase: 3000, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Engajar 3x", goldsBase: 4000, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Pesquisar + Engajar 1x", goldsBase: 2500, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Pesquisar + Engajar 2x", goldsBase: 3500, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Pesquisar + Engajar 3x", goldsBase: 4500, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Pesquisar 2x + Engajar 2x", goldsBase: 4000, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Pesquisar 3x + Engajar 3x", goldsBase: 5000, dificuldade: "Intermediário" },
+            { nome: "SEO + Promover conteúdo + Tarefas 4x extensas", goldsBase: 6000, dificuldade: "Complexo" },
+            { nome: "SEO + Promover conteúdo + Tarefas 5x extensas", goldsBase: 7000, dificuldade: "Complexo" }
+        ]
     };
 
     // Variáveis globais para controle do modal e dados
     let currentCompanyId = null;
     let currentCompanyName = null;
+    let currentStep = 1;
+    const totalSteps = 4;
+    let serviceSteps = [{ id: 1, description: "" }];
+    const BASE_REWARD = 150; // Golds base por tarefa
+    const FIXED_FEE = 50; // Taxa fixa adicional em Golds
+    
+    
+    /**
+     * FUNÇÕES DO FLUXO GUIADO
+     */
 
-    // Função para abrir o modal de publicação
+    // Função para calcular a recompensa por freelancer com base na complexidade
+    function calculateRewardPerFreelancer() {
+        let baseReward = BASE_REWARD;
+        const totalSteps = serviceSteps.length;
+        
+        // Multiplicadores para aumento da recompensa baseada na quantidade de passos
+        const multipliers = [1, 1.5, 2.5, 4, 6];
+        
+        let calculatedReward = baseReward;
+
+        const subcategorySelect = document.getElementById("subcategory");
+        const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
+
+        if (selectedOption && selectedOption.dataset.goldsBase) {
+            const subcategoryGolds = parseFloat(selectedOption.dataset.goldsBase);
+            calculatedReward = subcategoryGolds;
+            
+            // Reajusta o multiplicador para ser proporcional ao BASE_REWARD de 150
+            const stepMultiplier = [0, 75, 125, 250, 450]; // Aumento absoluto em Golds por passo
+            let stepsBonus = 0;
+            for(let i = 1; i < totalSteps; i++){
+                stepsBonus += stepMultiplier[i];
+            }
+            calculatedReward += stepsBonus;
+            
+            document.getElementById("basePriceDisplay").textContent = `${formatGold(subcategoryGolds)} Golds (Base)`;
+            document.getElementById("calculatedReward").value = `${formatGold(calculatedReward)} Golds`;
+
+            return calculatedReward;
+        }
+
+        // Se nenhuma subcategoria for selecionada, usa o valor base simplificado
+        const multiplier = multipliers[totalSteps - 1] || multipliers[multipliers.length - 1]; // Limita em 5 passos
+        calculatedReward = baseReward * multiplier;
+
+        document.getElementById("basePriceDisplay").textContent = `${formatGold(BASE_REWARD)} Golds (Base)`;
+        document.getElementById("calculatedReward").value = `${formatGold(calculatedReward)} Golds (Base)`;
+        return calculatedReward;
+    }
+
+    // Adiciona uma nova etapa (Passo do Serviço)
+    function addStep() {
+        if (serviceSteps.length >= 5) {
+            showNotification("Máximo de 5 passos atingido.");
+            return;
+        }
+        const newStepId = serviceSteps.length + 1;
+        const container = document.getElementById("serviceStepsContainer");
+        
+        // Use a função renderServiceSteps para adicionar o novo passo
+        const newStep = { id: newStepId, description: "" };
+        serviceSteps.push(newStep);
+        renderServiceSteps(); // Redesenha tudo para manter a ordem e IDs
+        
+        document.getElementById("stepCount").textContent = serviceSteps.length;
+        if (serviceSteps.length >= 5) {
+            document.getElementById("addStepButton").disabled = true;
+            document.getElementById("addStepButton").textContent = "Máximo de 5 passos atingido";
+        }
+
+        calculateRewardPerFreelancer();
+        prepareSummary(); // Adicionado
+        updateModalSize();
+    }
+
+    // Remove uma etapa (Passo do Serviço)
+    function removeStep(id) {
+        if (serviceSteps.length === 1) {
+            showNotification("O serviço deve ter pelo menos 1 passo.");
+            return;
+        }
+        
+        // Filtra o passo removido e re-renderiza
+        serviceSteps = serviceSteps.filter(step => step.id !== id);
+        renderServiceSteps();
+
+        document.getElementById("stepCount").textContent = serviceSteps.length;
+        if (serviceSteps.length < 5) {
+            document.getElementById("addStepButton").disabled = false;
+            document.getElementById("addStepButton").textContent = `+ Adicionar Passo (Total: ${serviceSteps.length})`;
+        }
+
+        calculateRewardPerFreelancer();
+        prepareSummary(); // Adicionado
+        updateModalSize();
+    }
+
+    // Atualiza a descrição de um passo no array serviceSteps
+    function updateStepDescription(id, value) {
+        const step = serviceSteps.find(s => s.id === id);
+        if (step) {
+            step.description = value;
+        }
+    }
+
+    // Renderiza a lista de passos (usada após remoção e adição para reordenar)
+    function renderServiceSteps() {
+        const container = document.getElementById("serviceStepsContainer");
+        container.innerHTML = ''; // Limpa a lista
+        serviceSteps.forEach((step, index) => {
+            const stepId = index + 1;
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'step-item';
+            stepDiv.setAttribute('data-step-id', stepId);
+            stepDiv.innerHTML = `
+                <input type="text" placeholder="Passo ${stepId} (Obrigatório)" class="service-step-input" required value="${step.description || ''}" oninput="updateStepDescription(${stepId}, this.value)">
+                <button class="bg-red-500 hover:bg-red-700 text-white" style="display: ${stepId === 1 ? 'none' : 'block'};" onclick="removeStep(${stepId})"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(stepDiv);
+            step.id = stepId; // Atualiza o ID no array para garantir consistência
+        });
+        document.getElementById("stepCount").textContent = serviceSteps.length;
+    }
+
+
+    // Validação da etapa atual
+    function validateStep(step) {
+        document.getElementById("errorMessage").style.display = "none";
+        
+        switch (step) {
+            case 1:
+                const subcategory = document.getElementById("subcategory").value;
+                const freelancers = parseInt(document.getElementById("freelancers").value);
+                const description = document.getElementById("serviceDescription").value.trim();
+
+                if (!subcategory) {
+                    document.getElementById("errorMessage").textContent = "Selecione a Categoria do Serviço.";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                }
+                if (!freelancers || freelancers <= 0 || isNaN(freelancers)) {
+                    document.getElementById("errorMessage").textContent = "Informe uma quantidade válida de Freelancers (> 0).";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                }
+                if (description.length < 10) {
+                    document.getElementById("errorMessage").textContent = "A Descrição Rápida deve ter pelo menos 10 caracteres.";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                }
+                return true;
+            case 2:
+                // Valida que todos os passos têm descrição
+                let allStepsValid = true;
+                serviceSteps.forEach((step) => {
+                    // Encontra o input mais recente do passo
+                    const inputElement = document.querySelector(`.step-item[data-step-id="${step.id}"] .service-step-input`);
+                    if (!inputElement || inputElement.value.trim() === "") {
+                        allStepsValid = false;
+                    } else {
+                        step.description = inputElement.value.trim(); // Garante que a descrição está salva
+                    }
+                });
+                
+                if (!allStepsValid) {
+                    document.getElementById("errorMessage").textContent = "Preencha a descrição de todos os passos do serviço.";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                }
+                
+                // Calcula e atualiza a recompensa final
+                calculateRewardPerFreelancer();
+                return true;
+            case 3:
+                const proofDescription = document.getElementById("proofDescription").value.trim();
+                const proofImage = document.getElementById("proofImage").checked;
+                const proofText = document.getElementById("proofText").checked;
+                const minProofCount = parseInt(document.getElementById("minProofCount").textContent);
+                
+                if (proofDescription.length < 10) {
+                    document.getElementById("errorMessage").textContent = "A descrição da prova deve ter pelo menos 10 caracteres.";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                }
+                if (minProofCount === 2 && (!proofImage || !proofText)) {
+                    document.getElementById("errorMessage").textContent = "Com a complexidade do serviço, você deve exigir pelo menos 2 tipos de prova (Imagem E Texto).";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                }
+                if (minProofCount === 1 && !proofImage && !proofText) {
+                    document.getElementById("errorMessage").textContent = "Selecione pelo menos um tipo de prova (Imagem ou Texto).";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                }
+                
+                // Pré-calcula e prepara o resumo
+                prepareSummary();
+                return true;
+            case 4:
+                // A validação de saldo é feita ao tentar publicar
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    // Navegação para a próxima etapa
+    function nextStep() {
+        if (!validateStep(currentStep)) return;
+        
+        if (currentStep < totalSteps) {
+            const currentElement = document.getElementById(`step-${currentStep}`);
+            const nextElement = document.getElementById(`step-${currentStep + 1}`);
+
+            currentElement.classList.remove('active', 'fade-in-step');
+            
+            currentStep++;
+            document.getElementById("currentStepNumber").textContent = currentStep;
+            
+            // Transição Fade-In
+            setTimeout(() => {
+                nextElement.classList.add('active');
+                updateModalSize();
+                setTimeout(() => nextElement.classList.add('fade-in-step'), 10); 
+            }, 300); // 300ms = Duração da transição do fade-in
+
+            updateNavigationButtons();
+            
+        }
+    }
+
+    // Navegação para a etapa anterior
+    function prevStep() {
+        if (currentStep > 1) {
+            const currentElement = document.getElementById(`step-${currentStep}`);
+            const prevElement = document.getElementById(`step-${currentStep - 1}`);
+
+            currentElement.classList.remove('active', 'fade-in-step');
+
+            currentStep--;
+            document.getElementById("currentStepNumber").textContent = currentStep;
+
+            // Transição Fade-In
+            setTimeout(() => {
+                prevElement.classList.add('active');
+                updateModalSize();
+                setTimeout(() => prevElement.classList.add('fade-in-step'), 10); 
+            }, 300);
+            
+            updateNavigationButtons();
+        }
+    }
+
+    // Atualiza os botões de navegação
+    function updateNavigationButtons() {
+        const backButton = document.getElementById("backButton");
+        const nextButton = document.getElementById("nextButton");
+
+        backButton.style.display = currentStep > 1 ? 'block' : 'none';
+        nextButton.style.display = currentStep < totalSteps ? 'block' : 'none';
+        
+        // Finalizar ou Confirmar na última etapa
+        if (currentStep === totalSteps) {
+            // O botão de confirmar publicação está dentro da Etapa 4
+            nextButton.style.display = 'none';
+        }
+    }
+
+    // Atualiza o tamanho do modal para ser proporcional ao conteúdo da etapa
+    function updateModalSize() {
+        const modalContent = document.getElementById('modalContent');
+        const activeStep = document.querySelector(`#step-${currentStep}`);
+        
+        if (activeStep) {
+            // Para garantir que a altura seja a mínima de 350px, mas se expanda se necessário.
+            const minHeight = 350;
+            
+            // Calcula a altura necessária: altura do conteúdo + altura do título/indicador + altura da navegação
+            // Usando getBoundingClientRect().height para maior precisão
+            const contentHeight = activeStep.scrollHeight;
+            const titleHeight = document.getElementById('modalTitle').getBoundingClientRect().height;
+            const indicatorHeight = document.querySelector('.step-indicator').getBoundingClientRect().height;
+            const navigationHeight = document.querySelector('.step-navigation').getBoundingClientRect().height;
+            
+            // Padding total do modal content
+            const style = window.getComputedStyle(modalContent);
+            const paddingTop = parseFloat(style.paddingTop);
+            const paddingBottom = parseFloat(style.paddingBottom);
+            
+            const fixedOverhead = titleHeight + indicatorHeight + navigationHeight + paddingTop + paddingBottom;
+            
+            const newHeight = Math.max(minHeight, contentHeight + fixedOverhead);
+            
+            // Aplica a altura calculada
+            modalContent.style.height = `${newHeight}px`;
+
+            // Garante que a largura de 100% (max-width de 500px) seja mantida.
+            modalContent.style.width = `100%`;
+        }
+    }
+
+    // Carrega subcategorias no dropdown e preenche dados iniciais
+    function loadSubcategories() {
+        if (!currentCompanyId || !subcategorias[currentCompanyId]) return;
+
+        const subcategorySelect = document.getElementById("subcategory");
+        subcategorySelect.innerHTML = '<option value="" disabled selected>Escolha uma subcategoria</option>';
+        subcategorias[currentCompanyId].forEach(sub => {
+            const option = document.createElement("option");
+            option.value = sub.nome;
+            option.textContent = sub.nome;
+            option.dataset.goldsBase = sub.goldsBase;
+            option.dataset.dificuldade = sub.dificuldade;
+            subcategorySelect.appendChild(option);
+        });
+        
+        // Reseta os inputs da Etapa 1
+        document.getElementById("serviceDifficulty").value = "Aguardando seleção...";
+        document.getElementById("freelancers").value = "";
+        document.getElementById("serviceDescription").value = "";
+
+        // Reseta os passos
+        serviceSteps = [{ id: 1, description: "" }];
+        renderServiceSteps();
+        document.getElementById("addStepButton").disabled = false;
+        document.getElementById("addStepButton").textContent = `+ Adicionar Passo (Total: 1)`;
+        calculateRewardPerFreelancer(); // Garante que a recompensa inicial seja exibida
+        
+        // Zera as provas
+        document.getElementById("proofDescription").value = "";
+        document.getElementById("proofImage").checked = true;
+        document.getElementById("proofText").checked = false;
+        document.getElementById("minProofCount").textContent = "1";
+    }
+
+    // Calcula a dificuldade e a prova mínima na Etapa 1
+    function calculateDifficultyAndProof() {
+        const subcategorySelect = document.getElementById("subcategory");
+        const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
+
+        if (selectedOption && selectedOption.dataset.dificuldade) {
+            const dificuldade = selectedOption.dataset.dificuldade;
+            document.getElementById("serviceDifficulty").value = dificuldade;
+
+            // Lógica de Prova Mínima Baseada na Dificuldade
+            let minProof = 1;
+            if (dificuldade === "Complexo") {
+                minProof = 2; // Exige 2 tipos de prova para serviços complexos
+            }
+            document.getElementById("minProofCount").textContent = minProof;
+            calculateRewardPerFreelancer();
+            prepareSummary(); // Adicionado para recalcular o custo total ao mudar a categoria
+        } else {
+            document.getElementById("serviceDifficulty").value = "Aguardando seleção...";
+            document.getElementById("minProofCount").textContent = "1";
+            calculateRewardPerFreelancer();
+            prepareSummary(); // Adicionado para recalcular o custo total
+        }
+    }
+
+    // Função para calcular a taxa de publicação e preparar o resumo (Etapa 4)
+    function prepareSummary() {
+        const rewardPerFreelancer = calculateRewardPerFreelancer();
+        const freelancers = parseInt(document.getElementById("freelancers").value) || 0;
+        const difficulty = document.getElementById("serviceDifficulty").value;
+        const grossCost = rewardPerFreelancer * freelancers;
+
+        // CÁLCULO DA NOVA TAXA: 1% do custo total + 50 Golds FIXOS
+        const percentageFee = grossCost * 0.01;
+        const fee = percentageFee + FIXED_FEE; 
+        
+        const finalCost = grossCost + fee;
+        const currentBalance = walletData.goldsBalance || 0;
+
+        // Atualiza o Resumo
+        document.getElementById("summaryUserName").textContent = walletData.name || "Usuário";
+        document.getElementById("summaryUserId").textContent = walletData.id || "---";
+        document.getElementById("summaryDifficulty").textContent = difficulty;
+        document.getElementById("summaryReward").textContent = formatGold(rewardPerFreelancer, false); // Sem decimais na recompensa
+        document.getElementById("summaryFreelancers").textContent = formatGold(freelancers, false);
+        document.getElementById("summaryGrossCost").textContent = formatGold(grossCost, true);
+        document.getElementById("summaryFee").textContent = formatGold(fee, true);
+        document.getElementById("summaryFinalCost").textContent = formatGold(finalCost, true);
+
+        // Validação de Saldo
+        const confirmButton = document.getElementById("confirmPublishButton");
+        const summaryWarning = document.getElementById("summaryWarning");
+
+        if (currentBalance < finalCost) {
+            summaryWarning.textContent = `Saldo insuficiente! Você precisa de ${formatGold(finalCost, true)} Golds. Saldo atual: ${formatGold(currentBalance, true)} Golds.`;
+            summaryWarning.style.display = "block";
+            confirmButton.disabled = true;
+            confirmButton.style.backgroundColor = 'var(--text-secondary)';
+            confirmButton.style.cursor = 'not-allowed';
+        } else {
+            summaryWarning.style.display = "none";
+            confirmButton.disabled = false;
+            confirmButton.style.backgroundColor = 'var(--secondary)';
+            confirmButton.style.cursor = 'pointer';
+        }
+
+        return { finalCost, fee, grossCost, rewardPerFreelancer };
+    }
+
+
+    // Função para abrir o modal de publicação (Inicia o fluxo guiado)
     function openPublishModal(companyId, companyName) {
+        selectedCompanyId = companyId;
       currentCompanyId = companyId;
       currentCompanyName = companyName;
       document.getElementById("modalCompanyName").textContent = companyName;
+      
+      // Reseta o estado
+      currentStep = 1;
+      document.getElementById("currentStepNumber").textContent = currentStep;
       document.getElementById("errorMessage").style.display = "none";
-
-      // Carrega subcategorias específicas da empresa
-      const subcategorySelect = document.getElementById("subcategory");
-      subcategorySelect.innerHTML = '<option value="" disabled selected>Selecione uma subcategoria</option>';
-
-      subcategorias[companyId].forEach(sub => {
-        const option = document.createElement("option");
-        option.value = sub.nome;
-        option.textContent = sub.nome;
-        option.dataset.goldsBase = sub.goldsBase;
-        option.dataset.dificuldade = sub.dificuldade;
-        subcategorySelect.appendChild(option);
-      });
-
-      // Reseta campos
-      document.getElementById("serviceName").value = "";
-      document.getElementById("serviceDescription").value = "";
-      document.getElementById("reward").value = "";
-      document.getElementById("freelancers").value = "";
-      document.getElementById("difficulty").value = "";
-      document.getElementById("publicationFee").value = "";
-
-      // Exibe o modal
-      document.getElementById("publishServiceModal").style.display = "flex";
+      
+      // Esconde todas as etapas, exibe apenas a primeira
+      for(let i = 1; i <= totalSteps; i++) {
+        const stepElement = document.getElementById(`step-${i}`);
+        stepElement.classList.remove('active', 'fade-in-step');
+      }
+      document.getElementById("step-1").classList.add('active', 'fade-in-step');
+      
+      loadSubcategories();
+      updateNavigationButtons();
+      
+      // Exibe o modal e ajusta o tamanho
+      const modal = document.getElementById("guidedPublishModal");
+      modal.classList.add("active");
+      // Timeout para garantir que o DOM renderizou antes de calcular o tamanho
+      setTimeout(updateModalSize, 50); 
     }
 
     // Função para fechar o modal
     function closeModal() {
-      document.getElementById("publishServiceModal").style.display = "none";
-    }
-
-    // Função para calcular a taxa de publicação
-    function calculateFee() {
-      const reward = parseFloat(document.getElementById("reward").value) || 0;
-      const freelancers = parseInt(document.getElementById("freelancers").value) || 0;
-      const totalCost = reward * freelancers;
-      const fee = totalCost * 0.01; // 1% do custo total
-
-      document.getElementById("publicationFee").value = fee.toFixed(2);
-      return { totalCost, fee };
-    }
-
-    // Função para atualizar a dificuldade com base na subcategoria selecionada
-    document.getElementById("subcategory").addEventListener("change", function() {
-      const selectedOption = this.options[this.selectedIndex];
-      if (selectedOption) {
-        document.getElementById("difficulty").value = selectedOption.dataset.dificuldade;
+      // Remover a classe 'active' e 'fade-in-step' de todas as etapas ativas
+      for(let i = 1; i <= totalSteps; i++) {
+        const stepElement = document.getElementById(`step-${i}`);
+        if(stepElement) {
+            stepElement.classList.remove('active', 'fade-in-step');
+        }
       }
-    });
+      // Garante que o modal saia da tela
+      document.getElementById("guidedPublishModal").classList.remove("active");
+      
+      // Opcional: Limpar dados do formulário e resetar estado para a próxima abertura
+      currentCompanyId = null;
+      currentCompanyName = null;
+      currentStep = 1;
+      serviceSteps = [{ id: 1, description: "" }];
+    }
 
     // Função para publicar o serviço
     async function publishService() {
-      const serviceName = document.getElementById("serviceName").value.trim();
-      const serviceDescription = document.getElementById("serviceDescription").value.trim();
-      const reward = parseFloat(document.getElementById("reward").value);
-      const freelancers = parseInt(document.getElementById("freelancers").value);
-      const subcategorySelect = document.getElementById("subcategory");
-      const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
+        if (!validateStep(4)) return;
 
-      if (!serviceName || !serviceDescription || !reward || !freelancers || !selectedOption) {
-        document.getElementById("errorMessage").textContent = "Preencha todos os campos obrigatórios!";
-        document.getElementById("errorMessage").style.display = "block";
-        return;
-      }
+        // Garante que o cálculo final está atualizado
+        const { finalCost, fee, grossCost, rewardPerFreelancer } = prepareSummary(); 
+        const user = auth.currentUser;
 
-      const { totalCost, fee } = calculateFee();
-      const user = auth.currentUser;
-      if (!user) {
-        showNotification("Usuário não autenticado!");
-        return;
-      }
+        if (!user) {
+            showNotification("Usuário não autenticado!");
+            return;
+        }
 
-      // Verifica saldo na carteira
-      const walletSnapshot = await db.collection("wallets").where("userId", "==", user.uid).limit(1).get();
-      if (walletSnapshot.empty) {
-        showNotification("Carteira não encontrada!");
-        return;
-      }
-      const walletData = walletSnapshot.docs[0].data();
-      const currentBalance = walletData.saldoGolds || 0;
+        if (walletData.goldsBalance < finalCost) {
+            showNotification("Saldo insuficiente para publicar o serviço.");
+            return;
+        }
 
-      if (currentBalance < (totalCost + fee)) {
-        document.getElementById("errorMessage").textContent = "Saldo insuficiente para publicar este serviço!";
-        document.getElementById("errorMessage").style.display = "block";
-        return;
-      }
+        const subcategorySelect = document.getElementById("subcategory");
+        const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
+        const freelancers = parseInt(document.getElementById("freelancers").value);
 
-      try {
-        // 1. Cria entrada em serviceCards
-        const serviceCardRef = await db.collection("serviceCards").add({
-          userId: user.uid,
-          empresa: currentCompanyName,
-          taxa: fee,
-          custoTotal: totalCost,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-          status: "pago"
-        });
+        try {
+            // 1. Cria entrada em serviceCards
+            const serviceCardRef = await db.collection("serviceCards").add({
+                userId: user.uid,
+                empresa: currentCompanyName,
+                taxa: fee,
+                custoTotal: finalCost,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                status: "pago"
+            });
 
-        // 2. Cria serviço em services
-        await db.collection("services").add({
-          serviceCardId: serviceCardRef.id,
-          userId: user.uid,
-          empresa: currentCompanyName,
-          nome: serviceName,
-          descricao: serviceDescription,
-          recompensa: reward,
-          freelancers: freelancers,
-          subcategoria: selectedOption.value,
-          dificuldade: selectedOption.dataset.dificuldade,
-          status: "ativo",
-          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        });
+            // 2. Cria serviço em services
+            await db.collection("services").add({
+                serviceCardId: serviceCardRef.id,
+                userId: user.uid,
+                empresa: currentCompanyName,
+                nome: selectedOption.value, // Nome é a subcategoria
+                descricao: document.getElementById("serviceDescription").value.trim(),
+                recompensa: rewardPerFreelancer,
+                freelancers: freelancers,
+                subcategoria: selectedOption.value,
+                dificuldade: selectedOption.dataset.dificuldade,
+                passos: serviceSteps,
+                provaDescricao: document.getElementById("proofDescription").value.trim(),
+                provaTipoImagem: document.getElementById("proofImage").checked,
+                provaTipoTexto: document.getElementById("proofText").checked,
+                status: "ativo",
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-        // 3. Dedução automática da carteira
-        await db.collection("wallets").doc(walletSnapshot.docs[0].id).update({
-          saldoGolds: firebase.firestore.FieldValue.increment(-(totalCost + fee))
-        });
+            // 3. Dedução automática da carteira (em Golds)
+            await db.collection("wallets").doc(user.uid).update({
+                goldsBalance: firebase.firestore.FieldValue.increment(-finalCost),
+                transactions: firebase.firestore.FieldValue.arrayUnion({
+                    type: 'send',
+                    amount: finalCost,
+                    currency: 'golds',
+                    description: `Publicação de serviço: ${selectedOption.value}`,
+                    date: new Date().toISOString()
+                })
+            });
 
-        showNotification("Serviço publicado com sucesso! A taxa de publicação foi aplicada automaticamente.");
-        closeModal();
-      } catch (error) {
-        console.error("Erro ao publicar serviço:", error);
-        showNotification("Erro ao publicar serviço. Tente novamente.");
-      }
+            showNotification("Serviço publicado com sucesso! A taxa de publicação foi aplicada automaticamente.");
+            closeModal();
+        } catch (error) {
+            console.error("Erro ao publicar serviço:", error);
+            showNotification("Erro ao publicar serviço. Tente novamente.");
+        }
     }
 
-    // Adiciona eventos para cálculo automático da taxa
-    document.getElementById("reward").addEventListener("input", calculateFee);
-    document.getElementById("freelancers").addEventListener("input", calculateFee);
+
+    // Event listeners para a nova Etapa 1 e 2
+    document.getElementById("subcategory").addEventListener("change", calculateDifficultyAndProof);
+    document.getElementById("freelancers").addEventListener("input", prepareSummary); 
+    
+    // Adiciona event listener para recalcular o resumo sempre que a quantidade de passos mudar
+    document.getElementById("serviceStepsContainer").addEventListener("input", prepareSummary);
 
     // Função para visualizar serviços publicados
     function viewServices(companyId) {
@@ -1752,10 +2401,10 @@
                                                         cardId === 'reddit' ? 'upvotes' :
                                                         cardId === 'seo' ? 'palavras' : 'ativas'}`);
       if (fillEl) fillEl.style.width = `${percentual}%`;
-      if (textEl) textEl.textContent = `${Number(golds).toLocaleString('pt-BR')} / ${proximaMeta.toLocaleString('pt-BR')}`;
+      if (textEl) textEl.textContent = `${formatGold(golds)} / ${formatGold(proximaMeta)}`;
       if (nivelEl) nivelEl.textContent = nivelAtual.nome;
-      if (goldsEl) goldsEl.textContent = Number(golds).toLocaleString('pt-BR');
-      if (metricEl && metricValue !== undefined) metricEl.textContent = Number(metricValue).toLocaleString('pt-BR');
+      if (goldsEl) goldsEl.textContent = formatGold(golds); // Usando a nova função de formatação
+      if (metricEl && metricValue !== undefined) metricEl.textContent = formatGold(metricValue, false); // Sem decimais para métricas
     }
 
     // Função para carregar dados dos cards
@@ -1768,7 +2417,8 @@
         db.collection("serviceCards").doc(cardId).onSnapshot((doc) => {
           if (doc.exists) {
             const data = doc.data();
-            const golds = data.golds || 0;
+            // A taxa da empresa é adicionada nos golds acumulados para fins de progressão de nível
+            const golds = (data.golds || 0) + (data.fee || 0); 
             const metricKey = cardId === 'facebook' || cardId === 'instagram' ? 'seguidores' :
                              cardId === 'mobile' ? 'instalacoes' :
                              cardId === 'telegram' ? 'canais' :
@@ -1798,7 +2448,11 @@
     let touchEndX = 0;
 
     function updateCarousel() {
-      const width = carousel.querySelector('.nav-card').offsetWidth + 12;
+      // Ajuste para garantir que a largura seja calculada corretamente após o layout
+      const firstCard = carousel.querySelector('.nav-card');
+      if (!firstCard) return;
+      // offsetWidth + gap (0.75rem = 12px)
+      const width = firstCard.offsetWidth + 12; 
       carousel.style.transform = `translateX(-${currentCard * width}px)`;
     }
 
@@ -1820,10 +2474,11 @@
     // Carrega dados do usuário e verifica autenticação
     function carregarDadosUsuario(user) {
       const userId = user.uid;
-      db.collection("wallets").where("userId", "==", userId).limit(1).get()
-        .then(snapshot => {
-          if (!snapshot.empty) {
-            const data = snapshot.docs[0].data();
+      db.collection("wallets").doc(userId).get()
+        .then(doc => {
+          if (doc.exists) {
+            const data = doc.data();
+            walletData = { ...data, id: userId };
             document.getElementById("footerUserName").textContent = data.name || "Usuário";
             document.getElementById("footerUserId").textContent = userId;
           } else {
@@ -1893,6 +2548,7 @@
 
       const themeToggle = document.getElementById('theme-toggle');
       const body = document.body;
+
       themeToggle.addEventListener('click', () => {
         const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         body.setAttribute('data-theme', currentTheme);
@@ -1941,6 +2597,7 @@
           document.querySelectorAll('.top-bar__icon').forEach(icon => {
             if (icon) icon.classList.remove('active');
           });
+          closeModal(); // Adicionado para fechar o modal com Escape
         }
       });
 
@@ -1949,15 +2606,79 @@
       });
 
       showCookieBannerOncePerDay();
+
       cookieAccept.addEventListener('click', () => {
         cookieBanner.classList.remove('active');
       });
+
       cookieDecline.addEventListener('click', () => {
         cookieBanner.classList.remove('active');
       });
 
       window.addEventListener('resize', updateCarousel);
+      
+      // Chama updateCarousel na inicialização para posicionar o carrossel corretamente
+      setTimeout(updateCarousel, 100); 
     });
+    // ===========================================
+// 🚀 Função principal para publicar serviço
+// e redirecionar a taxa para o Firestore
+// ===========================================
+async function publishService() {
+    try {
+        if (!currentUser) {
+            alert("Você precisa estar logado para publicar um serviço.");
+            return;
+        }
+        
+        // Pega a empresa selecionada no modal
+        const empresa = selectedCompanyId; // ⚠️ pode ajustar depois
+        const freelancers = parseInt(document.getElementById("freelancers").value) || 0;
+        const recompensaBase = 150; // valor base em Golds
+        const passos = document.querySelectorAll(".service-step-input").length || 1;
+        const recompensaFinal = recompensaBase + (passos * 50);
+        const custoBruto = recompensaFinal * freelancers;
+        
+        // Calcula a taxa da empresa (1% + 50 Golds fixos)
+        const taxa = Math.round((custoBruto * 0.01) + 50);
+        
+        console.log(`🧾 Taxa de publicação (${empresa}): ${taxa} Golds`);
+        
+        // ===========================================
+        // 1️⃣ Atualiza o campo "golds" da empresa
+        // ===========================================
+        const empresaRef = db.collection("serviceCards").doc(empresa);
+        await db.runTransaction(async (t) => {
+            const doc = await t.get(empresaRef);
+            const goldsAtuais = doc.exists ? (doc.data().golds || 0) : 0;
+            const novosGolds = goldsAtuais + taxa;
+            
+            t.set(empresaRef, { golds: novosGolds }, { merge: true });
+            
+            // Atualiza a tela automaticamente
+            const elementoGolds = document.getElementById(`${empresa}-golds`);
+            if (elementoGolds) elementoGolds.innerText = formatGold(novosGolds, false);
+        });
+        
+        // ===========================================
+        // 2️⃣ (Opcional) Desconta taxa da carteira do usuário
+        // ===========================================
+        const walletRef = db.collection("wallets").doc(currentUser.uid);
+        await walletRef.update({
+            goldsBalance: firebase.firestore.FieldValue.increment(-taxa)
+        });
+        
+        // ===========================================
+        // 3️⃣ Mostra aviso visual e fecha o modal
+        // ===========================================
+        showNotification(`Serviço publicado! A empresa ${empresa} recebeu ${taxa} Golds em taxas.`);
+        closeModal();
+        
+    } catch (error) {
+        console.error("❌ Erro ao publicar serviço:", error);
+        showNotification("Erro ao publicar o serviço. Tente novamente.");
+    }
+}
   </script>
 </body>
 </html>
