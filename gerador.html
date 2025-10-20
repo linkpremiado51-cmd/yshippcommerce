@@ -38,6 +38,8 @@
       --tasks: #8e44ad;
       --surveys: #27ae60;
       --afiliado: #d69e2e;
+      --games: #9b59b6; /* Novo */
+      --invite: #f39c12; /* Novo */
     }
     [data-theme="dark"] {
       --background: #1a202c;
@@ -61,6 +63,8 @@
       --tasks: #6c3483;
       --surveys: #1b5e20;
       --afiliado: #b7791f;
+      --games: #8e44ad; /* Novo */
+      --invite: #e67e22; /* Novo */
     }
     * {
       margin: 0;
@@ -78,13 +82,15 @@
       padding-top: 60px;
       overflow-x: hidden;
     }
+    /* Estilos do Cabeçalho - MODIFICADO PARA EFEITO DE COR */
     .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       height: 60px;
-      background: var(--surface);
+      /* Removido: background: var(--surface); */
+      background: var(--header-bg, var(--surface)); /* Variável CSS para JS */
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -92,7 +98,9 @@
       padding: 0 16px;
       z-index: 1001;
       box-shadow: var(--shadow);
+      transition: background 0.3s ease; /* Transição suave para o efeito */
     }
+    /* Estilos existentes... (Omitidos para brevidade, mas devem ser mantidos) */
     .header h1 {
       font-size: 1.125rem;
       font-weight: 600;
@@ -100,8 +108,16 @@
       align-items: center;
       gap: 0.5rem;
     }
-    .header h1 i {
-      color: var(--primary);
+   .header h1 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* COR DA FONTE DO TÍTULO AGORA É PRETA EM AMBOS OS TEMAS */
+  color: #000000;
+  /* Define a cor preta */
+}
     }
     .top-bar__section {
       display: flex;
@@ -122,7 +138,7 @@
     }
     .top-bar__icon:hover {
       background: var(--primary);
-      color: white;
+      color: black;
     }
     .menu {
       position: fixed;
@@ -140,6 +156,7 @@
     }
     .menu.open {
       transform: translateX(0);
+      
     }
     .menu__list {
       list-style: none;
@@ -289,6 +306,21 @@
       display: flex;
       flex-direction: column;
     }
+    .ad-card.propaganda {
+      flex: 0 0 200px; /* Cards menores para propaganda */
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(45deg, var(--surface), var(--background));
+      border: 1px solid var(--border);
+    }
+    .ad-card.propaganda h3 {
+      font-size: 0.9rem;
+      text-align: center;
+      margin: 0;
+      color: var(--text-primary);
+    }
     .ad-card:hover {
       transform: translateY(-3px);
       box-shadow: var(--shadow-lg);
@@ -334,6 +366,7 @@
     .ad-card .view-button:hover {
       background: var(--button-hover);
     }
+    /* Estilos Modal, Banner e Footer... (Omitidos para brevidade) */
     .modal {
       display: none;
       position: fixed;
@@ -496,6 +529,7 @@
       z-index: 999;
       font-family: 'Inter', sans-serif;
     }
+    /* Estilos do Card de Informação */
     .info-card {
       width: 100%;
       max-width: 1000px;
@@ -510,26 +544,43 @@
       justify-content: space-between;
       align-items: center;
       margin: 0.5rem auto;
+      /* Atributo data-color adicionado ao JS, mas as classes base definem o background */
     }
     .info-card:hover {
       transform: translateY(-3px);
       box-shadow: var(--shadow-lg);
     }
+    /* Definir cores e adicionar o atributo data-color para o JS */
+    .info-card.games { 
+        background: linear-gradient(135deg, var(--games), #7d3c98);
+        /* Cor de fundo pura para o cabeçalho: */
+        --info-card-color: var(--games); 
+    }
     .info-card.links {
       background: linear-gradient(135deg, var(--tutorial-bg), var(--tutorial-hover));
+      --info-card-color: var(--tutorial-bg); 
     }
     .info-card.crypto {
       background: linear-gradient(135deg, var(--crypto), var(--nsfw-hover));
+      --info-card-color: var(--crypto);
     }
     .info-card.tasks {
       background: linear-gradient(135deg, var(--tasks), #6c3483);
+      --info-card-color: var(--tasks);
     }
     .info-card.surveys {
       background: linear-gradient(135deg, var(--surveys), #1b5e20);
+      --info-card-color: var(--surveys);
     }
     .info-card.afiliado {
       background: linear-gradient(135deg, var(--afiliado), #b7791f);
+      --info-card-color: var(--afiliado);
     }
+    .info-card.invite {
+        background: linear-gradient(135deg, var(--invite), #d35400);
+        --info-card-color: var(--invite);
+    }
+
     .info-card .info-text {
       font-size: 0.8rem;
       line-height: 1.4;
@@ -555,6 +606,7 @@
       animation: fadeIn 0.4s ease-out forwards;
     }
     @media (max-width: 768px) {
+      /* Media queries... (Mantidas) */
       .menu {
         width: min(80vw, 240px);
       }
@@ -747,11 +799,32 @@
     </div>
 
     <section class="ads-section fade-in">
+      <h2><i class="fas fa-gamepad"></i>Gerador de Golds via Games</h2>
+      <p>Jogue e complete missões para ganhar Golds.</p>
+      <div class="carousel-container" id="games-carousel"></div>
+    </section>
+    <div class="info-card games fade-in" data-color="var(--games)">
+      <div class="info-text">
+        <strong>Instruções Games:</strong><br>
+        1. Escolha um jogo parceiro.<br>
+        2. Complete o nível ou meta exigida.<br>
+        3. Envie o comprovante para receber seus Golds.
+      </div>
+      <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+      <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+      <p>Veja as ofertas dos nossos parceiros.</p>
+      <div class="carousel-container" id="propaganda-carousel-1"></div>
+    </section>
+
+    <section class="ads-section fade-in">
       <h2><i class="fas fa-link"></i>Gerador de Golds via Links Curtos</h2>
       <p>Acesse links curtos e ganhe 150 Golds por visualização.</p>
       <div class="carousel-container" id="links-carousel"></div>
     </section>
-    <div class="info-card links fade-in">
+    <div class="info-card links fade-in" data-color="var(--tutorial-bg)">
       <div class="info-text">
         <strong>Links curtos Instruções e ganhos:</strong><br>
         Encurte seus links e compartilhe. Cada pessoa que passar pelo seu link gera um pequeno valor em dólar pra você.
@@ -759,12 +832,18 @@
       <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
     </div>
 
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Aproveite promoções exclusivas.</p>
+        <div class="carousel-container" id="propaganda-carousel-2"></div>
+    </section>
+
     <section class="ads-section fade-in">
       <h2><i class="fas fa-coins"></i>Gerador de Golds via Cripto</h2>
       <p>Realize tarefas de criptomoedas e ganhe Golds inserindo o código fornecido.</p>
       <div class="carousel-container" id="crypto-carousel"></div>
     </section>
-    <div class="info-card crypto fade-in">
+    <div class="info-card crypto fade-in" data-color="var(--crypto)">
       <div class="info-text">
         <strong>Instruções:</strong><br>
         Veja como funciona
@@ -772,25 +851,37 @@
       <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
     </div>
 
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Novidades das maiores lojas.</p>
+        <div class="carousel-container" id="propaganda-carousel-3"></div>
+    </section>
+
     <section class="ads-section fade-in">
       <h2><i class="fas fa-tasks"></i>Gerador de Golds via Offers</h2>
       <p>Realize tarefas e ganhe Golds inserindo o código fornecido.</p>
       <div class="carousel-container" id="tasks-carousel"></div>
     </section>
-    <div class="info-card tasks fade-in">
+    <div class="info-card tasks fade-in" data-color="var(--tasks)">
       <div class="info-text">
         <strong>Instruções:</strong><br>
         Explique aqui como funciona
       </div>
       <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
     </div>
+
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Produtos e serviços em destaque.</p>
+        <div class="carousel-container" id="propaganda-carousel-4"></div>
+    </section>
 
     <section class="ads-section fade-in">
       <h2><i class="fas fa-poll"></i>Gerador de Golds via Pesquisas Remuneradas</h2>
       <p>Realize pesquisas remuneradas e ganhe Golds por participação.</p>
       <div class="carousel-container" id="pesquisas-carousel"></div>
     </section>
-    <div class="info-card surveys fade-in">
+    <div class="info-card surveys fade-in" data-color="var(--surveys)">
       <div class="info-text">
         <strong>Instruções:</strong><br>
         Explique aqui como funciona
@@ -798,18 +889,41 @@
       <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
     </div>
 
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Confira estas ofertas imperdíveis.</p>
+        <div class="carousel-container" id="propaganda-carousel-5"></div>
+    </section>
+
     <section class="ads-section fade-in">
       <h2><i class="fas fa-user-plus"></i>Gerador de Golds via Link de Afiliado</h2>
       <p>Compartilhe links de afiliado e ganhe Golds por cada pessoa que se cadastrar ou realizar uma ação.</p>
       <div class="carousel-container" id="afiliado-carousel"></div>
     </section>
-    <div class="info-card afiliado fade-in">
+    <div class="info-card afiliado fade-in" data-color="var(--afiliado)">
       <div class="info-text">
         <strong>Instruções:</strong><br>
         1. Seja um afiliado Shopee e gere seu link de afiliado exclusivo.<br>
       </div>
       <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
     </div>
+    
+    <section class="ads-section fade-in">
+        <h2><i class="fas fa-share-alt"></i>Gerador de Golds via Link de Convite</h2>
+        <p>Convide amigos para a plataforma e ganhe Golds.</p>
+        <div class="carousel-container" id="invite-carousel"></div>
+    </section>
+    <div class="info-card invite fade-in" data-color="var(--invite)">
+        <div class="info-text">
+            <strong>Instruções Convite:</strong><br>
+            1. Copie seu link exclusivo.<br>
+            2. Compartilhe com amigos.<br>
+        
+        </div>
+        <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+
   </main>
 
   <div id="welcomeModal" class="modal" role="dialog">
@@ -847,6 +961,7 @@
   </footer>
 
   <script>
+    // Configuração do Firebase e funções auxiliares... (Mantidas)
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
       authDomain: "yshippcommerce.firebaseapp.com",
@@ -919,8 +1034,9 @@
     function updateInterface(walletData) {
       const goldsBalance = walletData.goldsBalance || 0;
       const reaisBalance = walletData.reaisBalance || 0;
-      document.getElementById('golds-balance').textContent = goldsBalance.toLocaleString();
-      document.getElementById('reais-balance').textContent = `R$ ${reaisBalance.toFixed(2).replace('.', ',')}`;
+      document.getElementById('golds-balance').textContent = goldsBalance.toLocaleString('pt-BR'); // Formato de milhar no Brasil
+      // Garantindo o formato de moeda R$ X.XXX,XX
+      document.getElementById('reais-balance').textContent = `R$ ${reaisBalance.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
     }
 
     function updateUserStatus(uid) {
@@ -942,6 +1058,65 @@
         document.getElementById("footerUserName").textContent = "Usuário Desconhecido";
       }
     }
+
+    // --- FUNÇÕES DE CARREGAMENTO DOS NOVOS CARROSSEIS ---
+
+    function loadGamesCarousel(games) {
+      const carousel = document.getElementById('games-carousel');
+      carousel.innerHTML = '';
+      games.forEach(ad => {
+        const golds = ad.golds ?? ad.reward ?? 0;
+        const card = document.createElement('div');
+        card.classList.add('ad-card', 'fade-in');
+        card.innerHTML = `
+          <h3>${ad.title}</h3>
+          <div class="steps-list">
+            <strong>Passos:</strong>
+            <ul>${(ad.steps || []).map(step => `<li>${step}</li>`).join('')}</ul>
+          </div>
+          <div class="golds-reward"><strong>Recompensa:</strong> ${golds} Golds</div>
+          <button class="view-button" onclick="window.open('${ad.url || '#' }', '_blank')">${ad.buttonText || 'Jogar e Ganhar'}</button>
+        `;
+        carousel.appendChild(card);
+      });
+      if (games.length === 0) {
+        carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 1rem; font-size: 0.85rem">Nenhum jogo disponível.</p>';
+      }
+    }
+    
+    function loadInviteCarousel(invites) {
+      const carousel = document.getElementById('invite-carousel');
+      carousel.innerHTML = '';
+      invites.forEach(ad => {
+        const golds = ad.golds ?? ad.reward ?? 0;
+        const link = `${ad.link || '#'}/?ref=${auth.currentUser?.uid || 'guest'}`;
+        const card = document.createElement('div');
+        card.classList.add('ad-card', 'fade-in');
+        card.innerHTML = `
+          <h3>${ad.title}</h3>
+          <div class="steps-list">
+            <strong>Recompensa:</strong> ${golds} Golds por convite válido.
+          </div>
+          <div class="golds-reward" style="overflow-wrap: break-word;">Seu Link: ${link}</div>
+          <button class="view-button" onclick="copyInviteLink('${link}')">${ad.buttonText || 'Copiar Link de Convite'}</button>
+        `;
+        carousel.appendChild(card);
+      });
+      if (invites.length === 0) {
+        carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 1rem; font-size: 0.85rem">Nenhuma campanha de convite ativa.</p>';
+      }
+    }
+
+    function copyInviteLink(link) {
+        navigator.clipboard.writeText(link).then(() => {
+            showNotification('Link de Convite copiado! 🔗');
+        }).catch(err => {
+            console.error('Erro ao copiar link: ', err);
+            showModal('welcomeModal', 'Falha ao copiar o link. Tente novamente manualmente.', true, 'erro');
+        });
+    }
+
+    // --- FUNÇÕES DE CARREGAMENTO DE CARROSSEIS EXISTENTES (Reorganizadas) ---
 
     function loadLinksCarousel(links) {
       const carousel = document.getElementById('links-carousel');
@@ -1243,6 +1418,7 @@
             reaisBalance: walletData.reaisBalance,
             transactions: [newTransaction, ...(walletData.transactions || [])]
           }));
+          updateInterface({ goldsBalance: walletData.goldsBalance + golds, reaisBalance: walletData.reaisBalance, transactions: [newTransaction, ...(walletData.transactions || [])] });
           console.log("[DEBUG] Ganhos sincronizados para adId:", adId, "Golds:", golds);
         } else {
           showModal('welcomeModal', 'Carteira não encontrada. Tente novamente.', true, 'erro');
@@ -1289,6 +1465,9 @@
         const tasks = [];
         const pesquisas = [];
         const afiliados = [];
+        const games = []; // Novo
+        const invites = []; // Novo
+
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           const offer = { id: doc.id, ...data };
@@ -1302,13 +1481,20 @@
             pesquisas.push(offer);
           } else if (data.type === 'Link de Afiliado') {
             afiliados.push(offer);
+          } else if (data.type === 'Game') { // Novo
+            games.push(offer);
+          } else if (data.type === 'Link de Convite') { // Novo
+            invites.push(offer);
           }
         });
+        loadGamesCarousel(games); // Novo
         loadLinksCarousel(links);
         loadCryptoCarousel(cryptoAds);
         loadTasksCarousel(tasks);
         loadPesquisasCarousel(pesquisas);
         loadAfiliadoCarousel(afiliados);
+        loadInviteCarousel(invites); // Novo
+        setupPropagandaCarousels(); // Configura os carrosséis de propaganda
         document.getElementById("loadingOverlay").style.display = "none";
       } catch (error) {
         console.error('[DEBUG] Erro ao carregar dados:', error);
@@ -1316,6 +1502,96 @@
         document.getElementById("loadingOverlay").style.display = "none";
       }
     }
+
+    // --- LÓGICA DO CARROSSEL DE PROPAGANDAS ---
+    const PROPAGANDAS = [
+        { id: 'ad-1', title: 'Shopee: Descontos de até 50%!', url: 'https://shopee.com.br' },
+        { id: 'ad-2', title: 'Amazon: Frete Grátis em Milhares de Itens', url: 'https://amazon.com.br' },
+        { id: 'ad-3', title: 'Mercado Livre: Seu Produto Chega Mais Rápido!', url: 'https://mercadolivre.com.br' },
+        { id: 'ad-4', title: 'Magazine Luiza: Ofertas do Dia', url: 'https://magazineluiza.com.br' },
+        { id: 'ad-5', title: 'Casas Bahia: Liquidação Total!', url: 'https://casasbahia.com.br' }
+    ];
+
+    function createPropagandaCard(ad) {
+        const card = document.createElement('div');
+        card.classList.add('ad-card', 'propaganda', 'fade-in');
+        card.setAttribute('onclick', `window.open('${ad.url}', '_blank')`);
+        card.innerHTML = `<h3>${ad.title}</h3>`;
+        return card;
+    }
+
+    function loadPropagandaCarousel(carouselId, ads) {
+        const carousel = document.getElementById(carouselId);
+        carousel.innerHTML = '';
+        ads.forEach(ad => {
+            carousel.appendChild(createPropagandaCard(ad));
+        });
+        // Duplica para permitir deslizamento contínuo
+        ads.forEach(ad => {
+            carousel.appendChild(createPropagandaCard(ad));
+        });
+    }
+
+    function autoScrollCarousel(carouselId, scrollTimeMs, cardWidth) {
+        const carousel = document.getElementById(carouselId);
+        if (!carousel) return;
+        
+        let scrollInterval;
+        let isHovering = false;
+
+        const startScroll = () => {
+            scrollInterval = setInterval(() => {
+                if (isHovering) return;
+
+                const currentScroll = carousel.scrollLeft;
+                const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+                const nextScroll = currentScroll + cardWidth + 12; // 12 é o gap (0.75rem)
+
+                if (currentScroll >= maxScroll - 10) {
+                    // Reinicia para dar a sensação de loop infinito (volta para o início)
+                    carousel.scrollLeft = 0;
+                } else {
+                    // Desliza para o próximo card
+                    carousel.scroll({
+                        left: nextScroll,
+                        behavior: 'smooth'
+                    });
+                }
+            }, scrollTimeMs);
+        };
+
+        const stopScroll = () => {
+            clearInterval(scrollInterval);
+        };
+
+        // Pausa ao passar o mouse ou tocar
+        carousel.addEventListener('mouseenter', () => isHovering = true);
+        carousel.addEventListener('mouseleave', () => isHovering = false);
+        carousel.addEventListener('touchstart', () => isHovering = true);
+        carousel.addEventListener('touchend', () => isHovering = false);
+
+        // Inicia o autoscroll
+        startScroll();
+    }
+
+    function setupPropagandaCarousels() {
+        const carouselData = [
+            { id: 'propaganda-carousel-1', delay: 8000, cardWidth: 200 },
+            { id: 'propaganda-carousel-2', delay: 8200, cardWidth: 200 },
+            { id: 'propaganda-carousel-3', delay: 8400, cardWidth: 200 },
+            { id: 'propaganda-carousel-4', delay: 8600, cardWidth: 200 },
+            { id: 'propaganda-carousel-5', delay: 8800, cardWidth: 200 }
+        ];
+
+        carouselData.forEach(data => {
+            loadPropagandaCarousel(data.id, PROPAGANDAS); // Carrega 5 cards
+            // O tempo de delay define a cadência da troca, não o tempo total.
+            // Para ter a sensação de "diferentes", variamos o tempo.
+            autoScrollCarousel(data.id, data.delay, data.cardWidth);
+        });
+    }
+    // --- FIM DA LÓGICA DO CARROSSEL DE PROPAGANDAS ---
+
 
     function navigateTo(page) {
       switch(page) {
@@ -1415,6 +1691,86 @@
         document.getElementById("cookieBanner").classList.remove('active');
       }
       showCookieBannerOncePerDay();
+      
+      // --- LÓGICA DO HEADER SCROLL COLOR (ADICIONADO) ---
+      const header = document.querySelector('.header');
+      const infoCards = document.querySelectorAll('.info-card');
+      const rootStyle = document.documentElement.style;
+      const defaultHeaderColor = getComputedStyle(document.documentElement).getPropertyValue('--surface');
+
+      // Obtém o valor real da variável CSS (ex: '#2d3748' ou 'rgb(45, 55, 72)')
+      function getCssVarValue(varName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      }
+
+      // Função principal para mudar a cor do cabeçalho
+      function changeHeaderColor(color) {
+        rootStyle.setProperty('--header-bg', color);
+      }
+
+      // Configuração do Intersection Observer
+      // O 'rootMargin' de '-60px 0px 0px 0px' significa que a interseção será verificada 60px antes do topo do viewport.
+      // Como o cabeçalho tem 60px de altura, o 'limite de intersecção' é exatamente onde o cabeçalho termina.
+      const observerOptions = {
+        root: null,
+        rootMargin: '-60px 0px 0px 0px',
+        threshold: [0, 0.5, 1.0] // Monitora quando 0%, 50% ou 100% do card está no viewport acima do margin
+      };
+
+      const headerColorObserver = new IntersectionObserver((entries) => {
+        let newColor = defaultHeaderColor;
+        let foundCard = false;
+
+        // Itera sobre todos os cards observados
+        entries.forEach(entry => {
+          // Se o card está intersectando a área do cabeçalho
+          if (entry.isIntersecting && entry.intersectionRatio > 0) {
+             // O intersectionRatio deve ser 1 ou próximo a 1 (card completamente acima do limite)
+             // para que o cabeçalho absorva a cor do card que está "saindo"
+            if (entry.intersectionRatio > 0.01) { 
+              const cardColor = entry.target.style.getPropertyValue('--info-card-color') || getCssVarValue(entry.target.classList[1].replace('fade-in', '').trim() === 'games' ? '--games' : entry.target.classList[1].replace('fade-in', '').trim() === 'links' ? '--tutorial-bg' : entry.target.classList[1].replace('fade-in', '').trim() === 'crypto' ? '--crypto' : entry.target.classList[1].replace('fade-in', '').trim() === 'tasks' ? '--tasks' : entry.target.classList[1].replace('fade-in', '').trim() === 'surveys' ? '--surveys' : entry.target.classList[1].replace('fade-in', '').trim() === 'afiliado' ? '--afiliado' : entry.target.classList[1].replace('fade-in', '').trim() === 'invite' ? '--invite' : '--surface');
+              
+              // Se o topo do card passou (ou está passando) pelo cabeçalho (ratio alto)
+              // Usamos a cor do card que está mais alto na tela (menor boundingClientRect.top)
+              // Para simplificar: o card *mais alto* que ainda está visível define a cor.
+              // O ratio alto indica que a parte de baixo do card já está bem acima do limite de 60px.
+              newColor = cardColor;
+              foundCard = true;
+            }
+          }
+        });
+        
+        // Se nenhum card está na zona de transição, ou todos já passaram, volta para a cor padrão.
+        if (!foundCard) {
+            // Se o scroll está no topo, volta para a cor padrão
+            if (window.scrollY < 10) { 
+                changeHeaderColor(defaultHeaderColor);
+            }
+        } else {
+            changeHeaderColor(newColor);
+        }
+      }, observerOptions);
+
+      // Adiciona todos os cards para serem observados
+      infoCards.forEach(card => {
+        // Para que o script funcione, garantimos que o '--info-card-color' seja aplicado como estilo inline,
+        // pois getComputedStyle em classes dinâmicas pode ser lento/complexo.
+        // A cor foi adicionada diretamente no CSS com a variável --info-card-color, que é o ideal.
+        // Apenas para garantir que o JS a encontre:
+        const cardClass = Array.from(card.classList).find(c => ['games', 'links', 'crypto', 'tasks', 'surveys', 'afiliado', 'invite'].includes(c));
+        if (cardClass) {
+          card.style.setProperty('--info-card-color', getCssVarValue(`--${cardClass}`));
+        }
+        headerColorObserver.observe(card);
+      });
+      
+      // Lógica de fallback para resetar a cor ao voltar ao topo (acima do primeiro card)
+      window.addEventListener('scroll', () => {
+        if (window.scrollY < 10) { // Próximo ao topo
+             changeHeaderColor(defaultHeaderColor);
+        }
+      });
+      // --- FIM DA LÓGICA DO HEADER SCROLL COLOR ---
     });
 
     window.addEventListener('load', () => {
