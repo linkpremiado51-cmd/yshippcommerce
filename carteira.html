@@ -106,9 +106,9 @@
         .transaction-list { max-height: 360px; overflow-y: auto; margin-top: 0.5rem; }
         .transaction-item { 
             display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); 
-            margin-bottom: 0.5rem; background: var(--background); cursor: pointer; transition: background 0.2s; 
+            margin-bottom: 0.5rem; background: var(--background); cursor: pointer; transition: background 0.2s; /* Adicionado cursor */
         }
-        .transaction-item:hover { background: var(--border); } 
+        .transaction-item:hover { background: var(--border); } /* Adicionado hover */
         .transaction-type { font-weight: 600; font-size: 0.85rem; }
         .transaction-desc { color: var(--text-secondary); font-size: 0.8rem; }
         .transaction-date { color: var(--text-secondary); font-size: 0.75rem; }
@@ -122,10 +122,10 @@
         .form-group { margin-bottom: 0.75rem; }
         .form-group label { display: block; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.85rem; }
         .form-group input, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; background: var(--background); color: var(--text-primary); }
-        .form-group input.is-invalid { border-color: var(--accent); } 
-        .validation-error { color: var(--accent); font-size: 0.75rem; margin-top: 0.25rem; } 
+        .form-group input.is-invalid { border-color: var(--accent); } /* NOVO */
+        .validation-error { color: var(--accent); font-size: 0.75rem; margin-top: 0.25rem; } /* NOVO */
         .modal-buttons { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-        .modal-buttons button { flex: 1; padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s ease; position: relative;} 
+        .modal-buttons button { flex: 1; padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s ease; position: relative;} /* Adicionado position relative */
         #loadingOverlay { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; z-index: 10000; }
         footer#userInfoFooter { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: white; text-align: center; padding: 0.3rem; font-size: 0.8rem; border-top: 1px solid var(--border); z-index: 999; font-family: 'Inter', sans-serif; }
 
@@ -138,21 +138,21 @@
         .risk-high { background: var(--risk-high); }
         .estimated-return { font-weight: 700; color: var(--secondary); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
         
-        .investment-card { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 0.5rem; background: var(--background); transition: background 0.2s; cursor: pointer; } 
+        .investment-card { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 0.5rem; background: var(--background); transition: background 0.2s; }
         .investment-card:hover { background: var(--border); }
         .invest-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
         .invest-amount { font-weight: 600; font-size: 0.9rem; color: var(--gold); }
         .invest-return { font-size: 0.8rem; color: var(--reais); }
         .invest-lockin { font-size: 0.75rem; color: var(--text-secondary); }
 
-        /* Estilos de Loading Específico */
+        /* NOVO: Estilos de Loading Específico */
         .action-loading-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(45, 55, 72, 0.8); 
+            background: rgba(45, 55, 72, 0.8); /* Cor do botão principal: var(--primary) */
             border-radius: 4px;
             display: none;
             align-items: center;
@@ -165,7 +165,7 @@
             display: flex;
         }
         
-        /* Estilos do Histórico de Transações */
+        /* NOVO: Estilos do Histórico de Transações */
         .transaction-filters {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -305,14 +305,6 @@
                     <div id="total-sent" class="stat-value">0</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Total Investido</div>
-                    <div id="total-invested-value" class="stat-value">0 Golds</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Ganhos Aproximados</div>
-                    <div id="approximate-earnings" class="stat-value">R$ 0,00</div>
-                </div>
-                <div class="stat-item">
                     <div class="stat-label">Transações</div>
                     <div id="total-transactions" class="stat-value">0</div>
                 </div>
@@ -331,7 +323,7 @@
                 </div>
                 
                 <div id="investment-chart-container" style="padding: 0.5rem; border-top: 1px solid var(--border); margin-top: 0.5rem; text-align: center;">
-                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">Portfólio por Empresa (Golds)</h3>
+                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">Evolução do Portfólio (Golds)</h3>
                     <div style="width: 100%; max-width: 600px; margin: 0 auto;">
                         <canvas id="investmentChart"></canvas>
                     </div>
@@ -348,7 +340,7 @@
                 <button class="action-btn default" onclick="openConvertModal()"><i class="fas fa-sync-alt"></i>Converter</button>
                 <button class="action-btn invest" onclick="openInvestModal()"><i class="fas fa-chart-line"></i>Investimento</button>
                 <button class="action-btn crypto" onclick="openCryptoModal()"><i class="fas fa-coins"></i>Criptomoeda</button>
-                <button class="action-btn bank" onclick="openBankCentralModal()"><i class="fas fa-university"></i>Banco Central</button>
+                <button class="action-btn bank" onclick="window.location.href='https://linkpremiado51-cmd.github.io/yshippcommerce/bancocentral.html'"><i class="fas fa-university"></i>Banco Central</button>
                 <button class="action-btn commercial" onclick="openCommercialModal()"><i class="fas fa-briefcase"></i>Conta Comercial</button>
             </div>
         </section>
@@ -386,18 +378,6 @@
                 </div>
             <div class="modal-buttons">
                 <button class="action-btn default" onclick="closeModal('transactionDetailsModal')">Fechar</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="investmentDetailsModal" class="modal">
-        <div class="modal-content">
-            <h3><i class="fas fa-chart-pie"></i>Detalhes do Investimento</h3>
-            <div id="investment-specific-content" style="font-size: 0.9rem; color: var(--text-primary);">
-                </div>
-            <div class="modal-buttons">
-                <button class="action-btn invest" id="details-withdraw-btn" onclick="">Retirar Investimento</button>
-                <button class="action-btn default" onclick="closeModal('investmentDetailsModal')">Fechar</button>
             </div>
         </div>
     </div>
@@ -555,8 +535,8 @@
             </div>
 
             <div class="form-group">
-                <label for="withdraw-invest-amount">Quantidade de Golds a Retirar (Opcional)</label>
-                <input id="withdraw-invest-amount" type="text" placeholder="0 (Retirada Total)" oninput="renderWithdrawalDetails()">
+                <label for="withdraw-invest-amount">Quantidade de Golds a Retirar</label>
+                <input id="withdraw-invest-amount" type="text" placeholder="0" oninput="renderWithdrawalDetails()">
             </div>
             
             <div id="final-withdrawal-summary" class="estimated-return" style="color: var(--accent);">
@@ -573,7 +553,6 @@
     </div>
     <div id="cryptoModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-coins"></i>Criptomoeda</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de criptomoeda em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('cryptoModal')">Fechar</button> </div> </div> </div> 
     <div id="commercialModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-briefcase"></i>Conta Comercial</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de Conta Comercial em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('commercialModal')">Fechar</button> </div> </div> </div> 
-    <div id="bankCentralModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-university"></i>Banco Central</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Redirecionando para o Banco Central...</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('bankCentralModal')">Fechar</button> </div> </div> </div>
     <div id="notificationModal" class="modal"> <div class="modal-content"> <h3 id="notification-title"><i class="fas fa-bell"></i>Notificação</h3> <p id="notification-message" style="color:var(--text-secondary); font-size:0.85rem"></p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('notificationModal')">OK</button> </div> </div> </div>
 
     <footer id="userInfoFooter"> Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span> </footer>
@@ -590,17 +569,16 @@
             messagingSenderId: "680576769517",
             appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
         };
-        
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUser = null;
         let walletData = null;
-        // NOVO: Taxa de câmbio ajustada
-        const GOLD_TO_REAL_RATE = 10000; // 10.000 Golds = R$ 1,00
+        const GOLD_TO_REAL_RATE = 1000;
         const TAX_RATE = 0.05;
         const WITHDRAWAL_PENALTY_RATE = 0.10; // 10% de penalidade para retirada antecipada
 
+        // NOVO: Estrutura detalhada dos planos de investimento
         const INVESTMENT_PLANS = {
             facebook: { name: 'Micro Influenciador do Facebook', returnRate: 0.012, risk: 'Baixo', lockInDays: 30 },
             instagram: { name: 'Micro Influenciador do Instagram', returnRate: 0.015, risk: 'Baixo', lockInDays: 30 },
@@ -620,20 +598,24 @@
             companyNames[id] = plan.name;
         });
 
+        // Variável para o gráfico
         let investmentChart = null;
-        let allTransactions = []; 
+        let allTransactions = []; // NOVO: Cache para todas as transações
 
+        // NOVO: Funções de Loading
         function showLoading(actionId) {
             document.getElementById(`${actionId}-loading`).classList.add('active');
         }
         function hideLoading(actionId) {
             document.getElementById(`${actionId}-loading`).classList.remove('active');
         }
+        // FIM NOVO: Funções de Loading
 
         function formatCurrency(value) {
             if (!value && value !== 0) return '0,00';
             return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
+        
         function formatInputCurrency(input) {
              let value = input.value.replace(/\D/g, ''); value = value.padStart(3, '0'); const cents = value.slice(-2); const integer = value.slice(0, -2) || '0'; const formattedInteger = parseInt(integer).toLocaleString('pt-BR'); input.value = `${formattedInteger},${cents}`; 
         } 
@@ -655,7 +637,9 @@
                 input.addEventListener('blur', () => { if (!input.value) input.value = ''; }); 
                 input.addEventListener('focus', () => { if (!input.value) input.value = '0'; }); 
             }); 
+            // NOVO: Adiciona o listener para formatação/validação da chave PIX no Saque
             document.getElementById('withdraw-pix-key').addEventListener('input', (e) => validatePixKey(e.target.value, 'withdraw-pix-key'));
+            // NOVO: Adiciona o listener para formatação/validação da chave PIX no Depósito
             document.getElementById('deposit-pix-key').addEventListener('input', (e) => validatePixKey(e.target.value, 'deposit-pix-key'));
         }
 
@@ -664,10 +648,12 @@
             document.getElementById(id).style.display = 'none'; 
             const inputs = document.querySelectorAll(`#${id} input[type="text"]`); 
             inputs.forEach(input => input.value = ''); 
+            // NOVO: Limpar erros de validação
             document.querySelectorAll(`#${id} .validation-error`).forEach(el => el.style.display = 'none');
             document.querySelectorAll(`#${id} input.is-invalid`).forEach(el => el.classList.remove('is-invalid'));
+            // Ocultar campo PIX no depósito ao fechar
             if (id === 'depositModal') {
-                document.getElementById('deposit-method').value = 'pix'; 
+                document.getElementById('deposit-method').value = 'pix'; // Reseta para PIX
                 updateDepositMethodInfo();
             }
         } 
@@ -688,15 +674,12 @@
         }); 
         loadTheme(); 
         async function ensureAnonymousSignIn() { 
-            try { 
-                console.warn('Nenhum usuário logado. Tentando login anônimo...'); 
-                const res = await auth.signInAnonymously(); 
-                console.log('Login anônimo realizado. UID:', res.user.uid); 
-            } catch (error) { 
-                console.error('Erro ao autenticar anonimamente:', error); 
-                showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`); 
-            } 
+            try { console.warn('Nenhum usuário logado. Tentando login anônimo...'); 
+            const res = await auth.signInAnonymously(); console.log('Login anônimo realizado. UID:', res.user.uid); 
+        } catch (error) { 
+            console.error('Erro ao autenticar anonimamente:', error); showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`); 
         } 
+    } 
 
         async function loadWalletData(uid) { 
             try { 
@@ -707,20 +690,20 @@
                         userId: uid, name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'), 
                         goldsBalance: 0, 
                         reaisBalance: 0, 
-                        investments: {}, 
+                        investments: {}, // Agora investments é um mapa de id: {amount: number, date: timestamp}
                         transactions: [], 
                         taxes: [], 
                         createdAt: firebase.firestore.FieldValue.serverTimestamp() 
                     }; 
                     await ref.set(initial); 
                     walletData = initial; 
-                    allTransactions = initial.transactions || []; 
+                    allTransactions = initial.transactions || []; // NOVO: Inicializa o cache
                     renderWallet(); 
                     console.log('Carteira criada para', uid); 
                     return; 
                 } 
                 walletData = snap.data(); 
-                allTransactions = walletData.transactions || []; 
+                allTransactions = walletData.transactions || []; // NOVO: Atualiza o cache
                 renderWallet(); 
                 console.log('Carteira carregada para', uid, walletData); 
             } catch (err) { 
@@ -736,104 +719,99 @@
             const now = new Date();
             const start = initialDate instanceof firebase.firestore.Timestamp ? initialDate.toDate() : new Date(initialDate);
             const diffTime = Math.abs(now - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Diferença em dias
             
+            // Retorno Simples: Retorno diário = Taxa Anual / 365. Assumindo a returnRate como mensal/30 dias para simplificar
+            // Multiplicamos a taxa mensal (returnRate) por um fator proporcional aos dias corridos.
             const ratePerDay = plan.returnRate / 30; 
             const totalReturnRate = diffDays * ratePerDay;
             
+            // Retorno acumulado é o valor investido * taxa total
             const accumulatedReturn = investedAmount * totalReturnRate;
 
-            return Math.floor(accumulatedReturn); 
-        }
-        
-        // NOVO: Função para calcular os ganhos aproximados totais (em R$)
-        function calculateApproximateEarnings(totalReturnGolds) {
-            if (!totalReturnGolds || totalReturnGolds <= 0) return 0;
-            // Taxa de câmbio: 1 Real = 10.000 Golds
-            const reaisValue = totalReturnGolds / GOLD_TO_REAL_RATE;
-            return reaisValue;
+            return Math.floor(accumulatedReturn); // Retorno em Golds
         }
 
-        // NOVO: Renderiza Gráfico de Barras Empilhadas
-        function renderInvestmentChart() {
+        // NOVO: Função para obter dados simulados de evolução do portfólio
+        function getPortfolioHistory() {
             const investments = walletData.investments || {};
-            const activeInvestments = Object.entries(investments)
-                .filter(([, inv]) => inv.amount > 0);
+            const activeInvestments = Object.keys(investments)
+                .filter(id => investments[id].amount > 0);
 
-            const chartData = activeInvestments.map(([id, inv]) => {
-                const plan = INVESTMENT_PLANS[id];
-                const invested = inv.amount;
-                const accumulatedReturn = calculateCurrentReturn(id, invested, inv.date);
-                return {
-                    name: plan.name,
-                    invested: invested,
-                    return: accumulatedReturn
-                };
-            }).sort((a, b) => b.invested - a.invested); // Ordena por valor investido
+            if (activeInvestments.length === 0) return { labels: [], data: [] };
 
+            // Simula o histórico de 7 dias
+            const labels = [];
+            const data = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('pt-BR'));
+                
+                let dailyTotal = 0;
+                activeInvestments.forEach(id => {
+                    const inv = investments[id];
+                    const plan = INVESTMENT_PLANS[id];
+                    const start = inv.date instanceof firebase.firestore.Timestamp ? inv.date.toDate() : new Date(inv.date);
+                    
+                    const diffTime = Math.abs(date - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    const ratePerDay = plan.returnRate / 30; 
+                    const totalReturnRate = Math.max(0, (diffDays - i) * ratePerDay); // Ajuste simples para simular crescimento
+                    const accumulatedReturn = inv.amount * totalReturnRate;
+                    
+                    dailyTotal += inv.amount + Math.floor(accumulatedReturn);
+                });
+                data.push(dailyTotal);
+            }
+
+            return { labels, data };
+        }
+
+        // NOVO: Renderiza Gráfico de Linha
+        function renderInvestmentChart() {
+            const { labels, data } = getPortfolioHistory();
+            
             if (investmentChart) {
                 investmentChart.destroy();
             }
 
             const ctx = document.getElementById('investmentChart');
             const chartContainer = document.getElementById('investment-chart-container');
-            const labels = chartData.map(item => item.name.length > 20 ? item.name.substring(0, 20) + '...' : item.name);
-            const investedData = chartData.map(item => item.invested);
-            const returnData = chartData.map(item => item.return);
 
-            if (chartData.length === 0) {
+            if (data.length < 2) {
                 chartContainer.style.display = 'none';
                 return;
             } else {
                 chartContainer.style.display = 'block';
             }
 
-            // Garante que o gráfico não fique apertado demais em muitas barras
-            const maxBars = 8;
-            if (chartData.length > maxBars) {
-                // Aqui você pode implementar a lógica para agrupar as menores ou usar um gráfico de barras horizontal para melhor visualização
-                // Por enquanto, o Chart.js deve se adaptar, mas definimos o height para dar espaço
-                ctx.style.height = `${Math.min(chartData.length * 50, 400)}px`;
-            } else {
-                 ctx.style.height = '300px';
-            }
-            
-            // Definição de cores (podemos usar uma paleta mais rica se necessário)
-            const investedColor = 'var(--gold)'; 
-            const returnColor = 'var(--reais)';
-
             investmentChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [
-                        {
-                            label: 'Investido',
-                            data: investedData,
-                            backgroundColor: investedColor,
-                        },
-                        {
-                            label: 'Retorno Acumulado',
-                            data: returnData,
-                            backgroundColor: returnColor,
-                        }
-                    ]
+                    datasets: [{
+                        label: 'Valor do Portfólio (Golds)',
+                        data: data,
+                        backgroundColor: 'rgba(55, 125, 207, 0.2)', // Cor principal com transparência
+                        borderColor: 'var(--secondary)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'var(--secondary)',
+                        tension: 0.4,
+                        fill: true
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    indexAxis: 'y', // NOVO: Gráfico de barras horizontais para mais espaço
                     plugins: {
                         legend: {
-                            position: 'top',
+                            display: true,
                             labels: {
                                 color: 'var(--text-primary)'
                             }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribuição de Investimentos (Investido vs. Retorno)',
-                            color: 'var(--text-primary)'
                         },
                         tooltip: {
                             callbacks: {
@@ -842,8 +820,8 @@
                                     if (label) {
                                         label += ': ';
                                     }
-                                    if (context.parsed.x !== null) {
-                                        label += context.parsed.x.toLocaleString('pt-BR') + ' Golds';
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toLocaleString('pt-BR') + ' Golds';
                                     }
                                     return label;
                                 }
@@ -851,8 +829,8 @@
                         }
                     },
                     scales: {
-                        x: {
-                            stacked: true, // Barras Empilhadas
+                        y: {
+                            beginAtZero: true,
                             title: {
                                 display: true,
                                 text: 'Golds',
@@ -865,8 +843,7 @@
                                 color: 'var(--border)'
                             }
                         },
-                        y: {
-                            stacked: true, // Barras Empilhadas
+                        x: {
                             ticks: {
                                 color: 'var(--text-secondary)'
                             },
@@ -878,7 +855,7 @@
                 }
             });
         }
-        // FIM NOVO: Renderiza Gráfico de Barras Empilhadas
+        // FIM NOVO: Renderiza Gráfico de Linha
 
         function renderInvestmentSummary() {
             const listEl = document.getElementById('investment-summary-list');
@@ -896,8 +873,6 @@
                         <i class="fas fa-chart-line" style="font-size:1.5rem; opacity:0.6"></i>
                         <div style="margin-top:0.5rem; font-size:0.85rem">Você não tem investimentos ativos.</div>
                     </div>`;
-                document.getElementById('total-invested-value').textContent = '0 Golds';
-                document.getElementById('approximate-earnings').textContent = 'R$ 0,00';
                 renderInvestmentChart();
                 return;
             }
@@ -920,9 +895,8 @@
                     ? `<span style="color: var(--accent); font-weight: 500;">(Em Lock-in)</span>` 
                     : `<span style="color: var(--reais); font-weight: 500;">(Liberado)</span>`;
 
-                // NOVO: Adicionado onclick para abrir detalhes
                 return `
-                    <div class="investment-card" onclick="openInvestmentDetails('${inv.id}')">
+                    <div class="investment-card">
                         <div style="flex:1; min-width:0">
                             <div class="invest-name">${plan.name} ${statusTag}</div>
                             <div class="invest-return">Retorno Acumulado: +${accumulatedReturn.toLocaleString('pt-BR')} Golds</div>
@@ -936,113 +910,65 @@
                 `;
             }).join('');
 
-            // Atualizar Estatísticas
-            document.getElementById('total-invested-value').textContent = totalInvested.toLocaleString('pt-BR') + ' Golds';
-            const approximateEarningsReais = calculateApproximateEarnings(totalReturn);
-            document.getElementById('approximate-earnings').textContent = `R$ ${formatCurrency(approximateEarningsReais)}`;
-            
+            // Adicionar estatística de Total Investido na seção Stats (opcional)
+            const investedStat = document.getElementById('total-invested-stat');
+            if (!investedStat) {
+                // Se não existir, crie.
+                const statsGrid = document.querySelector('.stats-grid');
+                if (statsGrid) {
+                    const newStat = document.createElement('div');
+                    newStat.className = 'stat-item';
+                    newStat.id = 'total-invested-stat';
+                    newStat.innerHTML = `
+                        <div class="stat-label">Total Investido</div>
+                        <div id="total-invested-value" class="stat-value">${totalInvested.toLocaleString('pt-BR')}</div>
+                    `;
+                    statsGrid.appendChild(newStat);
+                }
+            } else {
+                document.getElementById('total-invested-value').textContent = totalInvested.toLocaleString('pt-BR');
+            }
 
             renderInvestmentChart();
         }
-        
-        // NOVO: Modal de Detalhes do Investimento
-        function openInvestmentDetails(investmentId) {
-            const invData = walletData.investments[investmentId];
-            const plan = INVESTMENT_PLANS[investmentId];
-
-            if (!invData || invData.amount <= 0 || !plan) {
-                showNotification('Erro', 'Dados do investimento não encontrados ou saldo zero.');
-                return;
-            }
-            
-            const investedAmount = invData.amount;
-            const accumulatedReturn = calculateCurrentReturn(investmentId, investedAmount, invData.date);
-            const totalValue = investedAmount + accumulatedReturn;
-            const isLocked = isInvestmentLocked(invData.date, plan.lockInDays);
-            const unlockDate = new Date(invData.date instanceof firebase.firestore.Timestamp ? invData.date.toDate().getTime() : new Date(invData.date).getTime());
-            unlockDate.setDate(unlockDate.getDate() + plan.lockInDays);
-            
-            // Indicadores de Ganhos (Aproximados)
-            const annualRate = plan.returnRate * 12; 
-            const dailyReturn = Math.floor(investedAmount * (plan.returnRate / 30));
-            const monthlyReturn = Math.floor(investedAmount * plan.returnRate);
-            const annualReturn = Math.floor(investedAmount * annualRate);
-
-            const riskClass = `risk-${plan.risk.toLowerCase().replace(' ', '-')}`;
-
-            const detailsHtml = `
-                <h4 style="font-weight: 600; margin-bottom: 0.5rem; color: var(--secondary);">${plan.name}</h4>
-                <div class="detail-item"><strong>Valor Investido:</strong> <span style="color: var(--gold);">${investedAmount.toLocaleString('pt-BR')} Golds</span></div>
-                <div class="detail-item"><strong>Retorno Acumulado:</strong> <span style="color: var(--reais);">+${accumulatedReturn.toLocaleString('pt-BR')} Golds</span></div>
-                <div class="detail-item"><strong>Valor Total (Est.):</strong> <span>${totalValue.toLocaleString('pt-BR')} Golds</span></div>
-                <div class="detail-item" style="border-top: 1px dashed var(--border); margin-top: 0.5rem; padding-top: 0.5rem;"><strong>Risco:</strong> <span class="risk-indicator ${riskClass}">${plan.risk}</span></div>
-                <div class="detail-item"><strong>Taxa de Retorno Mensal:</strong> <span>${(plan.returnRate * 100).toFixed(2)}%</span></div>
-                <div class="detail-item"><strong>Data do Investimento:</strong> <span>${new Date(invData.date).toLocaleDateString('pt-BR')}</span></div>
-                <div class="detail-item"><strong>Status Lock-in:</strong> <span style="color: ${isLocked ? 'var(--accent)' : 'var(--reais)'};">${isLocked ? 'Sim' : 'Não'} (Liberação: ${unlockDate.toLocaleDateString('pt-BR')})</span></div>
-                
-                <h4 style="font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--text-primary);">Indicadores de Ganhos (Baseado no Investido)</h4>
-                <div class="detail-item"><strong>Ganho Diário (Est.):</strong> <span style="color: var(--reais);">~${dailyReturn.toLocaleString('pt-BR')} Golds</span></div>
-                <div class="detail-item"><strong>Ganho Mensal (Est.):</strong> <span style="color: var(--reais);">~${monthlyReturn.toLocaleString('pt-BR')} Golds</span></div>
-                <div class="detail-item"><strong>Ganho Anual (Est.):</strong> <span style="color: var(--reais);">~${annualReturn.toLocaleString('pt-BR')} Golds</span></div>
-            `;
-
-            document.getElementById('investment-specific-content').innerHTML = detailsHtml;
-            document.getElementById('details-withdraw-btn').onclick = () => {
-                 closeModal('investmentDetailsModal');
-                 document.getElementById('withdraw-invest-company').value = investmentId;
-                 renderWithdrawalDetails(); // Renderiza com o ID pré-selecionado
-                 openWithdrawInvestmentModal();
-            }
-            openModal('investmentDetailsModal');
-        }
-        // FIM NOVO: Modal de Detalhes do Investimento
 
         function renderWallet() { 
             if (!walletData) return; 
             document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString('pt-BR'); 
-            
-            // NOVO: Adaptação para 10.000 Golds = R$ 1,00
-            const reaisFromGolds = (walletData.goldsBalance || 0) / GOLD_TO_REAL_RATE;
-            const totalReais = (walletData.reaisBalance || 0) + reaisFromGolds;
-            document.getElementById('reais-balance').textContent = `R$ ${formatCurrency(totalReais || 0)}`; 
-            
+            document.getElementById('reais-balance').textContent = `R$ ${formatCurrency(walletData.reaisBalance || 0)}`; 
             const txs = allTransactions || []; 
             document.getElementById('total-transactions').textContent = txs.length; 
             let totalReceived = 0, totalSent = 0, lastWithdrawal = '-'; 
             txs.forEach(tx => { 
                 if (tx.currency === 'golds') {
-                     if (tx.type === 'receive' || tx.type === 'withdraw_invest' || (tx.type === 'conversion' && tx.metadata.to === 'golds')) totalReceived += (tx.amount || 0); 
-                     if (tx.type === 'send' || tx.type === 'withdraw' || tx.type === 'invest' || (tx.type === 'conversion' && tx.metadata.from === 'golds')) totalSent += (tx.amount || 0); 
-                } else if (tx.currency === 'reais') {
-                    // Para estatísticas de Golds
-                     if (tx.type === 'deposit') totalReceived += (tx.amount || 0) * GOLD_TO_REAL_RATE; 
-                     if (tx.type === 'withdraw' || tx.type === 'send' || (tx.type === 'conversion' && tx.metadata.from === 'reais')) totalSent += (tx.amount || 0) * GOLD_TO_REAL_RATE; 
+                     if (tx.type === 'receive' || tx.type === 'withdraw_invest') totalReceived += (tx.amount || 0); 
+                     if (tx.type === 'send' || tx.type === 'withdraw' || tx.type === 'invest') totalSent += (tx.amount || 0); 
                 }
-                
                 if (tx.type === 'withdraw' && tx.currency === 'reais') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR'); 
             }); 
-            // Os totais devem ser em Golds para consistência com o balanço
-            document.getElementById('total-received').textContent = totalReceived.toLocaleString('pt-BR') + ' Golds'; 
-            document.getElementById('total-sent').textContent = totalSent.toLocaleString('pt-BR') + ' Golds'; 
+            // Os totais devem ser a soma total, não só em Golds. Para simplicidade, vamos considerar Golds + Reais (convertido)
+            // Mantendo Golds por enquanto
+            document.getElementById('total-received').textContent = totalReceived.toLocaleString('pt-BR'); 
+            document.getElementById('total-sent').textContent = totalSent.toLocaleString('pt-BR'); 
             document.getElementById('last-withdrawal').textContent = lastWithdrawal; 
-            
-            renderInvestmentSummary(); // Chamado antes de renderTransactions para atualizar o totalInvestido
             renderTransactions(); 
+            renderInvestmentSummary(); 
         } 
         
         function renderTransactions() {
-            // ... (Função renderTransactions mantida, usa allTransactions)
             const listEl = document.getElementById('transaction-list');
-            const filterType = document.getElementById('filter-type').value; 
-            const filterCurrency = document.getElementById('filter-currency').value; 
+            const filterType = document.getElementById('filter-type').value; // NOVO: Filtro
+            const filterCurrency = document.getElementById('filter-currency').value; // NOVO: Filtro
             
-            let txs = allTransactions.slice().reverse();
+            let txs = (walletData && walletData.transactions) ? walletData.transactions.slice().reverse() : [];
             
+            // NOVO: Aplica os filtros
             txs = txs.filter(tx => {
                 const matchesType = !filterType || tx.type === filterType;
                 const matchesCurrency = !filterCurrency || tx.currency === filterCurrency;
                 return matchesType && matchesCurrency;
             });
+            // FIM NOVO: Aplica os filtros
 
             if (!txs.length) {
                 listEl.innerHTML = `
@@ -1052,10 +978,7 @@
                 </div>`;
                 return;
             }
-            
-            // Note que o index é calculado para que o click referencie o item correto no array walletData.transactions
             listEl.innerHTML = txs.map((tx, index) => {
-                const actualIndex = walletData.transactions.length - 1 - allTransactions.indexOf(tx); // Encontra o índice original no array não revertido
                 const typeMap = {
                     receive: 'Recebido',
                     send: 'Enviado',
@@ -1072,8 +995,9 @@
                 const when = new Date(tx.date).toLocaleString('pt-BR');
                 const desc = tx.description || '';
                 
+                // NOVO: Adiciona o onclick para o modal de detalhes
                 return `
-                <div class="transaction-item" onclick="openTransactionDetails(${actualIndex})">
+                <div class="transaction-item" onclick="openTransactionDetails(${walletData.transactions.length - 1 - index})">
                     <div style="flex:1; min-width:0">
                         <div class="transaction-type">${typeMap[tx.type] || tx.type}</div>
                         <div class="transaction-desc">${desc}</div>
@@ -1087,13 +1011,19 @@
             }).join('');
         }
         
+        // NOVO: Função para abrir e preencher o modal de detalhes
         function openTransactionDetails(index) {
-            const tx = walletData.transactions[index]; 
+            const tx = walletData.transactions.slice().reverse()[index]; // Obtém a transação pelo índice na lista *renderizada*
             if (!tx) return;
-            
+
             const typeMap = {
-                receive: 'Recebido', send: 'Enviado', withdraw: 'Saque', deposit: 'Depósito', 
-                conversion: 'Conversão', invest: 'Investimento', withdraw_invest: 'Retirada de Investimento'
+                receive: 'Recebido',
+                send: 'Enviado',
+                withdraw: 'Saque',
+                deposit: 'Depósito',
+                conversion: 'Conversão',
+                invest: 'Investimento',
+                withdraw_invest: 'Retirada de Investimento'
             };
             const amountLabel = tx.currency === 'golds' ? `${tx.amount.toLocaleString('pt-BR')} Golds` : `R$ ${formatCurrency(tx.amount)}`;
             const type = typeMap[tx.type] || tx.type;
@@ -1102,49 +1032,38 @@
             let detailsHtml = `
                 <div class="detail-item"><strong>Tipo:</strong> <span>${type}</span></div>
                 <div class="detail-item"><strong>Valor:</strong> <span>${amountLabel}</span></div>
-                <div class="detail-item"><strong>Moeda:</strong> <span>${tx.currency === 'golds' ? 'Golds' : 'Reais (R$)'}</span></div>
                 <div class="detail-item"><strong>Descrição:</strong> <span>${tx.description || '-'}</span></div>
-                <div class="detail-item"><strong>Data/Hora:</strong> <span>${when}</span></div>
+                <div class="detail-item"><strong>Data:</strong> <span>${when}</span></div>
             `;
             
             if (tx.to) { detailsHtml += `<div class="detail-item"><strong>Para (ID):</strong> <span>${tx.to}</span></div>`; }
             if (tx.from) { detailsHtml += `<div class="detail-item"><strong>De (ID):</strong> <span>${tx.from}</span></div>`; }
-            
-            // NOVO: Detalhes específicos de Investimento/Taxa
-            if (tx.metadata) {
-                detailsHtml += `<h4 style="font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.3rem; border-top: 1px dashed var(--border); padding-top: 0.5rem;">Informações Adicionais</h4>`;
-                
-                if (tx.type === 'invest' || tx.type === 'withdraw_invest') {
-                    const companyName = INVESTMENT_PLANS[tx.metadata.company]?.name || tx.metadata.company;
-                    detailsHtml += `<div class="detail-item"><strong>Empresa:</strong> <span>${companyName}</span></div>`;
-                }
-                if (tx.metadata.tax !== undefined) {
-                    const taxLabel = tx.currency === 'golds' ? `${tx.metadata.tax.toLocaleString('pt-BR')} Golds` : `R$ ${formatCurrency(tx.metadata.tax)}`;
-                    detailsHtml += `<div class="detail-item"><strong>Taxa/Penalidade:</strong> <span style="color: var(--accent);">${taxLabel}</span></div>`;
-                }
-                if (tx.type === 'withdraw_invest' && tx.metadata.penalty > 0) {
-                     detailsHtml += `<div class="detail-item"><strong>Motivo Penalidade:</strong> <span>${isInvestmentLocked(walletData.investments[tx.metadata.company]?.date, INVESTMENT_PLANS[tx.metadata.company]?.lockInDays) ? 'Retirada Antecipada' : 'Taxa de Sistema'}</span></div>`;
-                }
-            }
+            if (tx.metadata) { detailsHtml += `<div class="detail-item"><strong>Metadata:</strong> <span>${JSON.stringify(tx.metadata)}</span></div>`; }
 
             document.getElementById('transaction-details-content').innerHTML = detailsHtml;
             openModal('transactionDetailsModal');
         }
-        
+        // FIM NOVO: Função para abrir e preencher o modal de detalhes
+
+        // NOVO: Funções de Validação de PIX
         function validatePixKey(key, inputId) {
             const inputEl = document.getElementById(inputId);
             const errorEl = document.getElementById(`${inputId}-error`);
             inputEl.classList.remove('is-invalid');
             errorEl.style.display = 'none';
 
-            if (!key) return true; 
+            if (!key) return true; // Permite vazio, se não for obrigatório
 
             const cleanedKey = key.replace(/[^a-zA-Z0-9@.\-\_]/g, '');
             inputEl.value = cleanedKey;
 
+            // Regex de validação básica para os 4 tipos de chave PIX
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // CPF: 11 dígitos. CNPJ: 14 dígitos.
             const cpfCnpjRegex = /^(\d{11}|\d{14})$/; 
+            // Telefone: +55 (DDD) NNNNN-NNNN (simples: 10 a 11 dígitos, opcionalmente com +55)
             const phoneRegex = /^(\+55)?\d{10,11}$/; 
+            // Chave Aleatória: UUID, 32 caracteres (não há um padrão universal de caracteres, mas geralmente é alfanumérico)
             const randomRegex = /^[a-zA-Z0-9\-]{26,36}$/; 
             
             const isEmail = emailRegex.test(cleanedKey);
@@ -1161,32 +1080,33 @@
                 return false;
             }
         }
+        // FIM NOVO: Funções de Validação de PIX
 
-        async function saveWallet(updated) { 
+        async function saveWallet(updated) { /* ... (Função mantida) ... */ 
             if (!currentUser || !currentUser.uid) throw new Error('Usuário não autenticado'); 
             try { 
                 await db.collection('wallets').doc(currentUser.uid).set(updated, { merge: true }); 
                 walletData = { ...walletData, ...updated }; 
-                allTransactions = walletData.transactions || []; 
+                allTransactions = walletData.transactions || []; // NOVO: Atualiza o cache
                 renderWallet(); 
             } catch (err) { 
                 console.error('Erro salvando wallet:', err); 
                 throw err; 
             } 
         } 
-        async function pushTransaction(tx) { 
+        async function pushTransaction(tx) { /* ... (Função mantida) ... */ 
             if (!walletData) walletData = {}; 
             const arr = Array.isArray(walletData.transactions) ? walletData.transactions : []; 
             arr.push(tx); 
             await saveWallet({ transactions: arr }); 
         } 
-        async function pushTax(tax) { 
+        async function pushTax(tax) { /* ... (Função mantida) ... */ 
             if (!walletData) walletData = {}; 
             const arr = Array.isArray(walletData.taxes) ? walletData.taxes : []; 
             arr.push(tax); 
             await saveWallet({ taxes: arr }); 
         } 
-        async function updateSystemReserves(amount, currency) { 
+        async function updateSystemReserves(amount, currency) { /* ... (Função mantida) ... */ 
             try { 
                 const reserveRef = db.collection('system').doc('reserves'); 
                 const reserveSnap = await reserveRef.get(); 
@@ -1194,7 +1114,6 @@
                 if (currency === 'reais') { 
                     newReserves.reais = (newReserves.reais || 0) + amount; 
                 } else if (currency === 'golds') { 
-                    // NOVO: Adaptação para 10.000 Golds = R$ 1,00
                     newReserves.reais = (newReserves.reais || 0) + (amount / GOLD_TO_REAL_RATE); 
                 } 
                 await reserveRef.set(newReserves, { merge: true }); 
@@ -1204,12 +1123,14 @@
             } 
         } 
         
+        // NOVO: Função para atualizar as informações do método de depósito
         function updateDepositMethodInfo() {
             const method = document.getElementById('deposit-method').value;
             const infoEl = document.getElementById('deposit-method-info');
             const pixKeyGroupEl = document.getElementById('pix-key-group');
             const pixKeyInput = document.getElementById('deposit-pix-key');
             
+            // Limpar erro ao mudar
             pixKeyInput.classList.remove('is-invalid');
             document.getElementById('deposit-pix-key-error').style.display = 'none';
 
@@ -1221,11 +1142,8 @@
                 `;
             } else if (method === 'boleto') {
                 pixKeyGroupEl.style.display = 'none';
-                let amount = document.getElementById('deposit-amount').value.replace(/\./g, '').replace(',', '.'); 
-                amount = Number(amount) || 0;
-                const tax = amount * TAX_RATE;
                 infoEl.innerHTML = `
-                    <p><strong>Instruções Boleto:</strong> Após confirmar, um boleto será gerado com o valor de depósito + taxa (R$ ${formatCurrency(tax)}). O crédito pode levar até 2 dias úteis após o pagamento.</p>
+                    <p><strong>Instruções Boleto:</strong> Após confirmar, um boleto será gerado com o valor de depósito + taxa (R$ ${formatCurrency(document.getElementById('deposit-amount').value.replace(/\./g, '').replace(',', '.') * TAX_RATE)}). O crédito pode levar até 2 dias úteis após o pagamento.</p>
                 `;
             } else if (method === 'card') {
                  pixKeyGroupEl.style.display = 'none';
@@ -1234,6 +1152,7 @@
                 `;
             }
         }
+        // FIM NOVO: Função para atualizar as informações do método de depósito
 
         async function processDeposit() { 
             showLoading('deposit');
@@ -1252,13 +1171,12 @@
 
             try { 
                 const tax = amount * TAX_RATE; 
-                const netAmount = amount - tax;
-                const newReais = (walletData.reaisBalance || 0) + netAmount; 
+                const newReais = (walletData.reaisBalance || 0) + (amount - tax); 
                 
                 await saveWallet({ reaisBalance: newReais }); 
                 await pushTransaction({ 
                     type: 'deposit', 
-                    amount: netAmount, 
+                    amount: amount - tax, 
                     currency: 'reais', 
                     description: `Depósito via ${method.toUpperCase()}`, 
                     date: new Date().toISOString(),
@@ -1268,7 +1186,7 @@
                 await updateSystemReserves(tax, 'reais'); 
                 
                 closeModal('depositModal'); 
-                showNotification('Sucesso', `Depósito de R$ ${formatCurrency(netAmount)} registrado (taxa: R$ ${formatCurrency(tax)}).`); 
+                showNotification('Sucesso', `Depósito de R$ ${formatCurrency(amount - tax)} registrado (taxa: R$ ${formatCurrency(tax)}).`); 
             } catch (err) { 
                 console.error('Erro depositar:', err); 
                 showNotification('Erro', 'Erro ao processar depósito.'); 
@@ -1277,6 +1195,7 @@
             }
         } 
         
+        // NOVO: Função para mostrar/ocultar campo PIX no Saque
         function togglePixKeyField() {
             const currency = document.getElementById('withdraw-currency').value;
             const pixGroup = document.getElementById('withdraw-pix-group');
@@ -1285,11 +1204,12 @@
                 pixGroup.style.display = 'block';
             } else {
                 pixGroup.style.display = 'none';
-                pixKeyInput.value = ''; 
+                pixKeyInput.value = ''; // Limpa a chave PIX se mudar para Golds
                 pixKeyInput.classList.remove('is-invalid');
                 document.getElementById('withdraw-pix-key-error').style.display = 'none';
             }
         }
+        // FIM NOVO: Função para mostrar/ocultar campo PIX no Saque
         
         async function processWithdrawal() { 
             showLoading('withdraw');
@@ -1301,7 +1221,6 @@
             if (!amount || amount <= 0) { hideLoading('withdraw'); showNotification('Erro', 'Valor inválido para saque.'); return; } 
             
             const tax = amount * TAX_RATE; 
-            const totalCost = amount + tax;
             
             if (currency === 'reais') { 
                 if (!validatePixKey(pixKey, 'withdraw-pix-key')) {
@@ -1310,8 +1229,8 @@
                     return;
                 }
                 
-                if ((walletData.reaisBalance || 0) < totalCost) { hideLoading('withdraw'); showNotification('Erro', `Saldo insuficiente em Reais. Necessário: R$ ${formatCurrency(totalCost)} (incluindo taxa).`); return; } 
-                const newReais = (walletData.reaisBalance || 0) - totalCost; 
+                if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('withdraw'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; } 
+                const newReais = (walletData.reaisBalance || 0) - (amount + tax); 
                 try { 
                     await saveWallet({ reaisBalance: newReais }); 
                     await pushTransaction({ 
@@ -1334,8 +1253,8 @@
                     hideLoading('withdraw');
                 }
             } else { 
-                if ((walletData.goldsBalance || 0) < totalCost) { hideLoading('withdraw'); showNotification('Erro', `Saldo insuficiente em Golds. Necessário: ${totalCost.toLocaleString('pt-BR')} (incluindo taxa).`); return; } 
-                const newGolds = (walletData.goldsBalance || 0) - totalCost; 
+                if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('withdraw'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; } 
+                const newGolds = (walletData.goldsBalance || 0) - (amount + tax); 
                 try { 
                     await saveWallet({ goldsBalance: newGolds }); 
                     await pushTransaction({ 
@@ -1350,7 +1269,7 @@
                     await updateSystemReserves(tax, 'golds'); 
                     
                     closeModal('withdrawModal'); 
-                    showNotification('Solicitação enviada', `Saque de ${amount.toLocaleString('pt-BR')} Golds solicitado (taxa: ${tax.toLocaleString('pt-BR')} Golds).`); 
+                    showNotification('Solicitação enviada', `Saque de ${amount} Golds solicitado (taxa: ${tax} Golds).`); 
                 } catch (err) { 
                     console.error('Erro saque golds:', err); 
                     showNotification('Erro', 'Não foi possível solicitar saque em Golds.'); 
@@ -1360,14 +1279,12 @@
             } 
         } 
         async function processTransfer() { 
-            // ... (Função processTransfer mantida, usa GOLD_TO_REAL_RATE)
             showLoading('transfer');
             const recipientId = document.getElementById('recipient-id').value.trim(); 
             const currency = document.getElementById('transfer-currency').value; 
             let amount = document.getElementById('transfer-amount').value.replace(/\./g, '').replace(',', '.'); 
             amount = Number(amount); 
             const tax = amount * TAX_RATE; 
-            const totalCost = amount + tax;
             
             if (!recipientId) { hideLoading('transfer'); showNotification('Erro', 'Informe o ID do destinatário.'); return; } 
             if (!amount || amount <= 0) { hideLoading('transfer'); showNotification('Erro', 'Valor inválido.'); return; } 
@@ -1379,11 +1296,11 @@
                 if (!recipientSnap.exists) { hideLoading('transfer'); showNotification('Erro', 'Destinatário não encontrado.'); return; } 
                 
                 if (currency === 'reais') { 
-                    if ((walletData.reaisBalance || 0) < totalCost) { hideLoading('transfer'); showNotification('Erro', `Saldo insuficiente em Reais. Necessário: R$ ${formatCurrency(totalCost)} (incluindo taxa).`); return; } 
+                    if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('transfer'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; } 
                     const batch = db.batch(); 
                     const senderRef = db.collection('wallets').doc(currentUser.uid); 
                     batch.update(senderRef, { 
-                        reaisBalance: (walletData.reaisBalance || 0) - totalCost, 
+                        reaisBalance: (walletData.reaisBalance || 0) - (amount + tax), 
                         transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'reais', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId, metadata: { tax } }), 
                         taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'transfer', amount: tax, currency: 'reais', date: new Date().toISOString() }) 
                     }); 
@@ -1397,11 +1314,11 @@
                     closeModal('transferModal'); 
                     showNotification('Sucesso', `Transferência de R$ ${formatCurrency(amount)} enviada (taxa: R$ ${formatCurrency(tax)}).`); 
                 } else { 
-                    if ((walletData.goldsBalance || 0) < totalCost) { hideLoading('transfer'); showNotification('Erro', `Saldo insuficiente em Golds. Necessário: ${totalCost.toLocaleString('pt-BR')} (incluindo taxa).`); return; } 
+                    if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('transfer'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; } 
                     const batch = db.batch(); 
                     const senderRef = db.collection('wallets').doc(currentUser.uid); 
                     batch.update(senderRef, { 
-                        goldsBalance: (walletData.goldsBalance || 0) - totalCost, 
+                        goldsBalance: (walletData.goldsBalance || 0) - (amount + tax), 
                         transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'golds', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId, metadata: { tax } }), 
                         taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'transfer', amount: tax, currency: 'golds', date: new Date().toISOString() }) 
                     }); 
@@ -1413,7 +1330,7 @@
                     await updateSystemReserves(tax, 'golds'); 
                     await loadWalletData(currentUser.uid); 
                     closeModal('transferModal'); 
-                    showNotification('Sucesso', `Transferência de ${amount.toLocaleString('pt-BR')} Golds enviada (taxa: ${tax.toLocaleString('pt-BR')} Golds).`); 
+                    showNotification('Sucesso', `Transferência de ${amount} Golds enviada (taxa: ${tax} Golds).`); 
                 } 
             } catch (err) { 
                 console.error('Erro transferir:', err); 
@@ -1429,18 +1346,15 @@
             let amount = document.getElementById('convert-amount').value.replace(/\./g, '').replace(',', '.'); 
             amount = Number(amount); 
             const tax = amount * TAX_RATE; 
-            const totalCost = amount + tax;
             
             if (!amount || amount <= 0) { hideLoading('convert'); showNotification('Erro', 'Valor inválido.'); return; } 
             if (from === to) { hideLoading('convert'); showNotification('Erro', 'Escolha moedas diferentes.'); return; } 
             
             try { 
                 if (from === 'golds' && to === 'reais') { 
-                    if ((walletData.goldsBalance || 0) < totalCost) { hideLoading('convert'); showNotification('Erro', `Saldo insuficiente em Golds. Necessário: ${totalCost.toLocaleString('pt-BR')} (incluindo taxa).`); return; } 
-                    const netGolds = amount - tax;
-                    // NOVO: Cálculo de conversão
-                    const reais = netGolds / GOLD_TO_REAL_RATE; 
-                    const newGolds = (walletData.goldsBalance || 0) - totalCost; 
+                    if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('convert'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; } 
+                    const reais = (amount - tax) / GOLD_TO_REAL_RATE; 
+                    const newGolds = (walletData.goldsBalance || 0) - (amount + tax); 
                     const newReais = (walletData.reaisBalance || 0) + reais; 
                     
                     await saveWallet({ 
@@ -1450,22 +1364,20 @@
                     }); 
                     await pushTransaction({ 
                         type: 'conversion', 
-                        amount: netGolds, 
+                        amount: amount - tax, 
                         currency: 'golds', 
-                        description: `Conversão ${netGolds.toLocaleString('pt-BR')} Golds → R$ ${formatCurrency(reais)}`, 
+                        description: `Conversão ${amount - tax} Golds → R$ ${formatCurrency(reais)}`, 
                         date: new Date().toISOString(),
                         metadata: { from: 'golds', to: 'reais', tax, convertedAmount: reais }
                     }); 
                     await updateSystemReserves(tax, 'golds'); 
                     
                     closeModal('convertModal'); 
-                    showNotification('Conversão', `Convertido ${netGolds.toLocaleString('pt-BR')} Golds para R$ ${formatCurrency(reais)} (taxa: ${tax.toLocaleString('pt-BR')} Golds).`); 
+                    showNotification('Conversão', `Convertido ${amount - tax} Golds para R$ ${formatCurrency(reais)} (taxa: ${tax} Golds).`); 
                 } else if (from === 'reais' && to === 'golds') { 
-                    if ((walletData.reaisBalance || 0) < totalCost) { hideLoading('convert'); showNotification('Erro', `Saldo insuficiente em Reais. Necessário: R$ ${formatCurrency(totalCost)} (incluindo taxa).`); return; } 
-                    const netReais = amount - tax;
-                    // NOVO: Cálculo de conversão
-                    const golds = Math.floor(netReais * GOLD_TO_REAL_RATE); 
-                    const newReais = (walletData.reaisBalance || 0) - totalCost; 
+                    if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('convert'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; } 
+                    const golds = Math.floor((amount - tax) * GOLD_TO_REAL_RATE); 
+                    const newReais = (walletData.reaisBalance || 0) - (amount + tax); 
                     const newGolds = (walletData.goldsBalance || 0) + golds; 
                     
                     await saveWallet({ 
@@ -1477,14 +1389,14 @@
                         type: 'conversion', 
                         amount: golds, 
                         currency: 'golds', 
-                        description: `Conversão R$ ${formatCurrency(netReais)} → ${golds.toLocaleString('pt-BR')} Golds`, 
+                        description: `Conversão R$ ${formatCurrency(amount - tax)} → ${golds} Golds`, 
                         date: new Date().toISOString(),
-                        metadata: { from: 'reais', to: 'golds', tax, convertedAmount: netReais }
+                        metadata: { from: 'reais', to: 'golds', tax, convertedAmount: amount - tax }
                     }); 
                     await updateSystemReserves(tax, 'reais'); 
                     
                     closeModal('convertModal'); 
-                    showNotification('Conversão', `Convertido R$ ${formatCurrency(netReais)} para ${golds.toLocaleString('pt-BR')} Golds (taxa: R$ ${formatCurrency(tax)}).`); 
+                    showNotification('Conversão', `Convertido R$ ${formatCurrency(amount - tax)} para ${golds} Golds (taxa: R$ ${formatCurrency(tax)}).`); 
                 } 
             } catch (err) { 
                 console.error('Erro conversão:', err); 
@@ -1494,6 +1406,7 @@
             }
         } 
         
+        // NOVO: Função para renderizar os detalhes do plano no modal de investimento
         function renderInvestmentDetails() {
             const companyId = document.getElementById('invest-company').value;
             const amountInput = document.getElementById('invest-amount');
@@ -1530,12 +1443,14 @@
             }
         }
 
+        // NOVO: Preencher as opções de investimento dinamicamente
         function populateInvestmentOptions() {
             const selectEl = document.getElementById('invest-company');
             const withdrawSelectEl = document.getElementById('withdraw-invest-company');
             selectEl.innerHTML = '';
             withdrawSelectEl.innerHTML = '';
 
+            // Adicionar opção padrão
             selectEl.appendChild(new Option('Selecione uma Empresa/Serviço', ''));
             withdrawSelectEl.appendChild(new Option('Selecione um Investimento Ativo', ''));
 
@@ -1543,6 +1458,7 @@
                 selectEl.appendChild(new Option(plan.name, id));
             });
 
+            // Preencher o modal de retirada apenas com investimentos ativos
             const investments = walletData.investments || {};
             Object.entries(investments)
                 .filter(([, inv]) => inv.amount > 0)
@@ -1554,6 +1470,7 @@
                 });
         }
         
+        // NOVO: Atualizar o retorno estimado dinamicamente
         document.getElementById('invest-company').addEventListener('change', renderInvestmentDetails);
         document.getElementById('invest-amount').addEventListener('input', renderInvestmentDetails);
         
@@ -1565,30 +1482,29 @@
             if (!cardId || !INVESTMENT_PLANS[cardId]) { hideLoading('invest'); showNotification('Erro', 'Selecione uma empresa válida.'); return; } 
             if (!amount || amount <= 0) { hideLoading('invest'); showNotification('Erro', 'Informe uma quantidade válida de Golds.'); return; } 
             
+            // NOVO: Limite mínimo de investimento (exemplo: 100 Golds)
             if (amount < 100) { hideLoading('invest'); showNotification('Erro', 'O investimento mínimo é de 100 Golds.'); return; }
 
-            const tax = Math.ceil(amount * TAX_RATE); 
+            const tax = Math.ceil(amount * TAX_RATE); // Arredondar a taxa para cima
             const totalCost = amount + tax;
 
             if ((walletData.goldsBalance || 0) < totalCost) { 
                 hideLoading('invest');
-                showNotification('Erro', `Saldo insuficiente em Golds. Necessário: ${totalCost.toLocaleString('pt-BR')} (Investimento: ${amount.toLocaleString('pt-BR')} + Taxa: ${tax.toLocaleString('pt-BR')}).`); 
+                showNotification('Erro', `Saldo insuficiente em Golds. Necessário: ${totalCost.toLocaleString('pt-BR')} (Investimento: ${amount} + Taxa: ${tax}).`); 
                 return; 
             } 
             
-            if (!confirm(`Confirmar investimento de ${amount.toLocaleString('pt-BR')} Golds em ${INVESTMENT_PLANS[cardId].name}? Taxa: ${tax.toLocaleString('pt-BR')} Golds.`)) { hideLoading('invest'); return; }
+            if (!confirm(`Confirmar investimento de ${amount.toLocaleString('pt-BR')} Golds em ${INVESTMENT_PLANS[cardId].name}? Taxa: ${tax} Golds.`)) { hideLoading('invest'); return; }
 
             try { 
                 const batch = db.batch(); 
                 const walletRef = db.collection('wallets').doc(currentUser.uid); 
                 const serviceRef = db.collection('serviceCards').doc(cardId); 
                 
-                const existingInvestment = walletData.investments[cardId];
-                
-                // Se for um novo investimento, a data é agora. Se for um aporte, atualiza a data de 'último aporte' para recálculo do lock-in/retorno.
+                // Estrutura de investimento atualizada no Firestore
                 const newInvestmentData = {
                     amount: firebase.firestore.FieldValue.increment(amount),
-                    date: new Date().toISOString() 
+                    date: new Date().toISOString() // Atualiza a data de investimento para o novo aporte
                 };
 
                 batch.update(walletRef, { 
@@ -1613,10 +1529,10 @@
                 
                 await batch.commit(); 
                 await updateSystemReserves(tax, 'golds'); 
-                // loadWalletData(currentUser.uid) será chamado automaticamente pelo onSnapshot, garantindo a atualização imediata.
+                await loadWalletData(currentUser.uid); 
                 
                 closeModal('investModal'); 
-                showNotification('Sucesso', `Investido ${amount.toLocaleString('pt-BR')} Golds em ${INVESTMENT_PLANS[cardId].name}.`); 
+                showNotification('Sucesso', `Investido ${amount} Golds em ${INVESTMENT_PLANS[cardId].name}.`); 
             } catch (err) { 
                 console.error('Erro ao investir:', err); 
                 showNotification('Erro', 'Falha ao processar investimento.'); 
@@ -1633,6 +1549,7 @@
             return new Date() < lockInPeriodEnd;
         }
 
+        // NOVO: Função para abrir o modal de retirada (separada do investimento)
         function openWithdrawInvestmentModal() {
             closeModal('investModal');
             populateInvestmentOptions();
@@ -1643,9 +1560,10 @@
             openModal('withdrawInvestModal');
         }
 
+        // NOVO: Renderizar detalhes de retirada (Lock-in, Retorno, Taxas)
         function renderWithdrawalDetails() {
             const cardId = document.getElementById('withdraw-invest-company').value;
-            let amountToWithdraw = Number(document.getElementById('withdraw-invest-amount').value) || 0;
+            let amountToWithdraw = Number(document.getElementById('withdraw-invest-amount').value);
             const detailsEl = document.getElementById('withdrawal-details');
             const summaryEl = document.getElementById('final-withdrawal-summary');
             
@@ -1665,60 +1583,78 @@
             }
 
             const invested = invData.amount;
-            amountToWithdraw = amountToWithdraw || invested; 
-
-            if (amountToWithdraw > invested) {
-                summaryEl.innerHTML = `<span style="color: var(--accent); font-weight: 700;">Erro: Quantidade a retirar (${amountToWithdraw.toLocaleString('pt-BR')}) maior que o saldo investido (${invested.toLocaleString('pt-BR')}).</span>`;
-                return;
-            }
-
             const accumulatedReturn = calculateCurrentReturn(cardId, invested, invData.date);
             const isLocked = isInvestmentLocked(invData.date, plan.lockInDays);
             const unlockDate = new Date(new Date(invData.date).getTime());
             unlockDate.setDate(unlockDate.getDate() + plan.lockInDays);
             
-            // Cálculos
-            let proportionalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested));
-            let penaltyRate = isLocked ? WITHDRAWAL_PENALTY_RATE : TAX_RATE;
-            let penalty = Math.ceil(amountToWithdraw * penaltyRate);
-            
-            let principalToReturn = amountToWithdraw;
-            let finalGolds = principalToReturn + proportionalReturn - penalty;
-            
-            let netPrincipal = principalToReturn;
-            let netReturn = proportionalReturn;
-            
-            if (penalty > proportionalReturn) {
-                 // Penalidade consome o retorno e parte do principal
-                 netReturn = 0;
-                 netPrincipal -= (penalty - proportionalReturn);
-                 penalty = proportionalReturn + (penalty - proportionalReturn); // Penalidade total para exibição
-            } else {
-                 // Penalidade consome o retorno
-                 netReturn -= penalty;
-                 penalty = penalty; // Penalidade total para exibição
+            amountToWithdraw = amountToWithdraw || invested; // Se não informar, assume total
+
+            if (amountToWithdraw > invested) {
+                summaryEl.innerHTML = `<span style="color: var(--accent); font-weight: 700;">Erro: Quantidade a retirar (${amountToWithdraw}) maior que o saldo investido (${invested}).</span>`;
+                detailsEl.innerHTML = `
+                    <div class="detail-item"><span>Investido:</span> <span>${invested.toLocaleString('pt-BR')} Golds</span></div>
+                    <div class="detail-item"><span>Retorno Acumulado:</span> <span style="color: var(--reais);">+${accumulatedReturn.toLocaleString('pt-BR')} Golds</span></div>
+                    <div class="detail-item"><span>Total Disponível:</span> <span>${(invested + accumulatedReturn).toLocaleString('pt-BR')} Golds</span></div>
+                    <div class="detail-item"><span>Status Lock-in:</span> <span style="color: ${isLocked ? 'var(--accent)' : 'var(--reais)'};">${isLocked ? 'Sim' : 'Não'} (Até: ${unlockDate.toLocaleDateString('pt-BR')})</span></div>
+                    <div class="detail-item" style="margin-top:0.5rem"><span>Taxa de Sistema (Saída):</span> <span>${(TAX_RATE * 100)}%</span></div>
+                `;
+                return;
             }
 
-            finalGolds = netPrincipal + netReturn;
+            let penalty = 0;
+            let totalWithdrawal = amountToWithdraw;
             
-            // Exibição dos detalhes
+            // Taxa/Penalidade
+            if (isLocked) {
+                // Penalidade sobre o valor investido a ser retirado
+                penalty = Math.ceil(amountToWithdraw * WITHDRAWAL_PENALTY_RATE); 
+                totalWithdrawal = amountToWithdraw;
+                // Reduz o retorno acumulado de forma proporcional à retirada antecipada (opcional, para ser mais punitivo)
+                const proportionalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested));
+                
+                let totalBeforePenalty = proportionalReturn;
+
+                if (totalBeforePenalty < penalty) { 
+                    penalty -= totalBeforePenalty; // A penalidade é abatida do retorno primeiro
+                    totalBeforePenalty = 0;
+                } else {
+                    totalBeforePenalty -= penalty;
+                    penalty = 0;
+                }
+                
+                totalWithdrawal += totalBeforePenalty;
+
+                summaryEl.style.color = 'var(--accent)';
+            } else {
+                // Se não estiver em lock-in, aplica-se apenas a taxa de sistema no valor a ser retirado (para simplificar)
+                const systemTax = Math.ceil(amountToWithdraw * TAX_RATE);
+                amountToWithdraw -= systemTax; // A taxa do sistema sai do valor investido
+                penalty = systemTax; // Usamos penalty para representar o total de taxas
+                
+                // Se for retirada parcial, o retorno acumulado proporcional é somado
+                const proportionalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested));
+                totalWithdrawal = amountToWithdraw + proportionalReturn;
+                
+                summaryEl.style.color = 'var(--reais)';
+            }
+            
+            const totalGolds = totalWithdrawal;
+            
             detailsEl.innerHTML = `
                 <div class="detail-item"><span>Investido Total:</span> <span>${invested.toLocaleString('pt-BR')} Golds</span></div>
                 <div class="detail-item"><span>Retorno Acumulado Total:</span> <span style="color: var(--reais);">+${accumulatedReturn.toLocaleString('pt-BR')} Golds</span></div>
-                <div class="detail-item"><span>Retirada Principal:</span> <span>${amountToWithdraw.toLocaleString('pt-BR')} Golds</span></div>
-                <div class="detail-item"><span>Retorno Proporcional:</span> <span style="color: var(--reais);">+${Math.floor(accumulatedReturn * (amountToWithdraw / invested)).toLocaleString('pt-BR')} Golds</span></div>
                 <div class="detail-item"><span>Status Lock-in:</span> <span style="color: ${isLocked ? 'var(--accent)' : 'var(--reais)'};">${isLocked ? 'Sim' : 'Não'} (Até: ${unlockDate.toLocaleDateString('pt-BR')})</span></div>
-                <div class="detail-item" style="border-top: 1px dashed var(--border); margin-top: 0.5rem; padding-top: 0.5rem;"><span>Taxa/Penalidade (${isLocked ? 'Ret. Antecipada 10%' : 'Sistema 5%'}):</span> <span style="color: var(--accent);">${penalty.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item" style="border-top: 1px dashed var(--border); margin-top: 0.5rem; padding-top: 0.5rem;"><span>Penalidade (Total):</span> <span style="color: var(--accent);">${penalty.toLocaleString('pt-BR')} Golds</span></div>
             `;
             
-            summaryEl.style.color = finalGolds > 0 ? 'var(--reais)' : 'var(--accent)';
-            summaryEl.innerHTML = `Valor Total a Receber (Líquido): <span style="font-size: 1.1rem;">${Math.max(0, finalGolds).toLocaleString('pt-BR')} Golds</span>`;
+            summaryEl.innerHTML = `Valor Total a Receber: <span style="font-size: 1.1rem; color: var(--reais);">${Math.floor(totalGolds).toLocaleString('pt-BR')} Golds</span> (Após Taxas/Penalidades)`;
         }
 
         async function confirmWithdrawal() {
             showLoading('withdraw-invest');
             const cardId = document.getElementById('withdraw-invest-company').value;
-            let amountToWithdraw = Number(document.getElementById('withdraw-invest-amount').value) || 0;
+            let amountToWithdraw = Number(document.getElementById('withdraw-invest-amount').value);
             
             if (!cardId || !INVESTMENT_PLANS[cardId]) { hideLoading('withdraw-invest'); showNotification('Erro', 'Selecione um investimento ativo válido.'); return; } 
             
@@ -1735,26 +1671,30 @@
             const accumulatedReturn = calculateCurrentReturn(cardId, invested, invData.date);
             const isLocked = isInvestmentLocked(invData.date, plan.lockInDays);
             
-            let proportionalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested));
-            let penaltyRate = isLocked ? WITHDRAWAL_PENALTY_RATE : TAX_RATE;
-            let penalty = Math.ceil(amountToWithdraw * penaltyRate);
-
+            let penalty = 0;
+            let totalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested)); // Retorno proporcional
             let principalToReturn = amountToWithdraw;
-            let totalPenalty = penalty;
-            let netReturn = proportionalReturn;
-            
-            if (totalPenalty > proportionalReturn) {
-                 netReturn = 0;
-                 principalToReturn -= (totalPenalty - proportionalReturn); // O restante da penalidade sai do principal
-            } else {
-                 netReturn -= totalPenalty;
-            }
 
-            const finalGolds = Math.max(0, principalToReturn + netReturn); // Garante que o valor não seja negativo
+            if (isLocked) {
+                penalty = Math.ceil(principalToReturn * WITHDRAWAL_PENALTY_RATE); 
+                if (totalReturn < penalty) { 
+                    penalty -= totalReturn; 
+                    totalReturn = 0;
+                    principalToReturn -= penalty; // O restante da penalidade sai do principal
+                } else {
+                    totalReturn -= penalty;
+                    penalty = 0;
+                }
+            } else {
+                penalty = Math.ceil(principalToReturn * TAX_RATE); // Taxa de sistema
+                principalToReturn -= penalty;
+            }
+            
+            const finalGolds = principalToReturn + totalReturn; 
 
             if (finalGolds <= 0) { hideLoading('withdraw-invest'); showNotification('Erro', `O valor líquido após penalidades é zero ou negativo.`); return; }
 
-            if (!confirm(`Confirma a retirada de ${finalGolds.toLocaleString('pt-BR')} Golds (líquido)? Valor bruto: ${amountToWithdraw.toLocaleString('pt-BR')} Golds (Principal) + ${proportionalReturn.toLocaleString('pt-BR')} Golds (Retorno). Taxas/Penalidades: ${totalPenalty.toLocaleString('pt-BR')} Golds.`)) { hideLoading('withdraw-invest'); return; }
+            if (!confirm(`Confirma a retirada de ${finalGolds.toLocaleString('pt-BR')} Golds (líquido)? Valor bruto: ${amountToWithdraw} Golds (Principal) + ${Math.floor(accumulatedReturn * (amountToWithdraw / invested))} Golds (Retorno). Taxas/Penalidades: ${penalty.toLocaleString('pt-BR')} Golds.`)) { hideLoading('withdraw-invest'); return; }
 
             try {
                 const batch = db.batch();
@@ -1768,13 +1708,13 @@
                         type: 'withdraw_invest', 
                         amount: finalGolds, 
                         currency: 'golds', 
-                        description: `Retirada de ${amountToWithdraw.toLocaleString('pt-BR')} Golds investidos (+${netReturn.toLocaleString('pt-BR')} Retorno Líq.) em ${plan.name}`, 
+                        description: `Retirada de ${amountToWithdraw} Golds investidos (+${totalReturn} Retorno, -${penalty} Taxa/Pen.) em ${plan.name}`, 
                         date: new Date().toISOString(),
-                        metadata: { company: cardId, principalWithdrawn: amountToWithdraw, finalReturn: netReturn, penalty: totalPenalty }
+                        metadata: { company: cardId, principalWithdrawn: amountToWithdraw, finalReturn: totalReturn, penalty }
                     }), 
                     taxes: firebase.firestore.FieldValue.arrayUnion({ 
                         type: 'withdraw_invest_penalty', 
-                        amount: totalPenalty, 
+                        amount: penalty, 
                         currency: 'golds', 
                         description: isLocked ? 'Retirada antecipada' : 'Taxa de sistema',
                         date: new Date().toISOString() 
@@ -1784,7 +1724,7 @@
                 batch.update(serviceRef, { golds: firebase.firestore.FieldValue.increment(-amountToWithdraw) }); 
                 
                 await batch.commit();
-                // loadWalletData(currentUser.uid) será chamado automaticamente pelo onSnapshot, garantindo a atualização imediata.
+                await loadWalletData(currentUser.uid);
                 
                 closeModal('withdrawInvestModal');
                 showNotification('Sucesso', `Retirada de ${finalGolds.toLocaleString('pt-BR')} Golds (líquido) de ${plan.name} efetuada.`);
@@ -1795,17 +1735,21 @@
                 hideLoading('withdraw-invest');
             }
         }
-        
-        // NOVO: Função para o Banco Central
-        function openBankCentralModal() { 
-            openModal('bankCentralModal');
-            // Abre o link após um pequeno atraso para dar tempo de ver a notificação, se houver
-             setTimeout(() => {
-                window.location.href='https://linkpremiado51-cmd.github.io/yshippcommerce/bancocentral.html';
-             }, 500);
-        }
 
-        // Exportação das funções para o escopo global (para uso no onclick)
+        function openDepositModal() { openModal('depositModal'); updateDepositMethodInfo(); } // NOVO: Chama função de info
+        function openWithdrawModal() { openModal('withdrawModal'); togglePixKeyField(); } // NOVO: Chama função de campo PIX
+        function openTransferModal() { openModal('transferModal'); } 
+        function openConvertModal() { openModal('convertModal'); } 
+        function openInvestModal() { 
+            populateInvestmentOptions(); 
+            document.getElementById('invest-amount').value = '';
+            document.getElementById('investment-details').innerHTML = 'Selecione um plano para ver detalhes.';
+            document.getElementById('estimated-return').textContent = '';
+            openModal('investModal'); 
+        } 
+        function openCryptoModal() { openModal('cryptoModal'); showNotification('Aviso', 'Funcionalidade de criptomoeda em desenvolvimento.'); } 
+        function openCommercialModal() { openModal('commercialModal'); showNotification('Aviso', 'Funcionalidade de Conta Comercial em desenvolvimento.'); } 
+        
         window.openDepositModal = openDepositModal; 
         window.openWithdrawModal = openWithdrawModal; 
         window.openTransferModal = openTransferModal; 
@@ -1813,14 +1757,12 @@
         window.openInvestModal = openInvestModal; 
         window.openCryptoModal = openCryptoModal; 
         window.openCommercialModal = openCommercialModal; 
-        window.openBankCentralModal = openBankCentralModal; // NOVO
         window.openWithdrawInvestmentModal = openWithdrawInvestmentModal; 
         window.renderWithdrawalDetails = renderWithdrawalDetails; 
         window.confirmWithdrawal = confirmWithdrawal; 
-        window.openTransactionDetails = openTransactionDetails; 
-        window.openInvestmentDetails = openInvestmentDetails; // NOVO
-        window.updateDepositMethodInfo = updateDepositMethodInfo; 
-        window.togglePixKeyField = togglePixKeyField; 
+        window.openTransactionDetails = openTransactionDetails; // NOVO
+        window.updateDepositMethodInfo = updateDepositMethodInfo; // NOVO
+        window.togglePixKeyField = togglePixKeyField; // NOVO
 
         window.processDeposit = processDeposit; 
         window.processWithdrawal = processWithdrawal; 
@@ -1831,9 +1773,9 @@
         window.closeModal = closeModal; 
         window.showNotification = showNotification; 
         window.navigateTo = navigateTo; 
-        window.renderTransactions = renderTransactions; 
+        window.renderTransactions = renderTransactions; // NOVO: Exporta para o onchange do filtro
         
-        function navigateTo(page) { 
+        function navigateTo(page) { /* ... (Função mantida) ... */ 
             switch (page) { 
                 case 'wallet': window.location.href = "carteira.html"; break; 
                 case 'generator': window.location.href = "gerador.html"; break; 
@@ -1845,7 +1787,7 @@
         } 
         
         document.addEventListener('DOMContentLoaded', function () { 
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL) .then(() => { console.log("✅ Persistência LOCAL ativada."); }) .catch((error) => { console.error("❌ Erro configurando persistência:", error); }); 
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL) .then(() => { console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar."); }) .catch((error) => { console.error("❌ Erro configurando persistência:", error); }); 
             const menuToggles = { 'menu-icon': 'main-menu' }; 
             Object.entries(menuToggles).forEach(([toggleId, menuId]) => { 
                 const toggle = document.getElementById(toggleId); 
@@ -1870,6 +1812,7 @@
         
         (function init() { 
             document.getElementById('loadingOverlay').style.display = 'flex'; 
+            console.log('Aguardando autenticação...'); 
         })(); 
         
         auth.onAuthStateChanged(async user => { 
@@ -1883,22 +1826,20 @@
                 await loadWalletData(user.uid); 
                 document.getElementById('loadingOverlay').style.display = 'none'; 
                 setupInputFormatting(); 
+                // NOVO: Chama a função de atualização de info no init
                 updateDepositMethodInfo();
                 togglePixKeyField();
                 
-                // Sincronização em Tempo Real (FireStore Listener)
                 db.collection('wallets').doc(user.uid).onSnapshot(async (doc) => { 
                     if (doc.exists) { 
                         walletData = doc.data(); 
-                        allTransactions = walletData.transactions || []; 
+                        allTransactions = walletData.transactions || []; // NOVO: Sincroniza o cache
                         renderWallet(); 
                     } 
                 }); 
             } catch (error) { 
                 console.error('Erro ao sincronizar carteira:', error); 
                 showNotification('Erro', `Erro ao sincronizar carteira: ${error.message}`); 
-                // Permite a visualização, mesmo com erro
-                document.getElementById('loadingOverlay').style.display = 'none'; 
             } 
         }); 
     </script>
