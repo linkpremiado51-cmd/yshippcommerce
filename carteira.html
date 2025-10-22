@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --background: #f5f7fa;
@@ -71,6 +70,7 @@
         .balance-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
         .balance-card.gold { background: linear-gradient(135deg, var(--gold), #b7791f); }
         .balance-card.reais { background: linear-gradient(135deg, var(--reais), #059669); }
+        .balance-card.portfolio { background: linear-gradient(135deg, #6b46c1, #805ad5); }
         .balance-label { font-size: 0.8rem; text-transform: uppercase; opacity: 0.9; margin-bottom: 0.3rem; font-weight: 500; }
         .balance-amount { font-size: 1.5rem; font-weight: 600; }
         .balance-desc { font-size: 0.8rem; opacity: 0.85; margin-top: 0.3rem; }
@@ -82,10 +82,10 @@
         .stat-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
         .stat-value { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
         .action-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
-        .action-btn { 
-            padding: 0.5rem; border-radius: 4px; border: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s ease; 
+        .action-btn {
+            padding: 0.5rem; border-radius: 4px; border: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s ease;
             display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--text-primary);
-            position: relative; /* Adicionado para o loading */
+            position: relative;
         }
         .action-btn.withdraw { background: var(--primary); color: white; }
         .action-btn.transfer { background: #3b82f6; color: white; }
@@ -94,6 +94,7 @@
         .action-btn.crypto { background: #f6e05e; color: var(--text-primary); }
         .action-btn.bank { background: #38a169; color: white; }
         .action-btn.commercial { background: #4a5568; color: white; }
+        .action-btn.resgate { background: #8b5cf6; color: white; }
         [data-theme="dark"] .action-btn.withdraw { background: #4a5568; color: #e2e8f0; }
         [data-theme="dark"] .action-btn.transfer { background: #60a5fa; color: #1a202c; }
         [data-theme="dark"] .action-btn.default { background: #63b3ed; color: #1a202c; }
@@ -104,11 +105,11 @@
         .action-btn:hover { background: var(--secondary-hover); }
         .action-btn i { font-size: 0.9rem; }
         .transaction-list { max-height: 360px; overflow-y: auto; margin-top: 0.5rem; }
-        .transaction-item { 
-            display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); 
-            margin-bottom: 0.5rem; background: var(--background); cursor: pointer; transition: background 0.2s; /* Adicionado cursor */
+        .transaction-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border);
+            margin-bottom: 0.5rem; background: var(--background); cursor: pointer; transition: background 0.2s;
         }
-        .transaction-item:hover { background: var(--border); } /* Adicionado hover */
+        .transaction-item:hover { background: var(--border); }
         .transaction-type { font-weight: 600; font-size: 0.85rem; }
         .transaction-desc { color: var(--text-secondary); font-size: 0.8rem; }
         .transaction-date { color: var(--text-secondary); font-size: 0.75rem; }
@@ -122,13 +123,12 @@
         .form-group { margin-bottom: 0.75rem; }
         .form-group label { display: block; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.85rem; }
         .form-group input, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; background: var(--background); color: var(--text-primary); }
-        .form-group input.is-invalid { border-color: var(--accent); } /* NOVO */
-        .validation-error { color: var(--accent); font-size: 0.75rem; margin-top: 0.25rem; } /* NOVO */
+        .form-group input.is-invalid { border-color: var(--accent); }
+        .validation-error { color: var(--accent); font-size: 0.75rem; margin-top: 0.25rem; }
         .modal-buttons { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-        .modal-buttons button { flex: 1; padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s ease; position: relative;} /* Adicionado position relative */
+        .modal-buttons button { flex: 1; padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s ease; position: relative;}
         #loadingOverlay { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; z-index: 10000; }
         footer#userInfoFooter { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: white; text-align: center; padding: 0.3rem; font-size: 0.8rem; border-top: 1px solid var(--border); z-index: 999; font-family: 'Inter', sans-serif; }
-
         /* Estilos específicos de Investimento */
         .investment-detail { font-size: 0.8rem; margin-top: 0.5rem; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: var(--background); }
         .detail-item { margin-bottom: 0.3rem; display: flex; justify-content: space-between; align-items: center; }
@@ -137,14 +137,13 @@
         .risk-medium { background: var(--risk-medium); color: var(--text-primary); }
         .risk-high { background: var(--risk-high); }
         .estimated-return { font-weight: 700; color: var(--secondary); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
-        
+
         .investment-card { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 0.5rem; background: var(--background); transition: background 0.2s; }
         .investment-card:hover { background: var(--border); }
         .invest-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
         .invest-amount { font-weight: 600; font-size: 0.9rem; color: var(--gold); }
         .invest-return { font-size: 0.8rem; color: var(--reais); }
         .invest-lockin { font-size: 0.75rem; color: var(--text-secondary); }
-
         /* NOVO: Estilos de Loading Específico */
         .action-loading-overlay {
             position: absolute;
@@ -152,7 +151,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(45, 55, 72, 0.8); /* Cor do botão principal: var(--primary) */
+            background: rgba(45, 55, 72, 0.8);
             border-radius: 4px;
             display: none;
             align-items: center;
@@ -164,7 +163,7 @@
         .action-loading-overlay.active {
             display: flex;
         }
-        
+
         /* NOVO: Estilos do Histórico de Transações */
         .transaction-filters {
             display: grid;
@@ -182,7 +181,6 @@
             background: var(--background);
             color: var(--text-primary);
         }
-
         @media (max-width: 768px) {
             .menu { width: min(80vw, 240px); }
             .header { padding: 0 12px; }
@@ -275,10 +273,8 @@
             </ul>
         </nav>
     </div>
-
     <div class="notification" id="notification"></div>
     <div id="overlay" class="overlay"></div>
-
     <main style="width:100%; max-width:1000px; padding:0 0.75rem 120px; margin:0 auto;">
         <div class="balance-cards">
             <div class="balance-card gold">
@@ -291,8 +287,15 @@
                 <div id="reais-balance" class="balance-amount">R$ 0,00</div>
                 <div class="balance-desc">Saldo disponível para saque</div>
             </div>
+            <div class="balance-card portfolio">
+                <div class="balance-label">Saldo Disponível em Portfólio</div>
+                <div id="portfolio-balance" class="balance-amount">0 Golds</div>
+                <div class="balance-desc">Lucro acumulado dos investimentos</div>
+                <button class="action-btn resgate" onclick="resgatarLucro()">
+                    <i class="fas fa-coins"></i> Resgatar Lucro
+                </button>
+            </div>
         </div>
-
         <section class="wallet-section">
             <h2><i class="fas fa-chart-bar"></i>Estatísticas</h2>
             <div class="stats-grid">
@@ -314,23 +317,14 @@
                 </div>
             </div>
         </section>
-
         <section class="wallet-section" id="my-investments-section">
             <h2><i class="fas fa-hand-holding-usd"></i>Meus Investimentos Ativos</h2>
             <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;">
                 <div id="investment-summary-list" class="transaction-list" style="max-height: none; overflow-y: visible; margin-top: 0;">
                     <div style="text-align:center; color:var(--text-secondary); padding:1rem">Nenhum investimento ativo.</div>
                 </div>
-                
-                <div id="investment-chart-container" style="padding: 0.5rem; border-top: 1px solid var(--border); margin-top: 0.5rem; text-align: center;">
-                    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">Evolução do Portfólio (Golds)</h3>
-                    <div style="width: 100%; max-width: 600px; margin: 0 auto;">
-                        <canvas id="investmentChart"></canvas>
-                    </div>
-                </div>
             </div>
         </section>
-
         <section class="wallet-section">
             <h2><i class="fas fa-bolt"></i>Ações Rápidas</h2>
             <div class="action-buttons">
@@ -344,10 +338,8 @@
                 <button class="action-btn commercial" onclick="openCommercialModal()"><i class="fas fa-briefcase"></i>Conta Comercial</button>
             </div>
         </section>
-
         <section class="wallet-section">
             <h2><i class="fas fa-history"></i>Histórico de Transações</h2>
-            
             <div class="transaction-filters">
                 <select id="filter-type" onchange="renderTransactions()">
                     <option value="">Todos os Tipos</option>
@@ -370,7 +362,6 @@
             </div>
         </section>
     </main>
-
     <div id="transactionDetailsModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-info-circle"></i>Detalhes da Transação</h3>
@@ -381,114 +372,112 @@
             </div>
         </div>
     </div>
-    <div id="depositModal" class="modal"> 
-        <div class="modal-content"> 
-            <h3><i class="fas fa-arrow-down"></i>Depositar</h3> 
-            <div class="form-group"> <label>Método</label> 
-                <select id="deposit-method" onchange="updateDepositMethodInfo()"> 
-                    <option value="pix">PIX</option> 
-                    <option value="boleto">Boleto</option> 
-                    <option value="card">Cartão</option> 
-                </select> 
-            </div> 
-            <div class="form-group"> <label>Valor (R$)</label> 
-                <input id="deposit-amount" type="text" placeholder="0,00"> 
-            </div> 
-            
-            <div id="pix-key-group" class="form-group"> 
-                <label for="deposit-pix-key">Chave PIX de Origem (Para validação)</label> 
-                <input id="deposit-pix-key" type="text" placeholder="CPF, e-mail, telefone ou aleatória"> 
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-arrow-down"></i>Depositar</h3>
+            <div class="form-group"> <label>Método</label>
+                <select id="deposit-method" onchange="updateDepositMethodInfo()">
+                    <option value="pix">PIX</option>
+                    <option value="boleto">Boleto</option>
+                    <option value="card">Cartão</option>
+                </select>
+            </div>
+            <div class="form-group"> <label>Valor (R$)</label>
+                <input id="deposit-amount" type="text" placeholder="0,00">
+            </div>
+            <div id="pix-key-group" class="form-group">
+                <label for="deposit-pix-key">Chave PIX de Origem (Para validação)</label>
+                <input id="deposit-pix-key" type="text" placeholder="CPF, e-mail, telefone ou aleatória">
                 <div id="deposit-pix-key-error" class="validation-error" style="display:none;"></div>
             </div>
             <div id="deposit-method-info" class="investment-detail" style="font-size:0.8rem; margin-top:0.5rem;">
                 <p><strong>Instruções PIX:</strong> Utilize a chave PIX acima para depositar. O valor será creditado em Reais na sua carteira.</p>
             </div>
-            <div class="modal-buttons"> 
+            <div class="modal-buttons">
                 <button class="action-btn default" id="deposit-confirm-btn" onclick="processDeposit()">
                     Confirmar
                     <div class="action-loading-overlay" id="deposit-loading"><i class="fas fa-spinner fa-spin"></i> Processando...</div>
-                </button> 
-                <button class="action-btn" onclick="closeModal('depositModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button> 
-            </div> 
-        </div> 
-    </div> 
-    <div id="withdrawModal" class="modal"> 
-        <div class="modal-content"> 
-            <h3><i class="fas fa-arrow-up"></i>Saque</h3> 
-            <div class="form-group"> <label>Moeda</label> 
-                <select id="withdraw-currency" onchange="togglePixKeyField()"> 
-                    <option value="reais">Reais</option> 
-                    <option value="golds">Golds</option> 
-                </select> 
-            </div> 
-            <div class="form-group"> <label>Valor</label> 
-                <input id="withdraw-amount" type="text" placeholder="0,00"> 
-            </div> 
-            
-            <div id="withdraw-pix-group" class="form-group" style="display:block;"> 
-                <label for="withdraw-pix-key">Chave PIX (destino)</label> 
-                <input id="withdraw-pix-key" type="text" placeholder="CPF, e-mail, telefone ou aleatória"> 
+                </button>
+                <button class="action-btn" onclick="closeModal('depositModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-arrow-up"></i>Saque</h3>
+            <div class="form-group"> <label>Moeda</label>
+                <select id="withdraw-currency" onchange="togglePixKeyField()">
+                    <option value="reais">Reais</option>
+                    <option value="golds">Golds</option>
+                </select>
+            </div>
+            <div class="form-group"> <label>Valor</label>
+                <input id="withdraw-amount" type="text" placeholder="0,00">
+            </div>
+            <div id="withdraw-pix-group" class="form-group" style="display:block;">
+                <label for="withdraw-pix-key">Chave PIX (destino)</label>
+                <input id="withdraw-pix-key" type="text" placeholder="CPF, e-mail, telefone ou aleatória">
                 <div id="withdraw-pix-key-error" class="validation-error" style="display:none;"></div>
-            </div> 
-            <div class="modal-buttons"> 
+            </div>
+            <div class="modal-buttons">
                 <button class="action-btn withdraw" id="withdraw-confirm-btn" onclick="processWithdrawal()">
                     Solicitar Saque
                     <div class="action-loading-overlay" id="withdraw-loading"><i class="fas fa-spinner fa-spin"></i> Solicitando...</div>
-                </button> 
-                <button class="action-btn" onclick="closeModal('withdrawModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button> 
-            </div> 
-        </div> 
-    </div> 
-    <div id="transferModal" class="modal"> 
-        <div class="modal-content"> 
-            <h3><i class="fas fa-exchange-alt"></i>Transferir</h3> 
-            <div class="form-group"> <label>ID do destinatário</label> 
-                <input id="recipient-id" type="text"> 
-            </div> 
-            <div class="form-group"> <label>Moeda</label> 
-                <select id="transfer-currency"> 
-                    <option value="golds">Golds</option> 
-                    <option value="reais">Reais</option> 
-                </select> 
-            </div> 
-            <div class="form-group"> <label>Valor</label> 
-                <input id="transfer-amount" type="text" placeholder="0,00"> 
-            </div> 
-            <div class="modal-buttons"> 
+                </button>
+                <button class="action-btn" onclick="closeModal('withdrawModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-exchange-alt"></i>Transferir</h3>
+            <div class="form-group"> <label>ID do destinatário</label>
+                <input id="recipient-id" type="text">
+            </div>
+            <div class="form-group"> <label>Moeda</label>
+                <select id="transfer-currency">
+                    <option value="golds">Golds</option>
+                    <option value="reais">Reais</option>
+                </select>
+            </div>
+            <div class="form-group"> <label>Valor</label>
+                <input id="transfer-amount" type="text" placeholder="0,00">
+            </div>
+            <div class="modal-buttons">
                 <button class="action-btn transfer" id="transfer-confirm-btn" onclick="processTransfer()">
                     Enviar
                     <div class="action-loading-overlay" id="transfer-loading"><i class="fas fa-spinner fa-spin"></i> Enviando...</div>
-                </button> 
-                <button class="action-btn" onclick="closeModal('transferModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button> 
-            </div> 
-        </div> 
-    </div> 
-    <div id="convertModal" class="modal"> 
-        <div class="modal-content"> 
-            <h3><i class="fas fa-sync-alt"></i>Converter</h3> 
-            <div class="form-group"> <label>Converter</label> 
-                <select id="convert-from"> 
-                    <option value="golds">Golds</option> 
-                    <option value="reais">Reais</option> 
-                </select> 
-            </div> 
-            <div class="form-group"> <label>Valor</label> 
-                <input id="convert-amount" type="text" placeholder="0,00"> 
-            </div> 
-            <div class="form-group"> <label>Para</label> 
-                <select id="convert-to"> 
-                    <option value="reais">Reais</option> 
-                    <option value="golds">Golds</option> 
-                </select> 
-            </div> 
-            <div class="modal-buttons"> 
+                </button>
+                <button class="action-btn" onclick="closeModal('transferModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="convertModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-sync-alt"></i>Converter</h3>
+            <div class="form-group"> <label>Converter</label>
+                <select id="convert-from">
+                    <option value="golds">Golds</option>
+                    <option value="reais">Reais</option>
+                </select>
+            </div>
+            <div class="form-group"> <label>Valor</label>
+                <input id="convert-amount" type="text" placeholder="0,00">
+            </div>
+            <div class="form-group"> <label>Para</label>
+                <select id="convert-to">
+                    <option value="reais">Reais</option>
+                    <option value="golds">Golds</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
                 <button class="action-btn default" id="convert-confirm-btn" onclick="processConversion()">
                     Confirmar Conversão
                     <div class="action-loading-overlay" id="convert-loading"><i class="fas fa-spinner fa-spin"></i> Convertendo...</div>
-                </button> 
-                <button class="action-btn" onclick="closeModal('convertModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button> 
-            </div> 
-        </div> 
+                </button>
+                <button class="action-btn" onclick="closeModal('convertModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
+            </div>
+        </div>
     </div>
     <div id="investModal" class="modal">
         <div class="modal-content">
@@ -498,19 +487,15 @@
                 <select id="invest-company">
                     </select>
             </div>
-            
             <div id="investment-details" class="investment-detail">
                 Selecione um plano para ver detalhes.
             </div>
-
             <div class="form-group">
                 <label for="invest-amount">Quantidade de Golds</label>
                 <input id="invest-amount" type="text" placeholder="0">
             </div>
-
             <div id="estimated-return" class="estimated-return">
                 </div>
-
             <div class="modal-buttons">
                 <button class="action-btn invest" id="invest-confirm-btn" onclick="processInvest()">
                     Confirmar Investimento
@@ -529,19 +514,15 @@
                 <select id="withdraw-invest-company" onchange="renderWithdrawalDetails()">
                     </select>
             </div>
-            
             <div id="withdrawal-details" class="investment-detail">
                 Selecione um investimento ativo.
             </div>
-
             <div class="form-group">
                 <label for="withdraw-invest-amount">Quantidade de Golds a Retirar</label>
                 <input id="withdraw-invest-amount" type="text" placeholder="0" oninput="renderWithdrawalDetails()">
             </div>
-            
             <div id="final-withdrawal-summary" class="estimated-return" style="color: var(--accent);">
                 </div>
-
             <div class="modal-buttons">
                 <button class="action-btn withdraw" id="withdraw-invest-confirm-btn" onclick="confirmWithdrawal()">
                     Confirmar Retirada
@@ -551,12 +532,10 @@
             </div>
         </div>
     </div>
-    <div id="cryptoModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-coins"></i>Criptomoeda</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de criptomoeda em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('cryptoModal')">Fechar</button> </div> </div> </div> 
-    <div id="commercialModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-briefcase"></i>Conta Comercial</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de Conta Comercial em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('commercialModal')">Fechar</button> </div> </div> </div> 
+    <div id="cryptoModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-coins"></i>Criptomoeda</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de criptomoeda em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('cryptoModal')">Fechar</button> </div> </div> </div>
+    <div id="commercialModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-briefcase"></i>Conta Comercial</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de Conta Comercial em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('commercialModal')">Fechar</button> </div> </div> </div>
     <div id="notificationModal" class="modal"> <div class="modal-content"> <h3 id="notification-title"><i class="fas fa-bell"></i>Notificação</h3> <p id="notification-message" style="color:var(--text-secondary); font-size:0.85rem"></p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('notificationModal')">OK</button> </div> </div> </div>
-
     <footer id="userInfoFooter"> Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span> </footer>
-
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
@@ -576,9 +555,7 @@
         let walletData = null;
         const GOLD_TO_REAL_RATE = 1000;
         const TAX_RATE = 0.05;
-        const WITHDRAWAL_PENALTY_RATE = 0.10; // 10% de penalidade para retirada antecipada
-
-        // NOVO: Estrutura detalhada dos planos de investimento
+        const WITHDRAWAL_PENALTY_RATE = 0.10;
         const INVESTMENT_PLANS = {
             facebook: { name: 'Micro Influenciador do Facebook', returnRate: 0.012, risk: 'Baixo', lockInDays: 30 },
             instagram: { name: 'Micro Influenciador do Instagram', returnRate: 0.015, risk: 'Baixo', lockInDays: 30 },
@@ -592,309 +569,153 @@
             seo: { name: 'SEO, Promover Conteúdo', returnRate: 0.020, risk: 'Médio', lockInDays: 60 },
             inscricoes: { name: 'Inscrever-se', returnRate: 0.005, risk: 'Muito Baixo', lockInDays: 15 }
         };
-
         const companyNames = {};
         Object.entries(INVESTMENT_PLANS).forEach(([id, plan]) => {
             companyNames[id] = plan.name;
         });
-
-        // Variável para o gráfico
-        let investmentChart = null;
-        let allTransactions = []; // NOVO: Cache para todas as transações
-
-        // NOVO: Funções de Loading
+        let allTransactions = [];
         function showLoading(actionId) {
             document.getElementById(`${actionId}-loading`).classList.add('active');
         }
         function hideLoading(actionId) {
             document.getElementById(`${actionId}-loading`).classList.remove('active');
         }
-        // FIM NOVO: Funções de Loading
-
         function formatCurrency(value) {
             if (!value && value !== 0) return '0,00';
             return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
-        
         function formatInputCurrency(input) {
-             let value = input.value.replace(/\D/g, ''); value = value.padStart(3, '0'); const cents = value.slice(-2); const integer = value.slice(0, -2) || '0'; const formattedInteger = parseInt(integer).toLocaleString('pt-BR'); input.value = `${formattedInteger},${cents}`; 
-        } 
-        function formatInputInteger(input) { 
-            input.value = input.value.replace(/\D/g, ''); 
-        } 
-        function setupInputFormatting() { 
-            const currencyInputs = [ 'deposit-amount', 'withdraw-amount', 'transfer-amount', 'convert-amount' ]; 
-            currencyInputs.forEach(id => { 
-                const input = document.getElementById(id); 
-                input.addEventListener('input', () => formatInputCurrency(input)); 
-                input.addEventListener('blur', () => { if (!input.value || input.value === '0,00') input.value = ''; }); 
-                input.addEventListener('focus', () => { if (!input.value) input.value = '0,00'; }); 
-            }); 
-            const integerInputs = ['invest-amount', 'withdraw-invest-amount']; 
-            integerInputs.forEach(id => { 
-                const input = document.getElementById(id); 
-                input.addEventListener('input', () => formatInputInteger(input)); 
-                input.addEventListener('blur', () => { if (!input.value) input.value = ''; }); 
-                input.addEventListener('focus', () => { if (!input.value) input.value = '0'; }); 
-            }); 
-            // NOVO: Adiciona o listener para formatação/validação da chave PIX no Saque
+             let value = input.value.replace(/\D/g, ''); value = value.padStart(3, '0'); const cents = value.slice(-2); const integer = value.slice(0, -2) || '0'; const formattedInteger = parseInt(integer).toLocaleString('pt-BR'); input.value = `${formattedInteger},${cents}`;
+        }
+        function formatInputInteger(input) {
+            input.value = input.value.replace(/\D/g, '');
+        }
+        function setupInputFormatting() {
+            const currencyInputs = [ 'deposit-amount', 'withdraw-amount', 'transfer-amount', 'convert-amount' ];
+            currencyInputs.forEach(id => {
+                const input = document.getElementById(id);
+                input.addEventListener('input', () => formatInputCurrency(input));
+                input.addEventListener('blur', () => { if (!input.value || input.value === '0,00') input.value = ''; });
+                input.addEventListener('focus', () => { if (!input.value) input.value = '0,00'; });
+            });
+            const integerInputs = ['invest-amount', 'withdraw-invest-amount'];
+            integerInputs.forEach(id => {
+                const input = document.getElementById(id);
+                input.addEventListener('input', () => formatInputInteger(input));
+                input.addEventListener('blur', () => { if (!input.value) input.value = ''; });
+                input.addEventListener('focus', () => { if (!input.value) input.value = '0'; });
+            });
             document.getElementById('withdraw-pix-key').addEventListener('input', (e) => validatePixKey(e.target.value, 'withdraw-pix-key'));
-            // NOVO: Adiciona o listener para formatação/validação da chave PIX no Depósito
             document.getElementById('deposit-pix-key').addEventListener('input', (e) => validatePixKey(e.target.value, 'deposit-pix-key'));
         }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; } 
-        function closeModal(id) { 
-            document.getElementById(id).style.display = 'none'; 
-            const inputs = document.querySelectorAll(`#${id} input[type="text"]`); 
-            inputs.forEach(input => input.value = ''); 
-            // NOVO: Limpar erros de validação
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+            const inputs = document.querySelectorAll(`#${id} input[type="text"]`);
+            inputs.forEach(input => input.value = '');
             document.querySelectorAll(`#${id} .validation-error`).forEach(el => el.style.display = 'none');
             document.querySelectorAll(`#${id} input.is-invalid`).forEach(el => el.classList.remove('is-invalid'));
-            // Ocultar campo PIX no depósito ao fechar
             if (id === 'depositModal') {
-                document.getElementById('deposit-method').value = 'pix'; // Reseta para PIX
+                document.getElementById('deposit-method').value = 'pix';
                 updateDepositMethodInfo();
             }
-        } 
-        function showNotification(title, message) { 
-            const notification = document.getElementById('notification'); 
-            notification.textContent = message; 
-            notification.classList.add('show'); 
-            setTimeout(() => { notification.classList.remove('show'); }, 3000); 
-        } 
-        function loadTheme() { 
-            const saved = localStorage.getItem('theme') || 'light'; 
-            document.body.dataset.theme = saved; 
-        } 
-        document.getElementById('theme-toggle').addEventListener('click', () => { 
-            const newTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light'; 
-            document.body.dataset.theme = newTheme; 
-            localStorage.setItem('theme', newTheme); 
-        }); 
-        loadTheme(); 
-        async function ensureAnonymousSignIn() { 
-            try { console.warn('Nenhum usuário logado. Tentando login anônimo...'); 
-            const res = await auth.signInAnonymously(); console.log('Login anônimo realizado. UID:', res.user.uid); 
-        } catch (error) { 
-            console.error('Erro ao autenticar anonimamente:', error); showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`); 
-        } 
-    } 
-
-        async function loadWalletData(uid) { 
-            try { 
-                const ref = db.collection('wallets').doc(uid); 
-                const snap = await ref.get(); 
-                if (!snap.exists) { 
-                    const initial = { 
-                        userId: uid, name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'), 
-                        goldsBalance: 0, 
-                        reaisBalance: 0, 
-                        investments: {}, // Agora investments é um mapa de id: {amount: number, date: timestamp}
-                        transactions: [], 
-                        taxes: [], 
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-                    }; 
-                    await ref.set(initial); 
-                    walletData = initial; 
-                    allTransactions = initial.transactions || []; // NOVO: Inicializa o cache
-                    renderWallet(); 
-                    console.log('Carteira criada para', uid); 
-                    return; 
-                } 
-                walletData = snap.data(); 
-                allTransactions = walletData.transactions || []; // NOVO: Atualiza o cache
-                renderWallet(); 
-                console.log('Carteira carregada para', uid, walletData); 
-            } catch (err) { 
-                console.error('Erro ao carregar carteira:', err); 
+        }
+        function showNotification(title, message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => { notification.classList.remove('show'); }, 3000);
+        }
+        function loadTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.body.dataset.theme = saved;
+        }
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const newTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+            document.body.dataset.theme = newTheme;
+            localStorage.setItem('theme', newTheme);
+        });
+        loadTheme();
+        async function ensureAnonymousSignIn() {
+            try { console.warn('Nenhum usuário logado. Tentando login anônimo...');
+            const res = await auth.signInAnonymously(); console.log('Login anônimo realizado. UID:', res.user.uid);
+        } catch (error) {
+            console.error('Erro ao autenticar anonimamente:', error); showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`);
+        }
+    }
+        async function loadWalletData(uid) {
+            try {
+                const ref = db.collection('wallets').doc(uid);
+                const snap = await ref.get();
+                if (!snap.exists) {
+                    const initial = {
+                        userId: uid, name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'),
+                        goldsBalance: 0,
+                        reaisBalance: 0,
+                        portfolioBalance: 0,
+                        investments: {},
+                        transactions: [],
+                        taxes: [],
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    await ref.set(initial);
+                    walletData = initial;
+                    allTransactions = initial.transactions || [];
+                    renderWallet();
+                    console.log('Carteira criada para', uid);
+                    return;
+                }
+                walletData = snap.data();
+                allTransactions = walletData.transactions || [];
+                renderWallet();
+                console.log('Carteira carregada para', uid, walletData);
+            } catch (err) {
+                console.error('Erro ao carregar carteira:', err);
                 showNotification('Erro', 'Não foi possível carregar os dados da carteira.');
-            } 
-        } 
-
+            }
+        }
         function calculateCurrentReturn(investmentId, investedAmount, initialDate) {
             const plan = INVESTMENT_PLANS[investmentId];
             if (!plan || investedAmount <= 0) return 0;
-
             const now = new Date();
             const start = initialDate instanceof firebase.firestore.Timestamp ? initialDate.toDate() : new Date(initialDate);
             const diffTime = Math.abs(now - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Diferença em dias
-            
-            // Retorno Simples: Retorno diário = Taxa Anual / 365. Assumindo a returnRate como mensal/30 dias para simplificar
-            // Multiplicamos a taxa mensal (returnRate) por um fator proporcional aos dias corridos.
-            const ratePerDay = plan.returnRate / 30; 
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const ratePerDay = plan.returnRate / 30;
             const totalReturnRate = diffDays * ratePerDay;
-            
-            // Retorno acumulado é o valor investido * taxa total
             const accumulatedReturn = investedAmount * totalReturnRate;
-
-            return Math.floor(accumulatedReturn); // Retorno em Golds
+            return Math.floor(accumulatedReturn);
         }
-
-        // NOVO: Função para obter dados simulados de evolução do portfólio
-        function getPortfolioHistory() {
-            const investments = walletData.investments || {};
-            const activeInvestments = Object.keys(investments)
-                .filter(id => investments[id].amount > 0);
-
-            if (activeInvestments.length === 0) return { labels: [], data: [] };
-
-            // Simula o histórico de 7 dias
-            const labels = [];
-            const data = [];
-            
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('pt-BR'));
-                
-                let dailyTotal = 0;
-                activeInvestments.forEach(id => {
-                    const inv = investments[id];
-                    const plan = INVESTMENT_PLANS[id];
-                    const start = inv.date instanceof firebase.firestore.Timestamp ? inv.date.toDate() : new Date(inv.date);
-                    
-                    const diffTime = Math.abs(date - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    const ratePerDay = plan.returnRate / 30; 
-                    const totalReturnRate = Math.max(0, (diffDays - i) * ratePerDay); // Ajuste simples para simular crescimento
-                    const accumulatedReturn = inv.amount * totalReturnRate;
-                    
-                    dailyTotal += inv.amount + Math.floor(accumulatedReturn);
-                });
-                data.push(dailyTotal);
-            }
-
-            return { labels, data };
-        }
-
-        // NOVO: Renderiza Gráfico de Linha
-        function renderInvestmentChart() {
-            const { labels, data } = getPortfolioHistory();
-            
-            if (investmentChart) {
-                investmentChart.destroy();
-            }
-
-            const ctx = document.getElementById('investmentChart');
-            const chartContainer = document.getElementById('investment-chart-container');
-
-            if (data.length < 2) {
-                chartContainer.style.display = 'none';
-                return;
-            } else {
-                chartContainer.style.display = 'block';
-            }
-
-            investmentChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Valor do Portfólio (Golds)',
-                        data: data,
-                        backgroundColor: 'rgba(55, 125, 207, 0.2)', // Cor principal com transparência
-                        borderColor: 'var(--secondary)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'var(--secondary)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: {
-                                color: 'var(--text-primary)'
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y.toLocaleString('pt-BR') + ' Golds';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Golds',
-                                color: 'var(--text-secondary)'
-                            },
-                            ticks: {
-                                color: 'var(--text-secondary)'
-                            },
-                            grid: {
-                                color: 'var(--border)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: 'var(--text-secondary)'
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        // FIM NOVO: Renderiza Gráfico de Linha
-
         function renderInvestmentSummary() {
             const listEl = document.getElementById('investment-summary-list');
             const investments = walletData.investments || {};
             let totalInvested = 0;
             let totalReturn = 0;
-
             const activeInvestments = Object.entries(investments)
                 .filter(([, inv]) => inv.amount > 0)
                 .map(([id, inv]) => ({ id, ...inv }));
-
             if (activeInvestments.length === 0) {
                 listEl.innerHTML = `
                     <div style="text-align:center; padding:1rem; color:var(--text-secondary)">
                         <i class="fas fa-chart-line" style="font-size:1.5rem; opacity:0.6"></i>
                         <div style="margin-top:0.5rem; font-size:0.85rem">Você não tem investimentos ativos.</div>
                     </div>`;
-                renderInvestmentChart();
                 return;
             }
-
             listEl.innerHTML = activeInvestments.map(inv => {
                 const plan = INVESTMENT_PLANS[inv.id];
                 if (!plan) return '';
-
                 const investedAmount = inv.amount;
                 const accumulatedReturn = calculateCurrentReturn(inv.id, investedAmount, inv.date);
                 const totalValue = investedAmount + accumulatedReturn;
                 const isLocked = isInvestmentLocked(inv.date, plan.lockInDays);
                 const unlockDate = new Date(inv.date instanceof firebase.firestore.Timestamp ? inv.date.toDate().getTime() : new Date(inv.date).getTime());
                 unlockDate.setDate(unlockDate.getDate() + plan.lockInDays);
-
                 totalInvested += investedAmount;
                 totalReturn += accumulatedReturn;
-
-                const statusTag = isLocked 
-                    ? `<span style="color: var(--accent); font-weight: 500;">(Em Lock-in)</span>` 
+                const statusTag = isLocked
+                    ? `<span style="color: var(--accent); font-weight: 500;">(Em Lock-in)</span>`
                     : `<span style="color: var(--reais); font-weight: 500;">(Liberado)</span>`;
-
                 return `
                     <div class="investment-card">
                         <div style="flex:1; min-width:0">
@@ -909,67 +730,39 @@
                     </div>
                 `;
             }).join('');
-
-            // Adicionar estatística de Total Investido na seção Stats (opcional)
-            const investedStat = document.getElementById('total-invested-stat');
-            if (!investedStat) {
-                // Se não existir, crie.
-                const statsGrid = document.querySelector('.stats-grid');
-                if (statsGrid) {
-                    const newStat = document.createElement('div');
-                    newStat.className = 'stat-item';
-                    newStat.id = 'total-invested-stat';
-                    newStat.innerHTML = `
-                        <div class="stat-label">Total Investido</div>
-                        <div id="total-invested-value" class="stat-value">${totalInvested.toLocaleString('pt-BR')}</div>
-                    `;
-                    statsGrid.appendChild(newStat);
-                }
-            } else {
-                document.getElementById('total-invested-value').textContent = totalInvested.toLocaleString('pt-BR');
-            }
-
-            renderInvestmentChart();
+            document.getElementById('portfolio-balance').textContent = `${totalReturn.toLocaleString('pt-BR')} Golds`;
         }
-
-        function renderWallet() { 
-            if (!walletData) return; 
-            document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString('pt-BR'); 
-            document.getElementById('reais-balance').textContent = `R$ ${formatCurrency(walletData.reaisBalance || 0)}`; 
-            const txs = allTransactions || []; 
-            document.getElementById('total-transactions').textContent = txs.length; 
-            let totalReceived = 0, totalSent = 0, lastWithdrawal = '-'; 
-            txs.forEach(tx => { 
+        function renderWallet() {
+            if (!walletData) return;
+            document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString('pt-BR');
+            document.getElementById('reais-balance').textContent = `R$ ${formatCurrency(walletData.reaisBalance || 0)}`;
+            document.getElementById('portfolio-balance').textContent = `${walletData.portfolioBalance || 0} Golds`;
+            const txs = allTransactions || [];
+            document.getElementById('total-transactions').textContent = txs.length;
+            let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
+            txs.forEach(tx => {
                 if (tx.currency === 'golds') {
-                     if (tx.type === 'receive' || tx.type === 'withdraw_invest') totalReceived += (tx.amount || 0); 
-                     if (tx.type === 'send' || tx.type === 'withdraw' || tx.type === 'invest') totalSent += (tx.amount || 0); 
+                     if (tx.type === 'receive' || tx.type === 'withdraw_invest') totalReceived += (tx.amount || 0);
+                     if (tx.type === 'send' || tx.type === 'withdraw' || tx.type === 'invest') totalSent += (tx.amount || 0);
                 }
-                if (tx.type === 'withdraw' && tx.currency === 'reais') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR'); 
-            }); 
-            // Os totais devem ser a soma total, não só em Golds. Para simplicidade, vamos considerar Golds + Reais (convertido)
-            // Mantendo Golds por enquanto
-            document.getElementById('total-received').textContent = totalReceived.toLocaleString('pt-BR'); 
-            document.getElementById('total-sent').textContent = totalSent.toLocaleString('pt-BR'); 
-            document.getElementById('last-withdrawal').textContent = lastWithdrawal; 
-            renderTransactions(); 
-            renderInvestmentSummary(); 
-        } 
-        
+                if (tx.type === 'withdraw' && tx.currency === 'reais') lastWithdrawal = new Date(tx.date).toLocaleDateString('pt-BR');
+            });
+            document.getElementById('total-received').textContent = totalReceived.toLocaleString('pt-BR');
+            document.getElementById('total-sent').textContent = totalSent.toLocaleString('pt-BR');
+            document.getElementById('last-withdrawal').textContent = lastWithdrawal;
+            renderTransactions();
+            renderInvestmentSummary();
+        }
         function renderTransactions() {
             const listEl = document.getElementById('transaction-list');
-            const filterType = document.getElementById('filter-type').value; // NOVO: Filtro
-            const filterCurrency = document.getElementById('filter-currency').value; // NOVO: Filtro
-            
+            const filterType = document.getElementById('filter-type').value;
+            const filterCurrency = document.getElementById('filter-currency').value;
             let txs = (walletData && walletData.transactions) ? walletData.transactions.slice().reverse() : [];
-            
-            // NOVO: Aplica os filtros
             txs = txs.filter(tx => {
                 const matchesType = !filterType || tx.type === filterType;
                 const matchesCurrency = !filterCurrency || tx.currency === filterCurrency;
                 return matchesType && matchesCurrency;
             });
-            // FIM NOVO: Aplica os filtros
-
             if (!txs.length) {
                 listEl.innerHTML = `
                 <div style="text-align:center; padding:1rem; color:var(--text-secondary)">
@@ -986,7 +779,7 @@
                     deposit: 'Depósito',
                     conversion: 'Conversão',
                     invest: 'Investimento',
-                    withdraw_invest: 'Retirada de Investimento'
+                    withdraw_invest: 'Retirada Investimento'
                 };
                 const amountLabel = tx.currency === 'golds' ? `${tx.amount.toLocaleString('pt-BR')} Golds` : `R$ ${formatCurrency(tx.amount)}`;
                 const sign = (tx.type === 'receive' || tx.type === 'withdraw_invest' || tx.type === 'deposit') ? '+' : (tx.type === 'withdraw' || tx.type === 'invest') ? '↓' : '-';
@@ -994,8 +787,6 @@
                 const icon = (tx.type === 'receive' || tx.type === 'withdraw_invest' || tx.type === 'deposit') ? 'fa-arrow-down' : (tx.type === 'withdraw' || tx.type === 'invest') ? 'fa-arrow-up' : 'fa-exchange-alt';
                 const when = new Date(tx.date).toLocaleString('pt-BR');
                 const desc = tx.description || '';
-                
-                // NOVO: Adiciona o onclick para o modal de detalhes
                 return `
                 <div class="transaction-item" onclick="openTransactionDetails(${walletData.transactions.length - 1 - index})">
                     <div style="flex:1; min-width:0">
@@ -1010,12 +801,9 @@
                 `;
             }).join('');
         }
-        
-        // NOVO: Função para abrir e preencher o modal de detalhes
         function openTransactionDetails(index) {
-            const tx = walletData.transactions.slice().reverse()[index]; // Obtém a transação pelo índice na lista *renderizada*
+            const tx = walletData.transactions.slice().reverse()[index];
             if (!tx) return;
-
             const typeMap = {
                 receive: 'Recebido',
                 send: 'Enviado',
@@ -1023,54 +811,39 @@
                 deposit: 'Depósito',
                 conversion: 'Conversão',
                 invest: 'Investimento',
-                withdraw_invest: 'Retirada de Investimento'
+                withdraw_invest: 'Retirada Investimento'
             };
             const amountLabel = tx.currency === 'golds' ? `${tx.amount.toLocaleString('pt-BR')} Golds` : `R$ ${formatCurrency(tx.amount)}`;
             const type = typeMap[tx.type] || tx.type;
             const when = new Date(tx.date).toLocaleString('pt-BR');
-            
             let detailsHtml = `
                 <div class="detail-item"><strong>Tipo:</strong> <span>${type}</span></div>
                 <div class="detail-item"><strong>Valor:</strong> <span>${amountLabel}</span></div>
                 <div class="detail-item"><strong>Descrição:</strong> <span>${tx.description || '-'}</span></div>
                 <div class="detail-item"><strong>Data:</strong> <span>${when}</span></div>
             `;
-            
             if (tx.to) { detailsHtml += `<div class="detail-item"><strong>Para (ID):</strong> <span>${tx.to}</span></div>`; }
             if (tx.from) { detailsHtml += `<div class="detail-item"><strong>De (ID):</strong> <span>${tx.from}</span></div>`; }
             if (tx.metadata) { detailsHtml += `<div class="detail-item"><strong>Metadata:</strong> <span>${JSON.stringify(tx.metadata)}</span></div>`; }
-
             document.getElementById('transaction-details-content').innerHTML = detailsHtml;
             openModal('transactionDetailsModal');
         }
-        // FIM NOVO: Função para abrir e preencher o modal de detalhes
-
-        // NOVO: Funções de Validação de PIX
         function validatePixKey(key, inputId) {
             const inputEl = document.getElementById(inputId);
             const errorEl = document.getElementById(`${inputId}-error`);
             inputEl.classList.remove('is-invalid');
             errorEl.style.display = 'none';
-
-            if (!key) return true; // Permite vazio, se não for obrigatório
-
+            if (!key) return true;
             const cleanedKey = key.replace(/[^a-zA-Z0-9@.\-\_]/g, '');
             inputEl.value = cleanedKey;
-
-            // Regex de validação básica para os 4 tipos de chave PIX
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            // CPF: 11 dígitos. CNPJ: 14 dígitos.
-            const cpfCnpjRegex = /^(\d{11}|\d{14})$/; 
-            // Telefone: +55 (DDD) NNNNN-NNNN (simples: 10 a 11 dígitos, opcionalmente com +55)
-            const phoneRegex = /^(\+55)?\d{10,11}$/; 
-            // Chave Aleatória: UUID, 32 caracteres (não há um padrão universal de caracteres, mas geralmente é alfanumérico)
-            const randomRegex = /^[a-zA-Z0-9\-]{26,36}$/; 
-            
+            const cpfCnpjRegex = /^(\d{11}|\d{14})$/;
+            const phoneRegex = /^(\+55)?\d{10,11}$/;
+            const randomRegex = /^[a-zA-Z0-9\-]{26,36}$/;
             const isEmail = emailRegex.test(cleanedKey);
             const isCpfCnpj = cpfCnpjRegex.test(cleanedKey) && (cleanedKey.length === 11 || cleanedKey.length === 14);
             const isPhone = phoneRegex.test(cleanedKey.replace(/[\(\)\-\s\+]/g, ''));
             const isRandom = randomRegex.test(cleanedKey);
-
             if (isEmail || isCpfCnpj || isPhone || isRandom) {
                 return true;
             } else {
@@ -1080,60 +853,53 @@
                 return false;
             }
         }
-        // FIM NOVO: Funções de Validação de PIX
-
-        async function saveWallet(updated) { /* ... (Função mantida) ... */ 
-            if (!currentUser || !currentUser.uid) throw new Error('Usuário não autenticado'); 
-            try { 
-                await db.collection('wallets').doc(currentUser.uid).set(updated, { merge: true }); 
-                walletData = { ...walletData, ...updated }; 
-                allTransactions = walletData.transactions || []; // NOVO: Atualiza o cache
-                renderWallet(); 
-            } catch (err) { 
-                console.error('Erro salvando wallet:', err); 
-                throw err; 
-            } 
-        } 
-        async function pushTransaction(tx) { /* ... (Função mantida) ... */ 
-            if (!walletData) walletData = {}; 
-            const arr = Array.isArray(walletData.transactions) ? walletData.transactions : []; 
-            arr.push(tx); 
-            await saveWallet({ transactions: arr }); 
-        } 
-        async function pushTax(tax) { /* ... (Função mantida) ... */ 
-            if (!walletData) walletData = {}; 
-            const arr = Array.isArray(walletData.taxes) ? walletData.taxes : []; 
-            arr.push(tax); 
-            await saveWallet({ taxes: arr }); 
-        } 
-        async function updateSystemReserves(amount, currency) { /* ... (Função mantida) ... */ 
-            try { 
-                const reserveRef = db.collection('system').doc('reserves'); 
-                const reserveSnap = await reserveRef.get(); 
-                let newReserves = reserveSnap.exists ? reserveSnap.data() : { reais: 0 }; 
-                if (currency === 'reais') { 
-                    newReserves.reais = (newReserves.reais || 0) + amount; 
-                } else if (currency === 'golds') { 
-                    newReserves.reais = (newReserves.reais || 0) + (amount / GOLD_TO_REAL_RATE); 
-                } 
-                await reserveRef.set(newReserves, { merge: true }); 
-            } catch (err) { 
-                console.error('Erro ao atualizar reservas do sistema:', err); 
-                showNotification('Erro', 'Não foi possível atualizar as reservas do sistema.'); 
-            } 
-        } 
-        
-        // NOVO: Função para atualizar as informações do método de depósito
+        async function saveWallet(updated) {
+            if (!currentUser || !currentUser.uid) throw new Error('Usuário não autenticado');
+            try {
+                await db.collection('wallets').doc(currentUser.uid).set(updated, { merge: true });
+                walletData = { ...walletData, ...updated };
+                allTransactions = walletData.transactions || [];
+                renderWallet();
+            } catch (err) {
+                console.error('Erro salvando wallet:', err);
+                throw err;
+            }
+        }
+        async function pushTransaction(tx) {
+            if (!walletData) walletData = {};
+            const arr = Array.isArray(walletData.transactions) ? walletData.transactions : [];
+            arr.push(tx);
+            await saveWallet({ transactions: arr });
+        }
+        async function pushTax(tax) {
+            if (!walletData) walletData = {};
+            const arr = Array.isArray(walletData.taxes) ? walletData.taxes : [];
+            arr.push(tax);
+            await saveWallet({ taxes: arr });
+        }
+        async function updateSystemReserves(amount, currency) {
+            try {
+                const reserveRef = db.collection('system').doc('reserves');
+                const reserveSnap = await reserveRef.get();
+                let newReserves = reserveSnap.exists ? reserveSnap.data() : { reais: 0 };
+                if (currency === 'reais') {
+                    newReserves.reais = (newReserves.reais || 0) + amount;
+                } else if (currency === 'golds') {
+                    newReserves.reais = (newReserves.reais || 0) + (amount / GOLD_TO_REAL_RATE);
+                }
+                await reserveRef.set(newReserves, { merge: true });
+            } catch (err) {
+                console.error('Erro ao atualizar reservas do sistema:', err);
+                showNotification('Erro', 'Não foi possível atualizar as reservas do sistema.');
+            }
+        }
         function updateDepositMethodInfo() {
             const method = document.getElementById('deposit-method').value;
             const infoEl = document.getElementById('deposit-method-info');
             const pixKeyGroupEl = document.getElementById('pix-key-group');
             const pixKeyInput = document.getElementById('deposit-pix-key');
-            
-            // Limpar erro ao mudar
             pixKeyInput.classList.remove('is-invalid');
             document.getElementById('deposit-pix-key-error').style.display = 'none';
-
             if (method === 'pix') {
                 pixKeyGroupEl.style.display = 'block';
                 infoEl.innerHTML = `
@@ -1152,50 +918,6 @@
                 `;
             }
         }
-        // FIM NOVO: Função para atualizar as informações do método de depósito
-
-        async function processDeposit() { 
-            showLoading('deposit');
-            const method = document.getElementById('deposit-method').value;
-            const pixKey = document.getElementById('deposit-pix-key').value.trim();
-            let amount = document.getElementById('deposit-amount').value.replace(/\./g, '').replace(',', '.'); 
-            amount = Number(amount); 
-            
-            if (!amount || amount <= 0) { hideLoading('deposit'); showNotification('Erro', 'Informe um valor válido para depósito.'); return; } 
-            
-            if (method === 'pix' && !validatePixKey(pixKey, 'deposit-pix-key')) {
-                hideLoading('deposit');
-                showNotification('Erro', 'Chave PIX de origem inválida.');
-                return;
-            }
-
-            try { 
-                const tax = amount * TAX_RATE; 
-                const newReais = (walletData.reaisBalance || 0) + (amount - tax); 
-                
-                await saveWallet({ reaisBalance: newReais }); 
-                await pushTransaction({ 
-                    type: 'deposit', 
-                    amount: amount - tax, 
-                    currency: 'reais', 
-                    description: `Depósito via ${method.toUpperCase()}`, 
-                    date: new Date().toISOString(),
-                    metadata: { method, fullAmount: amount, tax, pixKey: method === 'pix' ? pixKey : undefined }
-                }); 
-                await pushTax({ type: 'deposit', amount: tax, currency: 'reais', date: new Date().toISOString() }); 
-                await updateSystemReserves(tax, 'reais'); 
-                
-                closeModal('depositModal'); 
-                showNotification('Sucesso', `Depósito de R$ ${formatCurrency(amount - tax)} registrado (taxa: R$ ${formatCurrency(tax)}).`); 
-            } catch (err) { 
-                console.error('Erro depositar:', err); 
-                showNotification('Erro', 'Erro ao processar depósito.'); 
-            } finally {
-                hideLoading('deposit');
-            }
-        } 
-        
-        // NOVO: Função para mostrar/ocultar campo PIX no Saque
         function togglePixKeyField() {
             const currency = document.getElementById('withdraw-currency').value;
             const pixGroup = document.getElementById('withdraw-pix-group');
@@ -1204,236 +926,248 @@
                 pixGroup.style.display = 'block';
             } else {
                 pixGroup.style.display = 'none';
-                pixKeyInput.value = ''; // Limpa a chave PIX se mudar para Golds
+                pixKeyInput.value = '';
                 pixKeyInput.classList.remove('is-invalid');
                 document.getElementById('withdraw-pix-key-error').style.display = 'none';
             }
         }
-        // FIM NOVO: Função para mostrar/ocultar campo PIX no Saque
-        
-        async function processWithdrawal() { 
+        async function processDeposit() {
+            showLoading('deposit');
+            const method = document.getElementById('deposit-method').value;
+            const pixKey = document.getElementById('deposit-pix-key').value.trim();
+            let amount = document.getElementById('deposit-amount').value.replace(/\./g, '').replace(',', '.');
+            amount = Number(amount);
+            if (!amount || amount <= 0) { hideLoading('deposit'); showNotification('Erro', 'Informe um valor válido para depósito.'); return; }
+            if (method === 'pix' && !validatePixKey(pixKey, 'deposit-pix-key')) {
+                hideLoading('deposit');
+                showNotification('Erro', 'Chave PIX de origem inválida.');
+                return;
+            }
+            try {
+                const tax = amount * TAX_RATE;
+                const newReais = (walletData.reaisBalance || 0) + (amount - tax);
+                await saveWallet({ reaisBalance: newReais });
+                await pushTransaction({
+                    type: 'deposit',
+                    amount: amount - tax,
+                    currency: 'reais',
+                    description: `Depósito via ${method.toUpperCase()}`,
+                    date: new Date().toISOString(),
+                    metadata: { method, fullAmount: amount, tax, pixKey: method === 'pix' ? pixKey : undefined }
+                });
+                await pushTax({ type: 'deposit', amount: tax, currency: 'reais', date: new Date().toISOString() });
+                await updateSystemReserves(tax, 'reais');
+                closeModal('depositModal');
+                showNotification('Sucesso', `Depósito de R$ ${formatCurrency(amount - tax)} registrado (taxa: R$ ${formatCurrency(tax)}).`);
+            } catch (err) {
+                console.error('Erro depositar:', err);
+                showNotification('Erro', 'Erro ao processar depósito.');
+            } finally {
+                hideLoading('deposit');
+            }
+        }
+        async function processWithdrawal() {
             showLoading('withdraw');
-            const currency = document.getElementById('withdraw-currency').value; 
+            const currency = document.getElementById('withdraw-currency').value;
             const pixKey = document.getElementById('withdraw-pix-key').value.trim();
-            let amount = document.getElementById('withdraw-amount').value.replace(/\./g, '').replace(',', '.'); 
-            amount = Number(amount); 
-            
-            if (!amount || amount <= 0) { hideLoading('withdraw'); showNotification('Erro', 'Valor inválido para saque.'); return; } 
-            
-            const tax = amount * TAX_RATE; 
-            
-            if (currency === 'reais') { 
+            let amount = document.getElementById('withdraw-amount').value.replace(/\./g, '').replace(',', '.');
+            amount = Number(amount);
+            if (!amount || amount <= 0) { hideLoading('withdraw'); showNotification('Erro', 'Valor inválido para saque.'); return; }
+            if (currency === 'reais' && amount < 25) { hideLoading('withdraw'); showNotification('Erro', 'Saque mínimo é de R$ 25,00.'); return; }
+            const tax = amount * TAX_RATE;
+            if (currency === 'reais') {
                 if (!validatePixKey(pixKey, 'withdraw-pix-key')) {
                     hideLoading('withdraw');
                     showNotification('Erro', 'Chave PIX de destino inválida.');
                     return;
                 }
-                
-                if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('withdraw'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; } 
-                const newReais = (walletData.reaisBalance || 0) - (amount + tax); 
-                try { 
-                    await saveWallet({ reaisBalance: newReais }); 
-                    await pushTransaction({ 
-                        type: 'withdraw', 
-                        amount, 
-                        currency: 'reais', 
-                        description: 'Saque para conta (PIX)', 
+                if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('withdraw'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; }
+                const newReais = (walletData.reaisBalance || 0) - (amount + tax);
+                try {
+                    await saveWallet({ reaisBalance: newReais });
+                    await pushTransaction({
+                        type: 'withdraw',
+                        amount,
+                        currency: 'reais',
+                        description: 'Saque para conta (PIX)',
                         date: new Date().toISOString(),
                         metadata: { pixKey, tax }
-                    }); 
-                    await pushTax({ type: 'withdraw', amount: tax, currency: 'reais', date: new Date().toISOString() }); 
-                    await updateSystemReserves(tax, 'reais'); 
-                    
-                    closeModal('withdrawModal'); 
-                    showNotification('Solicitação enviada', `Saque de R$ ${formatCurrency(amount)} solicitado (taxa: R$ ${formatCurrency(tax)}).`); 
-                } catch (err) { 
-                    console.error('Erro saque:', err); 
-                    showNotification('Erro', 'Não foi possível solicitar saque.'); 
+                    });
+                    await pushTax({ type: 'withdraw', amount: tax, currency: 'reais', date: new Date().toISOString() });
+                    await updateSystemReserves(tax, 'reais');
+                    closeModal('withdrawModal');
+                    showNotification('Solicitação enviada', `Saque de R$ ${formatCurrency(amount)} solicitado (taxa: R$ ${formatCurrency(tax)}).`);
+                } catch (err) {
+                    console.error('Erro saque:', err);
+                    showNotification('Erro', 'Não foi possível solicitar saque.');
                 } finally {
                     hideLoading('withdraw');
                 }
-            } else { 
-                if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('withdraw'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; } 
-                const newGolds = (walletData.goldsBalance || 0) - (amount + tax); 
-                try { 
-                    await saveWallet({ goldsBalance: newGolds }); 
-                    await pushTransaction({ 
-                        type: 'withdraw', 
-                        amount, 
-                        currency: 'golds', 
-                        description: `Saque de ${amount} Golds`, 
+            } else {
+                if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('withdraw'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; }
+                const newGolds = (walletData.goldsBalance || 0) - (amount + tax);
+                try {
+                    await saveWallet({ goldsBalance: newGolds });
+                    await pushTransaction({
+                        type: 'withdraw',
+                        amount,
+                        currency: 'golds',
+                        description: `Saque de ${amount} Golds`,
                         date: new Date().toISOString(),
                         metadata: { tax }
-                    }); 
-                    await pushTax({ type: 'withdraw', amount: tax, currency: 'golds', date: new Date().toISOString() }); 
-                    await updateSystemReserves(tax, 'golds'); 
-                    
-                    closeModal('withdrawModal'); 
-                    showNotification('Solicitação enviada', `Saque de ${amount} Golds solicitado (taxa: ${tax} Golds).`); 
-                } catch (err) { 
-                    console.error('Erro saque golds:', err); 
-                    showNotification('Erro', 'Não foi possível solicitar saque em Golds.'); 
+                    });
+                    await pushTax({ type: 'withdraw', amount: tax, currency: 'golds', date: new Date().toISOString() });
+                    await updateSystemReserves(tax, 'golds');
+                    closeModal('withdrawModal');
+                    showNotification('Solicitação enviada', `Saque de ${amount} Golds solicitado (taxa: ${tax} Golds).`);
+                } catch (err) {
+                    console.error('Erro saque golds:', err);
+                    showNotification('Erro', 'Não foi possível solicitar saque em Golds.');
                 } finally {
                     hideLoading('withdraw');
                 }
-            } 
-        } 
-        async function processTransfer() { 
+            }
+        }
+        async function processTransfer() {
             showLoading('transfer');
-            const recipientId = document.getElementById('recipient-id').value.trim(); 
-            const currency = document.getElementById('transfer-currency').value; 
-            let amount = document.getElementById('transfer-amount').value.replace(/\./g, '').replace(',', '.'); 
-            amount = Number(amount); 
-            const tax = amount * TAX_RATE; 
-            
-            if (!recipientId) { hideLoading('transfer'); showNotification('Erro', 'Informe o ID do destinatário.'); return; } 
-            if (!amount || amount <= 0) { hideLoading('transfer'); showNotification('Erro', 'Valor inválido.'); return; } 
-            if (recipientId === (currentUser && currentUser.uid)) { hideLoading('transfer'); showNotification('Erro', 'Não é possível transferir para si mesmo.'); return; } 
-            
-            try { 
-                const recipientRef = db.collection('wallets').doc(recipientId); 
-                const recipientSnap = await recipientRef.get(); 
-                if (!recipientSnap.exists) { hideLoading('transfer'); showNotification('Erro', 'Destinatário não encontrado.'); return; } 
-                
-                if (currency === 'reais') { 
-                    if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('transfer'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; } 
-                    const batch = db.batch(); 
-                    const senderRef = db.collection('wallets').doc(currentUser.uid); 
-                    batch.update(senderRef, { 
-                        reaisBalance: (walletData.reaisBalance || 0) - (amount + tax), 
-                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'reais', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId, metadata: { tax } }), 
-                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'transfer', amount: tax, currency: 'reais', date: new Date().toISOString() }) 
-                    }); 
-                    batch.update(recipientRef, { 
-                        reaisBalance: (recipientSnap.data().reaisBalance || 0) + amount, 
-                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'receive', amount, currency: 'reais', description: `Recebido de ${currentUser.uid}`, date: new Date().toISOString(), from: currentUser.uid }) 
-                    }); 
-                    await batch.commit(); 
-                    await updateSystemReserves(tax, 'reais'); 
-                    await loadWalletData(currentUser.uid); 
-                    closeModal('transferModal'); 
-                    showNotification('Sucesso', `Transferência de R$ ${formatCurrency(amount)} enviada (taxa: R$ ${formatCurrency(tax)}).`); 
-                } else { 
-                    if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('transfer'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; } 
-                    const batch = db.batch(); 
-                    const senderRef = db.collection('wallets').doc(currentUser.uid); 
-                    batch.update(senderRef, { 
-                        goldsBalance: (walletData.goldsBalance || 0) - (amount + tax), 
-                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'golds', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId, metadata: { tax } }), 
-                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'transfer', amount: tax, currency: 'golds', date: new Date().toISOString() }) 
-                    }); 
-                    batch.update(recipientRef, { 
-                        goldsBalance: (recipientSnap.data().goldsBalance || 0) + amount, 
-                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'receive', amount, currency: 'golds', description: `Recebido de ${currentUser.uid}`, date: new Date().toISOString(), from: currentUser.uid }) 
-                    }); 
-                    await batch.commit(); 
-                    await updateSystemReserves(tax, 'golds'); 
-                    await loadWalletData(currentUser.uid); 
-                    closeModal('transferModal'); 
-                    showNotification('Sucesso', `Transferência de ${amount} Golds enviada (taxa: ${tax} Golds).`); 
-                } 
-            } catch (err) { 
-                console.error('Erro transferir:', err); 
-                showNotification('Erro', 'Falha ao processar transferência.'); 
+            const recipientId = document.getElementById('recipient-id').value.trim();
+            const currency = document.getElementById('transfer-currency').value;
+            let amount = document.getElementById('transfer-amount').value.replace(/\./g, '').replace(',', '.');
+            amount = Number(amount);
+            const tax = amount * TAX_RATE;
+            if (!recipientId) { hideLoading('transfer'); showNotification('Erro', 'Informe o ID do destinatário.'); return; }
+            if (!amount || amount <= 0) { hideLoading('transfer'); showNotification('Erro', 'Valor inválido.'); return; }
+            if (recipientId === (currentUser && currentUser.uid)) { hideLoading('transfer'); showNotification('Erro', 'Não é possível transferir para si mesmo.'); return; }
+            try {
+                const recipientRef = db.collection('wallets').doc(recipientId);
+                const recipientSnap = await recipientRef.get();
+                if (!recipientSnap.exists) { hideLoading('transfer'); showNotification('Erro', 'Destinatário não encontrado.'); return; }
+                if (currency === 'reais') {
+                    if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('transfer'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; }
+                    const batch = db.batch();
+                    const senderRef = db.collection('wallets').doc(currentUser.uid);
+                    batch.update(senderRef, {
+                        reaisBalance: (walletData.reaisBalance || 0) - (amount + tax),
+                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'reais', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId, metadata: { tax } }),
+                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'transfer', amount: tax, currency: 'reais', date: new Date().toISOString() })
+                    });
+                    batch.update(recipientRef, {
+                        reaisBalance: (recipientSnap.data().reaisBalance || 0) + amount,
+                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'receive', amount, currency: 'reais', description: `Recebido de ${currentUser.uid}`, date: new Date().toISOString(), from: currentUser.uid })
+                    });
+                    await batch.commit();
+                    await updateSystemReserves(tax, 'reais');
+                    await loadWalletData(currentUser.uid);
+                    closeModal('transferModal');
+                    showNotification('Sucesso', `Transferência de R$ ${formatCurrency(amount)} enviada (taxa: R$ ${formatCurrency(tax)}).`);
+                } else {
+                    if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('transfer'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; }
+                    const batch = db.batch();
+                    const senderRef = db.collection('wallets').doc(currentUser.uid);
+                    batch.update(senderRef, {
+                        goldsBalance: (walletData.goldsBalance || 0) - (amount + tax),
+                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'send', amount, currency: 'golds', description: `Transferência para ${recipientId}`, date: new Date().toISOString(), to: recipientId, metadata: { tax } }),
+                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'transfer', amount: tax, currency: 'golds', date: new Date().toISOString() })
+                    });
+                    batch.update(recipientRef, {
+                        goldsBalance: (recipientSnap.data().goldsBalance || 0) + amount,
+                        transactions: firebase.firestore.FieldValue.arrayUnion({ type: 'receive', amount, currency: 'golds', description: `Recebido de ${currentUser.uid}`, date: new Date().toISOString(), from: currentUser.uid })
+                    });
+                    await batch.commit();
+                    await updateSystemReserves(tax, 'golds');
+                    await loadWalletData(currentUser.uid);
+                    closeModal('transferModal');
+                    showNotification('Sucesso', `Transferência de ${amount} Golds enviada (taxa: ${tax} Golds).`);
+                }
+            } catch (err) {
+                console.error('Erro transferir:', err);
+                showNotification('Erro', 'Falha ao processar transferência.');
             } finally {
                 hideLoading('transfer');
             }
-        } 
-        async function processConversion() { 
+        }
+        async function processConversion() {
             showLoading('convert');
-            const from = document.getElementById('convert-from').value; 
-            const to = document.getElementById('convert-to').value; 
-            let amount = document.getElementById('convert-amount').value.replace(/\./g, '').replace(',', '.'); 
-            amount = Number(amount); 
-            const tax = amount * TAX_RATE; 
-            
-            if (!amount || amount <= 0) { hideLoading('convert'); showNotification('Erro', 'Valor inválido.'); return; } 
-            if (from === to) { hideLoading('convert'); showNotification('Erro', 'Escolha moedas diferentes.'); return; } 
-            
-            try { 
-                if (from === 'golds' && to === 'reais') { 
-                    if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('convert'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; } 
-                    const reais = (amount - tax) / GOLD_TO_REAL_RATE; 
-                    const newGolds = (walletData.goldsBalance || 0) - (amount + tax); 
-                    const newReais = (walletData.reaisBalance || 0) + reais; 
-                    
-                    await saveWallet({ 
-                        goldsBalance: newGolds, 
-                        reaisBalance: newReais, 
-                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'conversion', amount: tax, currency: 'golds', date: new Date().toISOString() }) 
-                    }); 
-                    await pushTransaction({ 
-                        type: 'conversion', 
-                        amount: amount - tax, 
-                        currency: 'golds', 
-                        description: `Conversão ${amount - tax} Golds → R$ ${formatCurrency(reais)}`, 
+            const from = document.getElementById('convert-from').value;
+            const to = document.getElementById('convert-to').value;
+            let amount = document.getElementById('convert-amount').value.replace(/\./g, '').replace(',', '.');
+            amount = Number(amount);
+            const tax = amount * TAX_RATE;
+            if (!amount || amount <= 0) { hideLoading('convert'); showNotification('Erro', 'Valor inválido.'); return; }
+            if (from === to) { hideLoading('convert'); showNotification('Erro', 'Escolha moedas diferentes.'); return; }
+            try {
+                if (from === 'golds' && to === 'reais') {
+                    if ((walletData.goldsBalance || 0) < (amount + tax)) { hideLoading('convert'); showNotification('Erro', 'Saldo insuficiente em Golds (incluindo taxa).'); return; }
+                    const reais = (amount - tax) / GOLD_TO_REAL_RATE;
+                    const newGolds = (walletData.goldsBalance || 0) - (amount + tax);
+                    const newReais = (walletData.reaisBalance || 0) + reais;
+                    await saveWallet({
+                        goldsBalance: newGolds,
+                        reaisBalance: newReais,
+                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'conversion', amount: tax, currency: 'golds', date: new Date().toISOString() })
+                    });
+                    await pushTransaction({
+                        type: 'conversion',
+                        amount: amount - tax,
+                        currency: 'golds',
+                        description: `Conversão ${amount - tax} Golds → R$ ${formatCurrency(reais)}`,
                         date: new Date().toISOString(),
                         metadata: { from: 'golds', to: 'reais', tax, convertedAmount: reais }
-                    }); 
-                    await updateSystemReserves(tax, 'golds'); 
-                    
-                    closeModal('convertModal'); 
-                    showNotification('Conversão', `Convertido ${amount - tax} Golds para R$ ${formatCurrency(reais)} (taxa: ${tax} Golds).`); 
-                } else if (from === 'reais' && to === 'golds') { 
-                    if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('convert'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; } 
-                    const golds = Math.floor((amount - tax) * GOLD_TO_REAL_RATE); 
-                    const newReais = (walletData.reaisBalance || 0) - (amount + tax); 
-                    const newGolds = (walletData.goldsBalance || 0) + golds; 
-                    
-                    await saveWallet({ 
-                        reaisBalance: newReais, 
-                        goldsBalance: newGolds, 
-                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'conversion', amount: tax, currency: 'reais', date: new Date().toISOString() }) 
-                    }); 
-                    await pushTransaction({ 
-                        type: 'conversion', 
-                        amount: golds, 
-                        currency: 'golds', 
-                        description: `Conversão R$ ${formatCurrency(amount - tax)} → ${golds} Golds`, 
+                    });
+                    await updateSystemReserves(tax, 'golds');
+                    closeModal('convertModal');
+                    showNotification('Conversão', `Convertido ${amount - tax} Golds para R$ ${formatCurrency(reais)} (taxa: ${tax} Golds).`);
+                } else if (from === 'reais' && to === 'golds') {
+                    if ((walletData.reaisBalance || 0) < (amount + tax)) { hideLoading('convert'); showNotification('Erro', 'Saldo insuficiente em Reais (incluindo taxa).'); return; }
+                    const golds = Math.floor((amount - tax) * GOLD_TO_REAL_RATE);
+                    const newReais = (walletData.reaisBalance || 0) - (amount + tax);
+                    const newGolds = (walletData.goldsBalance || 0) + golds;
+                    await saveWallet({
+                        reaisBalance: newReais,
+                        goldsBalance: newGolds,
+                        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'conversion', amount: tax, currency: 'reais', date: new Date().toISOString() })
+                    });
+                    await pushTransaction({
+                        type: 'conversion',
+                        amount: golds,
+                        currency: 'golds',
+                        description: `Conversão R$ ${formatCurrency(amount - tax)} → ${golds} Golds`,
                         date: new Date().toISOString(),
                         metadata: { from: 'reais', to: 'golds', tax, convertedAmount: amount - tax }
-                    }); 
-                    await updateSystemReserves(tax, 'reais'); 
-                    
-                    closeModal('convertModal'); 
-                    showNotification('Conversão', `Convertido R$ ${formatCurrency(amount - tax)} para ${golds} Golds (taxa: R$ ${formatCurrency(tax)}).`); 
-                } 
-            } catch (err) { 
-                console.error('Erro conversão:', err); 
-                showNotification('Erro', 'Falha ao converter.'); 
+                    });
+                    await updateSystemReserves(tax, 'reais');
+                    closeModal('convertModal');
+                    showNotification('Conversão', `Convertido R$ ${formatCurrency(amount - tax)} para ${golds} Golds (taxa: R$ ${formatCurrency(tax)}).`);
+                }
+            } catch (err) {
+                console.error('Erro conversão:', err);
+                showNotification('Erro', 'Falha ao converter.');
             } finally {
                 hideLoading('convert');
             }
-        } 
-        
-        // NOVO: Função para renderizar os detalhes do plano no modal de investimento
+        }
         function renderInvestmentDetails() {
             const companyId = document.getElementById('invest-company').value;
             const amountInput = document.getElementById('invest-amount');
             const detailsEl = document.getElementById('investment-details');
             const returnEl = document.getElementById('estimated-return');
             const plan = INVESTMENT_PLANS[companyId];
-            
             if (!plan) {
                 detailsEl.innerHTML = 'Selecione um plano para ver detalhes.';
                 returnEl.textContent = '';
                 return;
             }
-
             const riskClass = `risk-${plan.risk.toLowerCase().replace(' ', '-')}`;
-            
             detailsEl.innerHTML = `
                 <div class="detail-item"><span>Risco:</span> <span class="risk-indicator ${riskClass}">${plan.risk}</span></div>
                 <div class="detail-item"><span>Retorno Mensal (Est.):</span> <span>${(plan.returnRate * 100).toFixed(2)}%</span></div>
                 <div class="detail-item"><span>Lock-in (Prazo Mínimo):</span> <span>${plan.lockInDays} dias</span></div>
                 <div class="detail-item"><span>Taxa de Sistema (Invest):</span> <span>${(TAX_RATE * 100)}% do valor</span></div>
             `;
-            
             const amount = Number(amountInput.value) || 0;
             if (amount > 0) {
                 const estimatedMonthlyReturn = amount * plan.returnRate;
                 const estimatedLockInReturn = calculateCurrentReturn(companyId, amount, new Date());
-                
                 returnEl.innerHTML = `
                     <p>Retorno Estimado em 30 dias: <span style="color: var(--reais);">${Math.floor(estimatedMonthlyReturn).toLocaleString('pt-BR')} Golds</span></p>
                     <p style="font-size:0.8rem; color:var(--text-secondary);">Total após lock-in (Est.): ${(amount + Math.floor(estimatedLockInReturn)).toLocaleString('pt-BR')} Golds</p>
@@ -1442,23 +1176,16 @@
                 returnEl.textContent = 'Insira o valor para ver o retorno estimado.';
             }
         }
-
-        // NOVO: Preencher as opções de investimento dinamicamente
         function populateInvestmentOptions() {
             const selectEl = document.getElementById('invest-company');
             const withdrawSelectEl = document.getElementById('withdraw-invest-company');
             selectEl.innerHTML = '';
             withdrawSelectEl.innerHTML = '';
-
-            // Adicionar opção padrão
             selectEl.appendChild(new Option('Selecione uma Empresa/Serviço', ''));
             withdrawSelectEl.appendChild(new Option('Selecione um Investimento Ativo', ''));
-
             Object.entries(INVESTMENT_PLANS).forEach(([id, plan]) => {
                 selectEl.appendChild(new Option(plan.name, id));
             });
-
-            // Preencher o modal de retirada apenas com investimentos ativos
             const investments = walletData.investments || {};
             Object.entries(investments)
                 .filter(([, inv]) => inv.amount > 0)
@@ -1469,78 +1196,62 @@
                     }
                 });
         }
-        
-        // NOVO: Atualizar o retorno estimado dinamicamente
         document.getElementById('invest-company').addEventListener('change', renderInvestmentDetails);
         document.getElementById('invest-amount').addEventListener('input', renderInvestmentDetails);
-        
-        async function processInvest() { 
+        async function processInvest() {
             showLoading('invest');
-            const cardId = document.getElementById('invest-company').value; 
-            let amount = Number(document.getElementById('invest-amount').value); 
-            
-            if (!cardId || !INVESTMENT_PLANS[cardId]) { hideLoading('invest'); showNotification('Erro', 'Selecione uma empresa válida.'); return; } 
-            if (!amount || amount <= 0) { hideLoading('invest'); showNotification('Erro', 'Informe uma quantidade válida de Golds.'); return; } 
-            
-            // NOVO: Limite mínimo de investimento (exemplo: 100 Golds)
+            const cardId = document.getElementById('invest-company').value;
+            let amount = Number(document.getElementById('invest-amount').value);
+            if (!cardId || !INVESTMENT_PLANS[cardId]) { hideLoading('invest'); showNotification('Erro', 'Selecione uma empresa válida.'); return; }
+            if (!amount || amount <= 0) { hideLoading('invest'); showNotification('Erro', 'Informe uma quantidade válida de Golds.'); return; }
             if (amount < 100) { hideLoading('invest'); showNotification('Erro', 'O investimento mínimo é de 100 Golds.'); return; }
-
-            const tax = Math.ceil(amount * TAX_RATE); // Arredondar a taxa para cima
+            const tax = Math.ceil(amount * TAX_RATE);
             const totalCost = amount + tax;
-
-            if ((walletData.goldsBalance || 0) < totalCost) { 
+            if ((walletData.goldsBalance || 0) < totalCost) {
                 hideLoading('invest');
-                showNotification('Erro', `Saldo insuficiente em Golds. Necessário: ${totalCost.toLocaleString('pt-BR')} (Investimento: ${amount} + Taxa: ${tax}).`); 
-                return; 
-            } 
-            
+                showNotification('Erro', `Saldo insuficiente em Golds. Necessário: ${totalCost.toLocaleString('pt-BR')} (Investimento: ${amount} + Taxa: ${tax}).`);
+                return;
+            }
             if (!confirm(`Confirmar investimento de ${amount.toLocaleString('pt-BR')} Golds em ${INVESTMENT_PLANS[cardId].name}? Taxa: ${tax} Golds.`)) { hideLoading('invest'); return; }
-
-            try { 
-                const batch = db.batch(); 
-                const walletRef = db.collection('wallets').doc(currentUser.uid); 
-                const serviceRef = db.collection('serviceCards').doc(cardId); 
-                
-                // Estrutura de investimento atualizada no Firestore
+            try {
+                const batch = db.batch();
+                const walletRef = db.collection('wallets').doc(currentUser.uid);
+                const serviceRef = db.collection('serviceCards').doc(cardId);
                 const newInvestmentData = {
                     amount: firebase.firestore.FieldValue.increment(amount),
-                    date: new Date().toISOString() // Atualiza a data de investimento para o novo aporte
+                    date: new Date().toISOString()
                 };
-
-                batch.update(walletRef, { 
-                    goldsBalance: firebase.firestore.FieldValue.increment(-totalCost), 
+                batch.update(walletRef, {
+                    goldsBalance: firebase.firestore.FieldValue.increment(-totalCost),
                     [`investments.${cardId}`]: newInvestmentData,
-                    transactions: firebase.firestore.FieldValue.arrayUnion({ 
-                        type: 'invest', 
-                        amount: amount, 
-                        currency: 'golds', 
-                        description: `Investido em ${INVESTMENT_PLANS[cardId].name}`, 
+                    transactions: firebase.firestore.FieldValue.arrayUnion({
+                        type: 'invest',
+                        amount: amount,
+                        currency: 'golds',
+                        description: `Investido em ${INVESTMENT_PLANS[cardId].name}`,
                         date: new Date().toISOString(),
                         metadata: { company: cardId, tax }
-                    }), 
-                    taxes: firebase.firestore.FieldValue.arrayUnion({ 
-                        type: 'invest', 
-                        amount: tax, 
-                        currency: 'golds', 
-                        date: new Date().toISOString() 
-                    }) 
-                }); 
-                batch.update(serviceRef, { golds: firebase.firestore.FieldValue.increment(amount) }); 
-                
-                await batch.commit(); 
-                await updateSystemReserves(tax, 'golds'); 
-                await loadWalletData(currentUser.uid); 
-                
-                closeModal('investModal'); 
-                showNotification('Sucesso', `Investido ${amount} Golds em ${INVESTMENT_PLANS[cardId].name}.`); 
-            } catch (err) { 
-                console.error('Erro ao investir:', err); 
-                showNotification('Erro', 'Falha ao processar investimento.'); 
+                    }),
+                    taxes: firebase.firestore.FieldValue.arrayUnion({
+                        type: 'invest',
+                        amount: tax,
+                        currency: 'golds',
+                        date: new Date().toISOString()
+                    })
+                });
+                batch.update(serviceRef, { golds: firebase.firestore.FieldValue.increment(amount) });
+                await batch.commit();
+                await updateSystemReserves(tax, 'golds');
+                await loadWalletData(currentUser.uid);
+                closeModal('investModal');
+                showNotification('Sucesso', `Investido ${amount} Golds em ${INVESTMENT_PLANS[cardId].name}.`);
+            } catch (err) {
+                console.error('Erro ao investir:', err);
+                showNotification('Erro', 'Falha ao processar investimento.');
             } finally {
                 hideLoading('invest');
             }
-        } 
-
+        }
         function isInvestmentLocked(initialDate, lockInDays) {
             if (!initialDate) return true;
             const start = initialDate instanceof firebase.firestore.Timestamp ? initialDate.toDate() : new Date(initialDate);
@@ -1548,8 +1259,6 @@
             lockInPeriodEnd.setDate(lockInPeriodEnd.getDate() + lockInDays);
             return new Date() < lockInPeriodEnd;
         }
-
-        // NOVO: Função para abrir o modal de retirada (separada do investimento)
         function openWithdrawInvestmentModal() {
             closeModal('investModal');
             populateInvestmentOptions();
@@ -1559,37 +1268,29 @@
             document.getElementById('final-withdrawal-summary').textContent = '';
             openModal('withdrawInvestModal');
         }
-
-        // NOVO: Renderizar detalhes de retirada (Lock-in, Retorno, Taxas)
         function renderWithdrawalDetails() {
             const cardId = document.getElementById('withdraw-invest-company').value;
             let amountToWithdraw = Number(document.getElementById('withdraw-invest-amount').value);
             const detailsEl = document.getElementById('withdrawal-details');
             const summaryEl = document.getElementById('final-withdrawal-summary');
-            
             if (!cardId) {
                 detailsEl.innerHTML = 'Selecione um investimento ativo.';
                 summaryEl.textContent = '';
                 return;
             }
-
             const invData = walletData.investments[cardId];
             const plan = INVESTMENT_PLANS[cardId];
-            
             if (!invData || invData.amount <= 0 || !plan) {
                  detailsEl.innerHTML = 'Dados do investimento não encontrados ou saldo zero.';
                  summaryEl.textContent = '';
                  return;
             }
-
             const invested = invData.amount;
             const accumulatedReturn = calculateCurrentReturn(cardId, invested, invData.date);
             const isLocked = isInvestmentLocked(invData.date, plan.lockInDays);
             const unlockDate = new Date(new Date(invData.date).getTime());
             unlockDate.setDate(unlockDate.getDate() + plan.lockInDays);
-            
-            amountToWithdraw = amountToWithdraw || invested; // Se não informar, assume total
-
+            amountToWithdraw = amountToWithdraw || invested;
             if (amountToWithdraw > invested) {
                 summaryEl.innerHTML = `<span style="color: var(--accent); font-weight: 700;">Erro: Quantidade a retirar (${amountToWithdraw}) maior que o saldo investido (${invested}).</span>`;
                 detailsEl.innerHTML = `
@@ -1601,131 +1302,99 @@
                 `;
                 return;
             }
-
             let penalty = 0;
             let totalWithdrawal = amountToWithdraw;
-            
-            // Taxa/Penalidade
             if (isLocked) {
-                // Penalidade sobre o valor investido a ser retirado
-                penalty = Math.ceil(amountToWithdraw * WITHDRAWAL_PENALTY_RATE); 
+                penalty = Math.ceil(amountToWithdraw * WITHDRAWAL_PENALTY_RATE);
                 totalWithdrawal = amountToWithdraw;
-                // Reduz o retorno acumulado de forma proporcional à retirada antecipada (opcional, para ser mais punitivo)
                 const proportionalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested));
-                
                 let totalBeforePenalty = proportionalReturn;
-
-                if (totalBeforePenalty < penalty) { 
-                    penalty -= totalBeforePenalty; // A penalidade é abatida do retorno primeiro
+                if (totalBeforePenalty < penalty) {
+                    penalty -= totalBeforePenalty;
                     totalBeforePenalty = 0;
                 } else {
                     totalBeforePenalty -= penalty;
                     penalty = 0;
                 }
-                
                 totalWithdrawal += totalBeforePenalty;
-
                 summaryEl.style.color = 'var(--accent)';
             } else {
-                // Se não estiver em lock-in, aplica-se apenas a taxa de sistema no valor a ser retirado (para simplificar)
                 const systemTax = Math.ceil(amountToWithdraw * TAX_RATE);
-                amountToWithdraw -= systemTax; // A taxa do sistema sai do valor investido
-                penalty = systemTax; // Usamos penalty para representar o total de taxas
-                
-                // Se for retirada parcial, o retorno acumulado proporcional é somado
+                amountToWithdraw -= systemTax;
+                penalty = systemTax;
                 const proportionalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested));
                 totalWithdrawal = amountToWithdraw + proportionalReturn;
-                
                 summaryEl.style.color = 'var(--reais)';
             }
-            
             const totalGolds = totalWithdrawal;
-            
             detailsEl.innerHTML = `
                 <div class="detail-item"><span>Investido Total:</span> <span>${invested.toLocaleString('pt-BR')} Golds</span></div>
                 <div class="detail-item"><span>Retorno Acumulado Total:</span> <span style="color: var(--reais);">+${accumulatedReturn.toLocaleString('pt-BR')} Golds</span></div>
                 <div class="detail-item"><span>Status Lock-in:</span> <span style="color: ${isLocked ? 'var(--accent)' : 'var(--reais)'};">${isLocked ? 'Sim' : 'Não'} (Até: ${unlockDate.toLocaleDateString('pt-BR')})</span></div>
                 <div class="detail-item" style="border-top: 1px dashed var(--border); margin-top: 0.5rem; padding-top: 0.5rem;"><span>Penalidade (Total):</span> <span style="color: var(--accent);">${penalty.toLocaleString('pt-BR')} Golds</span></div>
             `;
-            
             summaryEl.innerHTML = `Valor Total a Receber: <span style="font-size: 1.1rem; color: var(--reais);">${Math.floor(totalGolds).toLocaleString('pt-BR')} Golds</span> (Após Taxas/Penalidades)`;
         }
-
         async function confirmWithdrawal() {
             showLoading('withdraw-invest');
             const cardId = document.getElementById('withdraw-invest-company').value;
             let amountToWithdraw = Number(document.getElementById('withdraw-invest-amount').value);
-            
-            if (!cardId || !INVESTMENT_PLANS[cardId]) { hideLoading('withdraw-invest'); showNotification('Erro', 'Selecione um investimento ativo válido.'); return; } 
-            
+            if (!cardId || !INVESTMENT_PLANS[cardId]) { hideLoading('withdraw-invest'); showNotification('Erro', 'Selecione um investimento ativo válido.'); return; }
             const invData = walletData.investments[cardId];
             const plan = INVESTMENT_PLANS[cardId];
-            
             if (!invData || invData.amount <= 0 || !plan) { hideLoading('withdraw-invest'); showNotification('Erro', 'Investimento não encontrado ou saldo zero.'); return; }
-            
             const invested = invData.amount;
             amountToWithdraw = amountToWithdraw || invested;
-            
             if (amountToWithdraw <= 0 || amountToWithdraw > invested) { hideLoading('withdraw-invest'); showNotification('Erro', `Valor de retirada inválido. Max: ${invested.toLocaleString('pt-BR')} Golds.`); return; }
-            
             const accumulatedReturn = calculateCurrentReturn(cardId, invested, invData.date);
             const isLocked = isInvestmentLocked(invData.date, plan.lockInDays);
-            
             let penalty = 0;
-            let totalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested)); // Retorno proporcional
+            let totalReturn = Math.floor(accumulatedReturn * (amountToWithdraw / invested));
             let principalToReturn = amountToWithdraw;
-
             if (isLocked) {
-                penalty = Math.ceil(principalToReturn * WITHDRAWAL_PENALTY_RATE); 
-                if (totalReturn < penalty) { 
-                    penalty -= totalReturn; 
+                penalty = Math.ceil(principalToReturn * WITHDRAWAL_PENALTY_RATE);
+                if (totalReturn < penalty) {
+                    penalty -= totalReturn;
                     totalReturn = 0;
-                    principalToReturn -= penalty; // O restante da penalidade sai do principal
+                    principalToReturn -= penalty;
                 } else {
                     totalReturn -= penalty;
                     penalty = 0;
                 }
             } else {
-                penalty = Math.ceil(principalToReturn * TAX_RATE); // Taxa de sistema
+                penalty = Math.ceil(principalToReturn * TAX_RATE);
                 principalToReturn -= penalty;
             }
-            
-            const finalGolds = principalToReturn + totalReturn; 
-
+            const finalGolds = principalToReturn + totalReturn;
             if (finalGolds <= 0) { hideLoading('withdraw-invest'); showNotification('Erro', `O valor líquido após penalidades é zero ou negativo.`); return; }
-
             if (!confirm(`Confirma a retirada de ${finalGolds.toLocaleString('pt-BR')} Golds (líquido)? Valor bruto: ${amountToWithdraw} Golds (Principal) + ${Math.floor(accumulatedReturn * (amountToWithdraw / invested))} Golds (Retorno). Taxas/Penalidades: ${penalty.toLocaleString('pt-BR')} Golds.`)) { hideLoading('withdraw-invest'); return; }
-
             try {
                 const batch = db.batch();
                 const walletRef = db.collection('wallets').doc(currentUser.uid);
                 const serviceRef = db.collection('serviceCards').doc(cardId);
-                
-                batch.update(walletRef, { 
-                    goldsBalance: firebase.firestore.FieldValue.increment(finalGolds), 
-                    [`investments.${cardId}.amount`]: firebase.firestore.FieldValue.increment(-amountToWithdraw), 
-                    transactions: firebase.firestore.FieldValue.arrayUnion({ 
-                        type: 'withdraw_invest', 
-                        amount: finalGolds, 
-                        currency: 'golds', 
-                        description: `Retirada de ${amountToWithdraw} Golds investidos (+${totalReturn} Retorno, -${penalty} Taxa/Pen.) em ${plan.name}`, 
+                batch.update(walletRef, {
+                    goldsBalance: firebase.firestore.FieldValue.increment(finalGolds),
+                    [`investments.${cardId}.amount`]: firebase.firestore.FieldValue.increment(-amountToWithdraw),
+                    portfolioBalance: firebase.firestore.FieldValue.increment(totalReturn),
+                    transactions: firebase.firestore.FieldValue.arrayUnion({
+                        type: 'withdraw_invest',
+                        amount: finalGolds,
+                        currency: 'golds',
+                        description: `Retirada de ${amountToWithdraw} Golds investidos (+${totalReturn} Retorno, -${penalty} Taxa/Pen.) em ${plan.name}`,
                         date: new Date().toISOString(),
                         metadata: { company: cardId, principalWithdrawn: amountToWithdraw, finalReturn: totalReturn, penalty }
-                    }), 
-                    taxes: firebase.firestore.FieldValue.arrayUnion({ 
-                        type: 'withdraw_invest_penalty', 
-                        amount: penalty, 
-                        currency: 'golds', 
+                    }),
+                    taxes: firebase.firestore.FieldValue.arrayUnion({
+                        type: 'withdraw_invest_penalty',
+                        amount: penalty,
+                        currency: 'golds',
                         description: isLocked ? 'Retirada antecipada' : 'Taxa de sistema',
-                        date: new Date().toISOString() 
-                    }) 
-                }); 
-                
-                batch.update(serviceRef, { golds: firebase.firestore.FieldValue.increment(-amountToWithdraw) }); 
-                
+                        date: new Date().toISOString()
+                    })
+                });
+                batch.update(serviceRef, { golds: firebase.firestore.FieldValue.increment(-amountToWithdraw) });
                 await batch.commit();
                 await loadWalletData(currentUser.uid);
-                
                 closeModal('withdrawInvestModal');
                 showNotification('Sucesso', `Retirada de ${finalGolds.toLocaleString('pt-BR')} Golds (líquido) de ${plan.name} efetuada.`);
             } catch (err) {
@@ -1735,113 +1404,139 @@
                 hideLoading('withdraw-invest');
             }
         }
-
-        function openDepositModal() { openModal('depositModal'); updateDepositMethodInfo(); } // NOVO: Chama função de info
-        function openWithdrawModal() { openModal('withdrawModal'); togglePixKeyField(); } // NOVO: Chama função de campo PIX
-        function openTransferModal() { openModal('transferModal'); } 
-        function openConvertModal() { openModal('convertModal'); } 
-        function openInvestModal() { 
-            populateInvestmentOptions(); 
+        function openDepositModal() { openModal('depositModal'); updateDepositMethodInfo(); }
+        function openWithdrawModal() { openModal('withdrawModal'); togglePixKeyField(); }
+        function openTransferModal() { openModal('transferModal'); }
+        function openConvertModal() { openModal('convertModal'); }
+        function openInvestModal() {
+            populateInvestmentOptions();
             document.getElementById('invest-amount').value = '';
             document.getElementById('investment-details').innerHTML = 'Selecione um plano para ver detalhes.';
             document.getElementById('estimated-return').textContent = '';
-            openModal('investModal'); 
-        } 
-        function openCryptoModal() { openModal('cryptoModal'); showNotification('Aviso', 'Funcionalidade de criptomoeda em desenvolvimento.'); } 
-        function openCommercialModal() { openModal('commercialModal'); showNotification('Aviso', 'Funcionalidade de Conta Comercial em desenvolvimento.'); } 
-        
-        window.openDepositModal = openDepositModal; 
-        window.openWithdrawModal = openWithdrawModal; 
-        window.openTransferModal = openTransferModal; 
-        window.openConvertModal = openConvertModal; 
-        window.openInvestModal = openInvestModal; 
-        window.openCryptoModal = openCryptoModal; 
-        window.openCommercialModal = openCommercialModal; 
-        window.openWithdrawInvestmentModal = openWithdrawInvestmentModal; 
-        window.renderWithdrawalDetails = renderWithdrawalDetails; 
-        window.confirmWithdrawal = confirmWithdrawal; 
-        window.openTransactionDetails = openTransactionDetails; // NOVO
-        window.updateDepositMethodInfo = updateDepositMethodInfo; // NOVO
-        window.togglePixKeyField = togglePixKeyField; // NOVO
-
-        window.processDeposit = processDeposit; 
-        window.processWithdrawal = processWithdrawal; 
-        window.processTransfer = processTransfer; 
-        window.processConversion = processConversion; 
-        window.processInvest = processInvest; 
-        window.processWithdrawInvestment = confirmWithdrawal; 
-        window.closeModal = closeModal; 
-        window.showNotification = showNotification; 
-        window.navigateTo = navigateTo; 
-        window.renderTransactions = renderTransactions; // NOVO: Exporta para o onchange do filtro
-        
-        function navigateTo(page) { /* ... (Função mantida) ... */ 
-            switch (page) { 
-                case 'wallet': window.location.href = "carteira.html"; break; 
-                case 'generator': window.location.href = "gerador.html"; break; 
-                case 'market': window.location.href = "mercado.html"; break; 
-                case 'store': window.location.href = "loja.html"; break; 
-                case 'yshippcommerce': window.location.href = "yshippcommerce.html"; break; 
-                case 'home': default: window.location.href = "index.html"; break; 
-            } 
-        } 
-        
-        document.addEventListener('DOMContentLoaded', function () { 
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL) .then(() => { console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar."); }) .catch((error) => { console.error("❌ Erro configurando persistência:", error); }); 
-            const menuToggles = { 'menu-icon': 'main-menu' }; 
-            Object.entries(menuToggles).forEach(([toggleId, menuId]) => { 
-                const toggle = document.getElementById(toggleId); 
-                const menu = document.getElementById(menuId); 
-                if (!toggle || !menu) { console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`); return; } 
-                toggle.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); toggle.classList.toggle('active'); }); 
-            }); 
-            document.addEventListener('click', e => { 
-                if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) { 
-                    Object.values(menuToggles).forEach(menuId => { const menu = document.getElementById(menuId); if (menu) menu.classList.remove('open'); }); 
-                    document.querySelectorAll('.top-bar__icon').forEach(icon => { if (icon) icon.classList.remove('active'); }); 
-                } 
-            }); 
-            document.addEventListener('keydown', e => { 
-                if (e.key === 'Escape') { 
-                    Object.values(menuToggles).forEach(menuId => { const menu = document.getElementById(menuId); if (menu) menu.classList.remove('open'); }); 
-                    document.querySelectorAll('.top-bar__icon').forEach(icon => { if (icon) icon.classList.remove('active'); }); 
-                } 
-            }); 
-            document.getElementById("logout-button").addEventListener("click", () => { auth.signOut().then(() => window.location.href = "cadastro.html"); }); 
-        }); 
-        
-        (function init() { 
-            document.getElementById('loadingOverlay').style.display = 'flex'; 
-            console.log('Aguardando autenticação...'); 
-        })(); 
-        
-        auth.onAuthStateChanged(async user => { 
-            console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário'); 
-            if (!user) { await ensureAnonymousSignIn(); return; } 
-            currentUser = user; 
-            document.getElementById('footerUserId').textContent = user.uid; 
-            document.getElementById('footerUserName').textContent = user.displayName || (user.isAnonymous ? 'Anônimo' : (user.email || 'Usuário')); 
-            console.log('Usuário ativo:', user.uid); 
-            try { 
-                await loadWalletData(user.uid); 
-                document.getElementById('loadingOverlay').style.display = 'none'; 
-                setupInputFormatting(); 
-                // NOVO: Chama a função de atualização de info no init
+            openModal('investModal');
+        }
+        function openCryptoModal() { openModal('cryptoModal'); showNotification('Aviso', 'Funcionalidade de criptomoeda em desenvolvimento.'); }
+        function openCommercialModal() { openModal('commercialModal'); showNotification('Aviso', 'Funcionalidade de Conta Comercial em desenvolvimento.'); }
+        function resgatarLucro() {
+            if ((walletData.portfolioBalance || 0) <= 0) {
+                showNotification('Erro', 'Não há lucro acumulado para resgatar.');
+                return;
+            }
+            if (!confirm(`Deseja resgatar ${walletData.portfolioBalance.toLocaleString('pt-BR')} Golds de lucro acumulado?`)) return;
+            const tax = Math.ceil(walletData.portfolioBalance * TAX_RATE);
+            const finalAmount = walletData.portfolioBalance - tax;
+            if (finalAmount <= 0) {
+                showNotification('Erro', 'Valor insuficiente após taxas.');
+                return;
+            }
+            saveWallet({
+                goldsBalance: (walletData.goldsBalance || 0) + finalAmount,
+                portfolioBalance: 0,
+                taxes: firebase.firestore.FieldValue.arrayUnion({
+                    type: 'portfolio_withdraw',
+                    amount: tax,
+                    currency: 'golds',
+                    date: new Date().toISOString()
+                })
+            }).then(() => {
+                pushTransaction({
+                    type: 'withdraw_invest',
+                    amount: finalAmount,
+                    currency: 'golds',
+                    description: `Resgate de lucro acumulado (${walletData.portfolioBalance} Golds bruto, -${tax} Golds taxa)`,
+                    date: new Date().toISOString()
+                });
+                showNotification('Sucesso', `Resgate de ${finalAmount.toLocaleString('pt-BR')} Golds realizado com sucesso!`);
+            }).catch(err => {
+                console.error('Erro ao resgatar lucro:', err);
+                showNotification('Erro', 'Falha ao resgatar lucro.');
+            });
+        }
+        window.openDepositModal = openDepositModal;
+        window.openWithdrawModal = openWithdrawModal;
+        window.openTransferModal = openTransferModal;
+        window.openConvertModal = openConvertModal;
+        window.openInvestModal = openInvestModal;
+        window.openCryptoModal = openCryptoModal;
+        window.openCommercialModal = openCommercialModal;
+        window.openWithdrawInvestmentModal = openWithdrawInvestmentModal;
+        window.renderWithdrawalDetails = renderWithdrawalDetails;
+        window.confirmWithdrawal = confirmWithdrawal;
+        window.openTransactionDetails = openTransactionDetails;
+        window.updateDepositMethodInfo = updateDepositMethodInfo;
+        window.togglePixKeyField = togglePixKeyField;
+        window.processDeposit = processDeposit;
+        window.processWithdrawal = processWithdrawal;
+        window.processTransfer = processTransfer;
+        window.processConversion = processConversion;
+        window.processInvest = processInvest;
+        window.processWithdrawInvestment = confirmWithdrawal;
+        window.closeModal = closeModal;
+        window.showNotification = showNotification;
+        window.navigateTo = navigateTo;
+        window.renderTransactions = renderTransactions;
+        function navigateTo(page) {
+            switch (page) {
+                case 'wallet': window.location.href = "carteira.html"; break;
+                case 'generator': window.location.href = "gerador.html"; break;
+                case 'market': window.location.href = "mercado.html"; break;
+                case 'store': window.location.href = "loja.html"; break;
+                case 'yshippcommerce': window.location.href = "yshippcommerce.html"; break;
+                case 'home': default: window.location.href = "index.html"; break;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL) .then(() => { console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar."); }) .catch((error) => { console.error("❌ Erro configurando persistência:", error); });
+            const menuToggles = { 'menu-icon': 'main-menu' };
+            Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
+                const toggle = document.getElementById(toggleId);
+                const menu = document.getElementById(menuId);
+                if (!toggle || !menu) { console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`); return; }
+                toggle.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); toggle.classList.toggle('active'); });
+            });
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
+                    Object.values(menuToggles).forEach(menuId => { const menu = document.getElementById(menuId); if (menu) menu.classList.remove('open'); });
+                    document.querySelectorAll('.top-bar__icon').forEach(icon => { if (icon) icon.classList.remove('active'); });
+                }
+            });
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') {
+                    Object.values(menuToggles).forEach(menuId => { const menu = document.getElementById(menuId); if (menu) menu.classList.remove('open'); });
+                    document.querySelectorAll('.top-bar__icon').forEach(icon => { if (icon) icon.classList.remove('active'); });
+                }
+            });
+            document.getElementById("logout-button").addEventListener("click", () => { auth.signOut().then(() => window.location.href = "cadastro.html"); });
+        });
+        (function init() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            console.log('Aguardando autenticação...');
+        })();
+        auth.onAuthStateChanged(async user => {
+            console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário');
+            if (!user) { await ensureAnonymousSignIn(); return; }
+            currentUser = user;
+            document.getElementById('footerUserId').textContent = user.uid;
+            document.getElementById('footerUserName').textContent = user.displayName || (user.isAnonymous ? 'Anônimo' : (user.email || 'Usuário'));
+            console.log('Usuário ativo:', user.uid);
+            try {
+                await loadWalletData(user.uid);
+                document.getElementById('loadingOverlay').style.display = 'none';
+                setupInputFormatting();
                 updateDepositMethodInfo();
                 togglePixKeyField();
-                
-                db.collection('wallets').doc(user.uid).onSnapshot(async (doc) => { 
-                    if (doc.exists) { 
-                        walletData = doc.data(); 
-                        allTransactions = walletData.transactions || []; // NOVO: Sincroniza o cache
-                        renderWallet(); 
-                    } 
-                }); 
-            } catch (error) { 
-                console.error('Erro ao sincronizar carteira:', error); 
-                showNotification('Erro', `Erro ao sincronizar carteira: ${error.message}`); 
-            } 
-        }); 
+                db.collection('wallets').doc(user.uid).onSnapshot(async (doc) => {
+                    if (doc.exists) {
+                        walletData = doc.data();
+                        allTransactions = walletData.transactions || [];
+                        renderWallet();
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao sincronizar carteira:', error);
+                showNotification('Erro', `Erro ao sincronizar carteira: ${error.message}`);
+            }
+        });
     </script>
 </body>
 </html>
