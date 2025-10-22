@@ -26,9 +26,9 @@
             --progress-bg: #edf2f7;
             --reais: #10b981;
             /* Cores de Risco */
-            --risk-low: #38a169;    /* Verde */
-            --risk-medium: #ecc94b; /* Amarelo */
-            --risk-high: #e53e3e;   /* Vermelho */
+            --risk-low: #38a169;
+            --risk-medium: #ecc94b;
+            --risk-high: #e53e3e;
         }
         [data-theme="dark"] {
             --background: #1a202c;
@@ -48,7 +48,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
         body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--text-primary); line-height: 1.5; min-height: 100vh; padding-top: 60px; overflow-x: hidden; }
-        .header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 1001; box-shadow: var(--shadow); }
+        .header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 1001; box-shadow: var(--shadow); transition: background 0.3s ease, color 0.3s ease; }
         .header h1 { font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
         .header h1 i { color: var(--text-primary); }
         .top-bar__section { display: flex; align-items: center; gap: 12px; }
@@ -65,20 +65,74 @@
         .menu__link:hover i { color: white; }
         .notification { position: fixed; bottom: 16px; right: 16px; padding: 8px 16px; background: var(--surface); color: var(--text-primary); border-radius: 4px; box-shadow: var(--shadow-lg); opacity: 0; transform: translateY(16px); transition: opacity 0.3s ease, transform 0.3s ease; z-index: 2000; }
         .notification.show { opacity: 1; transform: translateY(0); }
-        .balance-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.75rem; width: 100%; max-width: 1000px; padding: 0.75rem; margin: 0 auto; }
-        .balance-card { border-radius: 8px; padding: 1rem; color: white; position: relative; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .balance-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+        /* Carrossel de Saldo */
+        .balance-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            scroll-behavior: smooth;
+        }
+
+        .balance-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+       .balance-card {
+    /* 🔧 Controle fácil de tamanho */
+    --card-width: 105%;     /* ajuste horizontal */
+    --card-height: 140px;  /* ajuste vertical */
+
+    flex: 0 0 var(--card-width);
+    height: var(--card-height);
+
+    scroll-snap-align: start;
+    border-radius: 0px;
+    padding: 8rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.2s ease;
+}
+
+        .balance-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Cores dos Cards */
         .balance-card.gold { background: linear-gradient(135deg, var(--gold), #b7791f); }
         .balance-card.reais { background: linear-gradient(135deg, var(--reais), #059669); }
         .balance-card.portfolio { background: linear-gradient(135deg, #6b46c1, #805ad5); }
+        .balance-card.enterprise { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .balance-card.crypto { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+
         .balance-label { font-size: 0.8rem; text-transform: uppercase; opacity: 0.9; margin-bottom: 0.3rem; font-weight: 500; }
         .balance-amount { font-size: 1.5rem; font-weight: 600; }
         .balance-desc { font-size: 0.8rem; opacity: 0.85; margin-top: 0.3rem; }
+        .level-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+        }
         .wallet-section { width: 100%; max-width: 1000px; background: var(--surface); padding: 1rem; border-radius: 8px; margin: 1rem auto; box-shadow: var(--shadow); border: 1px solid var(--border); }
         .wallet-section h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; }
         .wallet-section h2 i { color: var(--secondary); }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; }
-        .stat-item { padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); text-align: center; background: var(--background); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.5rem; }
+        .stat-item { padding: 0.5rem; border-radius: 0px; border: 1px solid var(--border); text-align: center; background: var(--background); }
         .stat-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
         .stat-value { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
         .action-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
@@ -95,6 +149,7 @@
         .action-btn.bank { background: #38a169; color: white; }
         .action-btn.commercial { background: #4a5568; color: white; }
         .action-btn.resgate { background: #8b5cf6; color: white; }
+        .action-btn.enterprise { background: #2563eb; color: white; }
         [data-theme="dark"] .action-btn.withdraw { background: #4a5568; color: #e2e8f0; }
         [data-theme="dark"] .action-btn.transfer { background: #60a5fa; color: #1a202c; }
         [data-theme="dark"] .action-btn.default { background: #63b3ed; color: #1a202c; }
@@ -128,7 +183,7 @@
         .modal-buttons { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
         .modal-buttons button { flex: 1; padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.2s ease; position: relative;}
         #loadingOverlay { position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem; z-index: 10000; }
-        footer#userInfoFooter { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: white; text-align: center; padding: 0.3rem; font-size: 0.8rem; border-top: 1px solid var(--border); z-index: 999; font-family: 'Inter', sans-serif; }
+        footer#userInfoFooter { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: white; text-align: center; padding: 0.3rem; font-size: 0.8rem; border-top: 1px solid var(--border); z-index: 999; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
         /* Estilos específicos de Investimento */
         .investment-detail { font-size: 0.8rem; margin-top: 0.5rem; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: var(--background); }
         .detail-item { margin-bottom: 0.3rem; display: flex; justify-content: space-between; align-items: center; }
@@ -137,8 +192,7 @@
         .risk-medium { background: var(--risk-medium); color: var(--text-primary); }
         .risk-high { background: var(--risk-high); }
         .estimated-return { font-weight: 700; color: var(--secondary); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
-
-        .investment-card { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 0.5rem; background: var(--background); transition: background 0.2s; }
+        .investment-card { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 0.5rem; background: var(--background); transition: background 0.2s; cursor: pointer; }
         .investment-card:hover { background: var(--border); }
         .invest-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
         .invest-amount { font-weight: 600; font-size: 0.9rem; color: var(--gold); }
@@ -163,7 +217,6 @@
         .action-loading-overlay.active {
             display: flex;
         }
-
         /* NOVO: Estilos do Histórico de Transações */
         .transaction-filters {
             display: grid;
@@ -189,7 +242,7 @@
             .menu__link { padding: 8px 10px; font-size: 0.85rem; }
             .menu__link i { font-size: 1rem; }
             .notification { right: 8px; bottom: 8px; padding: 8px 12px; }
-            .balance-cards { padding: 0.5rem; }
+            .balance-carousel { padding: 0.5rem; }
             .balance-card { padding: 0.75rem; }
             .balance-amount { font-size: 1.25rem; }
             .wallet-section { padding: 0.75rem; }
@@ -211,7 +264,7 @@
         }
         @media (min-width: 601px) and (max-width: 1024px) {
             .header h1 { font-size: 1.125rem; }
-            .balance-cards { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+            .balance-carousel { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
             .wallet-section { padding: 0.75rem; }
             .wallet-section h2 { font-size: 1.25rem; }
         }
@@ -276,11 +329,14 @@
     <div class="notification" id="notification"></div>
     <div id="overlay" class="overlay"></div>
     <main style="width:100%; max-width:1000px; padding:0 0.75rem 120px; margin:0 auto;">
-        <div class="balance-cards">
+        <div class="balance-carousel" id="balanceCarousel">
             <div class="balance-card gold">
                 <div class="balance-label">Saldo em Golds</div>
                 <div id="golds-balance" class="balance-amount">0</div>
                 <div class="balance-desc">Moeda virtual do sistema</div>
+                <div class="level-badge" onclick="showLevelModal('golds')">
+                    <i class="fas fa-trophy"></i> <span id="golds-level">Nível 1</span>
+                </div>
             </div>
             <div class="balance-card reais">
                 <div class="balance-label">Saldo em Reais</div>
@@ -291,11 +347,43 @@
                 <div class="balance-label">Saldo Disponível em Portfólio</div>
                 <div id="portfolio-balance" class="balance-amount">0 Golds</div>
                 <div class="balance-desc">Lucro acumulado dos investimentos</div>
-                <button class="action-btn resgate" onclick="resgatarLucro()">
+                <button class="action-btn resgate" onclick="openProfitWithdrawalModal()">
                     <i class="fas fa-coins"></i> Resgatar Lucro
                 </button>
             </div>
+            <div class="balance-card enterprise">
+                <div class="balance-label">Saldo Empresarial</div>
+                <div id="enterprise-balance" class="balance-amount">0 Golds</div>
+                <div class="balance-desc">Golds acumulados em perfil empresarial</div>
+                <div class="level-badge" onclick="showLevelModal('enterprise')">
+                    <i class="fas fa-trophy"></i> <span id="enterprise-level">Nível 1</span>
+                </div>
+                <button class="action-btn enterprise" onclick="navigateTo('enterprise')">
+                    <i class="fas fa-building"></i> Ver Carteira Completa
+                </button>
+            </div>
+            <div class="balance-card crypto">
+                <div class="balance-label">Valor da Sua Criptomoeda</div>
+                <div id="crypto-balance" class="balance-amount">0 YSC</div>
+                <div class="balance-desc">Saldo em YshippCoin</div>
+                <button class="action-btn crypto" id="analyzeCryptoBtn" onclick="analyzeCrypto()" disabled>
+                    <i class="fas fa-chart-line"></i> Analisar Minha Cripto
+                </button>
+            </div>
         </div>
+        <section class="wallet-section">
+            <h2><i class="fas fa-bolt"></i>Ações Rápidas</h2>
+            <div class="action-buttons">
+                <button class="action-btn default" onclick="openDepositModal()"><i class="fas fa-arrow-down"></i>Depositar</button>
+                <button class="action-btn withdraw" onclick="openWithdrawModal()"><i class="fas fa-arrow-up"></i>Sacar</button>
+                <button class="action-btn transfer" onclick="openTransferModal()"><i class="fas fa-exchange-alt"></i>Transferir</button>
+                <button class="action-btn default" onclick="openConvertModal()"><i class="fas fa-sync-alt"></i>Converter</button>
+                <button class="action-btn invest" onclick="openInvestModal()"><i class="fas fa-chart-line"></i>Investimento</button>
+                <button class="action-btn crypto" onclick="openCryptoModal()"><i class="fas fa-coins"></i>Criptomoeda</button>
+                <button class="action-btn bank" onclick="window.location.href='https://linkpremiado51-cmd.github.io/yshippcommerce/bancocentral.html'"><i class="fas fa-university"></i>Banco Central</button>
+                <button class="action-btn commercial" onclick="openCommercialModal()"><i class="fas fa-briefcase"></i>Conta Comercial</button>
+            </div>
+        </section>
         <section class="wallet-section">
             <h2><i class="fas fa-chart-bar"></i>Estatísticas</h2>
             <div class="stats-grid">
@@ -315,6 +403,14 @@
                     <div class="stat-label">Último Saque</div>
                     <div id="last-withdrawal" class="stat-value">-</div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-label">Perfil Empresarial</div>
+                    <div id="enterprise-profile" class="stat-value">0 Golds</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Perfil Pessoal</div>
+                    <div id="personal-profile" class="stat-value">0 Golds</div>
+                </div>
             </div>
         </section>
         <section class="wallet-section" id="my-investments-section">
@@ -323,19 +419,6 @@
                 <div id="investment-summary-list" class="transaction-list" style="max-height: none; overflow-y: visible; margin-top: 0;">
                     <div style="text-align:center; color:var(--text-secondary); padding:1rem">Nenhum investimento ativo.</div>
                 </div>
-            </div>
-        </section>
-        <section class="wallet-section">
-            <h2><i class="fas fa-bolt"></i>Ações Rápidas</h2>
-            <div class="action-buttons">
-                <button class="action-btn default" onclick="openDepositModal()"><i class="fas fa-arrow-down"></i>Depositar</button>
-                <button class="action-btn withdraw" onclick="openWithdrawModal()"><i class="fas fa-arrow-up"></i>Sacar</button>
-                <button class="action-btn transfer" onclick="openTransferModal()"><i class="fas fa-exchange-alt"></i>Transferir</button>
-                <button class="action-btn default" onclick="openConvertModal()"><i class="fas fa-sync-alt"></i>Converter</button>
-                <button class="action-btn invest" onclick="openInvestModal()"><i class="fas fa-chart-line"></i>Investimento</button>
-                <button class="action-btn crypto" onclick="openCryptoModal()"><i class="fas fa-coins"></i>Criptomoeda</button>
-                <button class="action-btn bank" onclick="window.location.href='https://linkpremiado51-cmd.github.io/yshippcommerce/bancocentral.html'"><i class="fas fa-university"></i>Banco Central</button>
-                <button class="action-btn commercial" onclick="openCommercialModal()"><i class="fas fa-briefcase"></i>Conta Comercial</button>
             </div>
         </section>
         <section class="wallet-section">
@@ -362,27 +445,49 @@
             </div>
         </section>
     </main>
+
+    <!-- Modais -->
     <div id="transactionDetailsModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-info-circle"></i>Detalhes da Transação</h3>
-            <div id="transaction-details-content" style="font-size: 0.9rem; color: var(--text-primary);">
-                </div>
+            <div id="transaction-details-content" style="font-size: 0.9rem; color: var(--text-primary);"></div>
             <div class="modal-buttons">
                 <button class="action-btn default" onclick="closeModal('transactionDetailsModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <div id="investmentDetailsModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-chart-line"></i>Detalhes do Investimento</h3>
+            <div id="investment-details-content" style="font-size: 0.9rem; color: var(--text-primary);"></div>
+            <div class="modal-buttons">
+                <button class="action-btn default" onclick="closeModal('investmentDetailsModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <div id="profitWithdrawalModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-coins"></i>Resgatar Lucro</h3>
+            <div id="profit-withdrawal-content" style="font-size: 0.9rem; color: var(--text-primary);"></div>
+            <div class="modal-buttons">
+                <button class="action-btn resgate" onclick="resgatarLucro()">Confirmar Resgate</button>
+                <button class="action-btn default" onclick="closeModal('profitWithdrawalModal')">Cancelar</button>
             </div>
         </div>
     </div>
     <div id="depositModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-arrow-down"></i>Depositar</h3>
-            <div class="form-group"> <label>Método</label>
+            <div class="form-group">
+                <label>Método</label>
                 <select id="deposit-method" onchange="updateDepositMethodInfo()">
                     <option value="pix">PIX</option>
                     <option value="boleto">Boleto</option>
                     <option value="card">Cartão</option>
                 </select>
             </div>
-            <div class="form-group"> <label>Valor (R$)</label>
+            <div class="form-group">
+                <label>Valor (R$)</label>
                 <input id="deposit-amount" type="text" placeholder="0,00">
             </div>
             <div id="pix-key-group" class="form-group">
@@ -405,13 +510,15 @@
     <div id="withdrawModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-arrow-up"></i>Saque</h3>
-            <div class="form-group"> <label>Moeda</label>
+            <div class="form-group">
+                <label>Moeda</label>
                 <select id="withdraw-currency" onchange="togglePixKeyField()">
                     <option value="reais">Reais</option>
                     <option value="golds">Golds</option>
                 </select>
             </div>
-            <div class="form-group"> <label>Valor</label>
+            <div class="form-group">
+                <label>Valor</label>
                 <input id="withdraw-amount" type="text" placeholder="0,00">
             </div>
             <div id="withdraw-pix-group" class="form-group" style="display:block;">
@@ -431,16 +538,19 @@
     <div id="transferModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-exchange-alt"></i>Transferir</h3>
-            <div class="form-group"> <label>ID do destinatário</label>
+            <div class="form-group">
+                <label>ID do destinatário</label>
                 <input id="recipient-id" type="text">
             </div>
-            <div class="form-group"> <label>Moeda</label>
+            <div class="form-group">
+                <label>Moeda</label>
                 <select id="transfer-currency">
                     <option value="golds">Golds</option>
                     <option value="reais">Reais</option>
                 </select>
             </div>
-            <div class="form-group"> <label>Valor</label>
+            <div class="form-group">
+                <label>Valor</label>
                 <input id="transfer-amount" type="text" placeholder="0,00">
             </div>
             <div class="modal-buttons">
@@ -455,16 +565,19 @@
     <div id="convertModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-sync-alt"></i>Converter</h3>
-            <div class="form-group"> <label>Converter</label>
+            <div class="form-group">
+                <label>Converter</label>
                 <select id="convert-from">
                     <option value="golds">Golds</option>
                     <option value="reais">Reais</option>
                 </select>
             </div>
-            <div class="form-group"> <label>Valor</label>
+            <div class="form-group">
+                <label>Valor</label>
                 <input id="convert-amount" type="text" placeholder="0,00">
             </div>
-            <div class="form-group"> <label>Para</label>
+            <div class="form-group">
+                <label>Para</label>
                 <select id="convert-to">
                     <option value="reais">Reais</option>
                     <option value="golds">Golds</option>
@@ -484,8 +597,7 @@
             <h3><i class="fas fa-chart-line"></i>Investir em Serviços</h3>
             <div class="form-group">
                 <label for="invest-company">Empresa / Serviço</label>
-                <select id="invest-company">
-                    </select>
+                <select id="invest-company"></select>
             </div>
             <div id="investment-details" class="investment-detail">
                 Selecione um plano para ver detalhes.
@@ -494,12 +606,14 @@
                 <label for="invest-amount">Quantidade de Golds</label>
                 <input id="invest-amount" type="text" placeholder="0">
             </div>
-            <div id="estimated-return" class="estimated-return">
-                </div>
+            <div id="estimated-return" class="estimated-return"></div>
             <div class="modal-buttons">
                 <button class="action-btn invest" id="invest-confirm-btn" onclick="processInvest()">
                     Confirmar Investimento
                     <div class="action-loading-overlay" id="invest-loading"><i class="fas fa-spinner fa-spin"></i> Investindo...</div>
+                </button>
+                <button class="action-btn default" onclick="viewCompany()">
+                    <i class="fas fa-building"></i> Ver Empresa
                 </button>
                 <button class="action-btn withdraw" onclick="openWithdrawInvestmentModal()">Retirar Investimento</button>
                 <button class="action-btn" onclick="closeModal('investModal')" style="background:white; color:var(--text-primary); border:1px solid var(--border)">Cancelar</button>
@@ -511,8 +625,7 @@
             <h3><i class="fas fa-sign-out-alt"></i>Retirar Investimento</h3>
             <div class="form-group">
                 <label for="withdraw-invest-company">Empresa</label>
-                <select id="withdraw-invest-company" onchange="renderWithdrawalDetails()">
-                    </select>
+                <select id="withdraw-invest-company" onchange="renderWithdrawalDetails()"></select>
             </div>
             <div id="withdrawal-details" class="investment-detail">
                 Selecione um investimento ativo.
@@ -521,8 +634,7 @@
                 <label for="withdraw-invest-amount">Quantidade de Golds a Retirar</label>
                 <input id="withdraw-invest-amount" type="text" placeholder="0" oninput="renderWithdrawalDetails()">
             </div>
-            <div id="final-withdrawal-summary" class="estimated-return" style="color: var(--accent);">
-                </div>
+            <div id="final-withdrawal-summary" class="estimated-return" style="color: var(--accent);"></div>
             <div class="modal-buttons">
                 <button class="action-btn withdraw" id="withdraw-invest-confirm-btn" onclick="confirmWithdrawal()">
                     Confirmar Retirada
@@ -532,10 +644,44 @@
             </div>
         </div>
     </div>
-    <div id="cryptoModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-coins"></i>Criptomoeda</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de criptomoeda em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('cryptoModal')">Fechar</button> </div> </div> </div>
-    <div id="commercialModal" class="modal"> <div class="modal-content"> <h3><i class="fas fa-briefcase"></i>Conta Comercial</h3> <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de Conta Comercial em desenvolvimento.</p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('commercialModal')">Fechar</button> </div> </div> </div>
-    <div id="notificationModal" class="modal"> <div class="modal-content"> <h3 id="notification-title"><i class="fas fa-bell"></i>Notificação</h3> <p id="notification-message" style="color:var(--text-secondary); font-size:0.85rem"></p> <div class="modal-buttons"> <button class="action-btn default" onclick="closeModal('notificationModal')">OK</button> </div> </div> </div>
-    <footer id="userInfoFooter"> Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span> </footer>
+    <div id="cryptoModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-coins"></i>Criptomoeda</h3>
+            <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de criptomoeda em desenvolvimento.</p>
+            <div class="modal-buttons">
+                <button class="action-btn default" onclick="closeModal('cryptoModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <div id="commercialModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-briefcase"></i>Conta Comercial</h3>
+            <p style="color:var(--text-secondary); font-size:0.85rem">Funcionalidade de Conta Comercial em desenvolvimento.</p>
+            <div class="modal-buttons">
+                <button class="action-btn default" onclick="closeModal('commercialModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <h3 id="notification-title"><i class="fas fa-bell"></i>Notificação</h3>
+            <p id="notification-message" style="color:var(--text-secondary); font-size:0.85rem"></p>
+            <div class="modal-buttons">
+                <button class="action-btn default" onclick="closeModal('notificationModal')">OK</button>
+            </div>
+        </div>
+    </div>
+    <div id="levelModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-trophy"></i>Níveis e Benefícios</h3>
+            <div id="level-modal-content" style="font-size: 0.9rem; color: var(--text-primary);"></div>
+            <div class="modal-buttons">
+                <button class="action-btn default" onclick="closeModal('levelModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+    <footer id="userInfoFooter">Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span></footer>
+
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
@@ -569,29 +715,79 @@
             seo: { name: 'SEO, Promover Conteúdo', returnRate: 0.020, risk: 'Médio', lockInDays: 60 },
             inscricoes: { name: 'Inscrever-se', returnRate: 0.005, risk: 'Muito Baixo', lockInDays: 15 }
         };
-        const companyNames = {};
-        Object.entries(INVESTMENT_PLANS).forEach(([id, plan]) => {
-            companyNames[id] = plan.name;
-        });
         let allTransactions = [];
+
+        // Função para atualizar a cor do cabeçalho e rodapé
+        function updateHeaderFooterColor(cardClass) {
+            const header = document.querySelector('.header');
+            const footer = document.querySelector('#userInfoFooter');
+            const colors = {
+                'gold': { bg: '#d69e2e', text: '#1a202c' },
+                'reais': { bg: '#10b981', text: '#ffffff' },
+                'portfolio': { bg: '#6b46c1', text: '#ffffff' },
+                'enterprise': { bg: '#3b82f6', text: '#ffffff' },
+                'crypto': { bg: '#8b5cf6', text: '#ffffff' }
+            };
+            const color = colors[cardClass];
+            if (color) {
+                header.style.background = color.bg;
+                header.style.color = color.text;
+                footer.style.background = color.bg;
+                footer.style.color = color.text;
+            }
+        }
+
+        // Adicionar evento de scroll ao carrossel
+        document.getElementById('balanceCarousel').addEventListener('scroll', function() {
+            const carousel = this;
+            const cards = carousel.querySelectorAll('.balance-card');
+            const center = carousel.scrollLeft + carousel.offsetWidth / 2;
+            let closestCard = null;
+            let minDistance = Infinity;
+
+            cards.forEach(card => {
+                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                const distance = Math.abs(center - cardCenter);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestCard = card;
+                }
+            });
+
+            if (closestCard) {
+                const cardClass = closestCard.classList[1];
+                updateHeaderFooterColor(cardClass);
+            }
+        });
+
         function showLoading(actionId) {
             document.getElementById(`${actionId}-loading`).classList.add('active');
         }
+
         function hideLoading(actionId) {
             document.getElementById(`${actionId}-loading`).classList.remove('active');
         }
+
         function formatCurrency(value) {
             if (!value && value !== 0) return '0,00';
             return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
+
         function formatInputCurrency(input) {
-             let value = input.value.replace(/\D/g, ''); value = value.padStart(3, '0'); const cents = value.slice(-2); const integer = value.slice(0, -2) || '0'; const formattedInteger = parseInt(integer).toLocaleString('pt-BR'); input.value = `${formattedInteger},${cents}`;
+             let value = input.value.replace(/\D/g, '');
+             value = value.padStart(3, '0');
+             const cents = value.slice(-2);
+             const integer = value.slice(0, -2) || '0';
+             const formattedInteger = parseInt(integer).toLocaleString('pt-BR');
+             input.value = `${formattedInteger},${cents}`;
         }
+
         function formatInputInteger(input) {
             input.value = input.value.replace(/\D/g, '');
         }
+
         function setupInputFormatting() {
-            const currencyInputs = [ 'deposit-amount', 'withdraw-amount', 'transfer-amount', 'convert-amount' ];
+            const currencyInputs = ['deposit-amount', 'withdraw-amount', 'transfer-amount', 'convert-amount'];
             currencyInputs.forEach(id => {
                 const input = document.getElementById(id);
                 input.addEventListener('input', () => formatInputCurrency(input));
@@ -608,7 +804,11 @@
             document.getElementById('withdraw-pix-key').addEventListener('input', (e) => validatePixKey(e.target.value, 'withdraw-pix-key'));
             document.getElementById('deposit-pix-key').addEventListener('input', (e) => validatePixKey(e.target.value, 'deposit-pix-key'));
         }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
             const inputs = document.querySelectorAll(`#${id} input[type="text"]`);
@@ -620,39 +820,51 @@
                 updateDepositMethodInfo();
             }
         }
+
         function showNotification(title, message) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.classList.add('show');
             setTimeout(() => { notification.classList.remove('show'); }, 3000);
         }
+
         function loadTheme() {
             const saved = localStorage.getItem('theme') || 'light';
             document.body.dataset.theme = saved;
         }
+
         document.getElementById('theme-toggle').addEventListener('click', () => {
             const newTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
             document.body.dataset.theme = newTheme;
             localStorage.setItem('theme', newTheme);
         });
+
         loadTheme();
+
         async function ensureAnonymousSignIn() {
-            try { console.warn('Nenhum usuário logado. Tentando login anônimo...');
-            const res = await auth.signInAnonymously(); console.log('Login anônimo realizado. UID:', res.user.uid);
-        } catch (error) {
-            console.error('Erro ao autenticar anonimamente:', error); showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`);
+            try {
+                console.warn('Nenhum usuário logado. Tentando login anônimo...');
+                const res = await auth.signInAnonymously();
+                console.log('Login anônimo realizado. UID:', res.user.uid);
+            } catch (error) {
+                console.error('Erro ao autenticar anonimamente:', error);
+                showNotification('Erro de autenticação', `Não foi possível logar anonimamente: ${error.code} - ${error.message}`);
+            }
         }
-    }
+
         async function loadWalletData(uid) {
             try {
                 const ref = db.collection('wallets').doc(uid);
                 const snap = await ref.get();
                 if (!snap.exists) {
                     const initial = {
-                        userId: uid, name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'),
+                        userId: uid,
+                        name: auth.currentUser?.displayName || (auth.currentUser?.isAnonymous ? 'Anônimo' : 'Usuário'),
                         goldsBalance: 0,
                         reaisBalance: 0,
                         portfolioBalance: 0,
+                        enterpriseBalance: 0,
+                        cryptoBalance: 0,
                         investments: {},
                         transactions: [],
                         taxes: [],
@@ -674,6 +886,7 @@
                 showNotification('Erro', 'Não foi possível carregar os dados da carteira.');
             }
         }
+
         function calculateCurrentReturn(investmentId, investedAmount, initialDate) {
             const plan = INVESTMENT_PLANS[investmentId];
             if (!plan || investedAmount <= 0) return 0;
@@ -686,14 +899,35 @@
             const accumulatedReturn = investedAmount * totalReturnRate;
             return Math.floor(accumulatedReturn);
         }
+
+        function calculateDailyReturn(investmentId, investedAmount) {
+            const plan = INVESTMENT_PLANS[investmentId];
+            if (!plan || investedAmount <= 0) return 0;
+            return Math.floor(investedAmount * (plan.returnRate / 30));
+        }
+
+        function calculateMonthlyReturn(investmentId, investedAmount) {
+            const plan = INVESTMENT_PLANS[investmentId];
+            if (!plan || investedAmount <= 0) return 0;
+            return Math.floor(investedAmount * plan.returnRate);
+        }
+
+        function calculateYearlyReturn(investmentId, investedAmount) {
+            const plan = INVESTMENT_PLANS[investmentId];
+            if (!plan || investedAmount <= 0) return 0;
+            return Math.floor(investedAmount * plan.returnRate * 12);
+        }
+
         function renderInvestmentSummary() {
             const listEl = document.getElementById('investment-summary-list');
             const investments = walletData.investments || {};
             let totalInvested = 0;
             let totalReturn = 0;
+            let enterpriseGolds = 0;
             const activeInvestments = Object.entries(investments)
                 .filter(([, inv]) => inv.amount > 0)
                 .map(([id, inv]) => ({ id, ...inv }));
+
             if (activeInvestments.length === 0) {
                 listEl.innerHTML = `
                     <div style="text-align:center; padding:1rem; color:var(--text-secondary)">
@@ -702,6 +936,7 @@
                     </div>`;
                 return;
             }
+
             listEl.innerHTML = activeInvestments.map(inv => {
                 const plan = INVESTMENT_PLANS[inv.id];
                 if (!plan) return '';
@@ -713,11 +948,12 @@
                 unlockDate.setDate(unlockDate.getDate() + plan.lockInDays);
                 totalInvested += investedAmount;
                 totalReturn += accumulatedReturn;
+                enterpriseGolds += accumulatedReturn;
                 const statusTag = isLocked
                     ? `<span style="color: var(--accent); font-weight: 500;">(Em Lock-in)</span>`
                     : `<span style="color: var(--reais); font-weight: 500;">(Liberado)</span>`;
                 return `
-                    <div class="investment-card">
+                    <div class="investment-card" onclick="openInvestmentDetails('${inv.id}', ${investedAmount}, '${inv.date}')">
                         <div style="flex:1; min-width:0">
                             <div class="invest-name">${plan.name} ${statusTag}</div>
                             <div class="invest-return">Retorno Acumulado: +${accumulatedReturn.toLocaleString('pt-BR')} Golds</div>
@@ -730,13 +966,54 @@
                     </div>
                 `;
             }).join('');
+
             document.getElementById('portfolio-balance').textContent = `${totalReturn.toLocaleString('pt-BR')} Golds`;
+            document.getElementById('enterprise-balance').textContent = `${enterpriseGolds.toLocaleString('pt-BR')} Golds`;
+            document.getElementById('enterprise-profile').textContent = `${enterpriseGolds.toLocaleString('pt-BR')} Golds`;
+            document.getElementById('personal-profile').textContent = `${(walletData.goldsBalance - enterpriseGolds).toLocaleString('pt-BR')} Golds`;
         }
+
+        function openInvestmentDetails(investmentId, investedAmount, initialDate) {
+            const plan = INVESTMENT_PLANS[investmentId];
+            if (!plan) return;
+            const accumulatedReturn = calculateCurrentReturn(investmentId, investedAmount, initialDate);
+            const dailyReturn = calculateDailyReturn(investmentId, investedAmount);
+            const monthlyReturn = calculateMonthlyReturn(investmentId, investedAmount);
+            const yearlyReturn = calculateYearlyReturn(investmentId, investedAmount);
+            const isLocked = isInvestmentLocked(initialDate, plan.lockInDays);
+            const unlockDate = new Date(initialDate instanceof firebase.firestore.Timestamp ? initialDate.toDate().getTime() : new Date(initialDate).getTime());
+            unlockDate.setDate(unlockDate.getDate() + plan.lockInDays);
+            const riskClass = `risk-${plan.risk.toLowerCase().replace(' ', '-')}`;
+            document.getElementById('investment-details-content').innerHTML = `
+                <div class="detail-item"><span>Empresa:</span> <span>${plan.name}</span></div>
+                <div class="detail-item"><span>Investido:</span> <span>${investedAmount.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item"><span>Retorno Acumulado:</span> <span style="color: var(--reais);">+${accumulatedReturn.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item"><span>Retorno Diário (Est.):</span> <span style="color: var(--reais);">+${dailyReturn.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item"><span>Retorno Mensal (Est.):</span> <span style="color: var(--reais);">+${monthlyReturn.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item"><span>Retorno Anual (Est.):</span> <span style="color: var(--reais);">+${yearlyReturn.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item"><span>Risco:</span> <span class="risk-indicator ${riskClass}">${plan.risk}</span></div>
+                <div class="detail-item"><span>Status Lock-in:</span> <span style="color: ${isLocked ? 'var(--accent)' : 'var(--reais)'};">${isLocked ? 'Sim' : 'Não'} (Até: ${unlockDate.toLocaleDateString('pt-BR')})</span></div>
+            `;
+            openModal('investmentDetailsModal');
+        }
+
         function renderWallet() {
             if (!walletData) return;
+
             document.getElementById('golds-balance').textContent = (walletData.goldsBalance || 0).toLocaleString('pt-BR');
             document.getElementById('reais-balance').textContent = `R$ ${formatCurrency(walletData.reaisBalance || 0)}`;
             document.getElementById('portfolio-balance').textContent = `${walletData.portfolioBalance || 0} Golds`;
+            document.getElementById('enterprise-balance').textContent = `${walletData.enterpriseBalance || 0} Golds`;
+            document.getElementById('crypto-balance').textContent = `${walletData.cryptoBalance || 0} YSC`;
+
+            const goldsLevel = walletData.goldsBalance >= 1000000 ? 3 : (walletData.goldsBalance >= 500000 ? 2 : 1);
+            const enterpriseLevel = walletData.enterpriseBalance >= 1000000 ? 3 : (walletData.enterpriseBalance >= 500000 ? 2 : 1);
+            document.getElementById('golds-level').textContent = `Nível ${goldsLevel}`;
+            document.getElementById('enterprise-level').textContent = `Nível ${enterpriseLevel}`;
+
+            checkCryptoButton();
+            checkCommercialButton();
+
             const txs = allTransactions || [];
             document.getElementById('total-transactions').textContent = txs.length;
             let totalReceived = 0, totalSent = 0, lastWithdrawal = '-';
@@ -753,6 +1030,7 @@
             renderTransactions();
             renderInvestmentSummary();
         }
+
         function renderTransactions() {
             const listEl = document.getElementById('transaction-list');
             const filterType = document.getElementById('filter-type').value;
@@ -801,6 +1079,7 @@
                 `;
             }).join('');
         }
+
         function openTransactionDetails(index) {
             const tx = walletData.transactions.slice().reverse()[index];
             if (!tx) return;
@@ -828,6 +1107,7 @@
             document.getElementById('transaction-details-content').innerHTML = detailsHtml;
             openModal('transactionDetailsModal');
         }
+
         function validatePixKey(key, inputId) {
             const inputEl = document.getElementById(inputId);
             const errorEl = document.getElementById(`${inputId}-error`);
@@ -853,6 +1133,7 @@
                 return false;
             }
         }
+
         async function saveWallet(updated) {
             if (!currentUser || !currentUser.uid) throw new Error('Usuário não autenticado');
             try {
@@ -865,18 +1146,21 @@
                 throw err;
             }
         }
+
         async function pushTransaction(tx) {
             if (!walletData) walletData = {};
             const arr = Array.isArray(walletData.transactions) ? walletData.transactions : [];
             arr.push(tx);
             await saveWallet({ transactions: arr });
         }
+
         async function pushTax(tax) {
             if (!walletData) walletData = {};
             const arr = Array.isArray(walletData.taxes) ? walletData.taxes : [];
             arr.push(tax);
             await saveWallet({ taxes: arr });
         }
+
         async function updateSystemReserves(amount, currency) {
             try {
                 const reserveRef = db.collection('system').doc('reserves');
@@ -893,6 +1177,7 @@
                 showNotification('Erro', 'Não foi possível atualizar as reservas do sistema.');
             }
         }
+
         function updateDepositMethodInfo() {
             const method = document.getElementById('deposit-method').value;
             const infoEl = document.getElementById('deposit-method-info');
@@ -918,6 +1203,7 @@
                 `;
             }
         }
+
         function togglePixKeyField() {
             const currency = document.getElementById('withdraw-currency').value;
             const pixGroup = document.getElementById('withdraw-pix-group');
@@ -931,6 +1217,7 @@
                 document.getElementById('withdraw-pix-key-error').style.display = 'none';
             }
         }
+
         async function processDeposit() {
             showLoading('deposit');
             const method = document.getElementById('deposit-method').value;
@@ -966,6 +1253,7 @@
                 hideLoading('deposit');
             }
         }
+
         async function processWithdrawal() {
             showLoading('withdraw');
             const currency = document.getElementById('withdraw-currency').value;
@@ -1028,6 +1316,7 @@
                 }
             }
         }
+
         async function processTransfer() {
             showLoading('transfer');
             const recipientId = document.getElementById('recipient-id').value.trim();
@@ -1086,6 +1375,7 @@
                 hideLoading('transfer');
             }
         }
+
         async function processConversion() {
             showLoading('convert');
             const from = document.getElementById('convert-from').value;
@@ -1146,6 +1436,7 @@
                 hideLoading('convert');
             }
         }
+
         function renderInvestmentDetails() {
             const companyId = document.getElementById('invest-company').value;
             const amountInput = document.getElementById('invest-amount');
@@ -1176,6 +1467,7 @@
                 returnEl.textContent = 'Insira o valor para ver o retorno estimado.';
             }
         }
+
         function populateInvestmentOptions() {
             const selectEl = document.getElementById('invest-company');
             const withdrawSelectEl = document.getElementById('withdraw-invest-company');
@@ -1196,8 +1488,10 @@
                     }
                 });
         }
+
         document.getElementById('invest-company').addEventListener('change', renderInvestmentDetails);
         document.getElementById('invest-amount').addEventListener('input', renderInvestmentDetails);
+
         async function processInvest() {
             showLoading('invest');
             const cardId = document.getElementById('invest-company').value;
@@ -1252,6 +1546,7 @@
                 hideLoading('invest');
             }
         }
+
         function isInvestmentLocked(initialDate, lockInDays) {
             if (!initialDate) return true;
             const start = initialDate instanceof firebase.firestore.Timestamp ? initialDate.toDate() : new Date(initialDate);
@@ -1259,6 +1554,7 @@
             lockInPeriodEnd.setDate(lockInPeriodEnd.getDate() + lockInDays);
             return new Date() < lockInPeriodEnd;
         }
+
         function openWithdrawInvestmentModal() {
             closeModal('investModal');
             populateInvestmentOptions();
@@ -1268,6 +1564,7 @@
             document.getElementById('final-withdrawal-summary').textContent = '';
             openModal('withdrawInvestModal');
         }
+
         function renderWithdrawalDetails() {
             const cardId = document.getElementById('withdraw-invest-company').value;
             let amountToWithdraw = Number(document.getElementById('withdraw-invest-amount').value);
@@ -1335,6 +1632,7 @@
             `;
             summaryEl.innerHTML = `Valor Total a Receber: <span style="font-size: 1.1rem; color: var(--reais);">${Math.floor(totalGolds).toLocaleString('pt-BR')} Golds</span> (Após Taxas/Penalidades)`;
         }
+
         async function confirmWithdrawal() {
             showLoading('withdraw-invest');
             const cardId = document.getElementById('withdraw-invest-company').value;
@@ -1404,6 +1702,7 @@
                 hideLoading('withdraw-invest');
             }
         }
+
         function openDepositModal() { openModal('depositModal'); updateDepositMethodInfo(); }
         function openWithdrawModal() { openModal('withdrawModal'); togglePixKeyField(); }
         function openTransferModal() { openModal('transferModal'); }
@@ -1417,18 +1716,39 @@
         }
         function openCryptoModal() { openModal('cryptoModal'); showNotification('Aviso', 'Funcionalidade de criptomoeda em desenvolvimento.'); }
         function openCommercialModal() { openModal('commercialModal'); showNotification('Aviso', 'Funcionalidade de Conta Comercial em desenvolvimento.'); }
-        function resgatarLucro() {
-            if ((walletData.portfolioBalance || 0) <= 0) {
+        function openProfitWithdrawalModal() {
+            const portfolioBalance = walletData.portfolioBalance || 0;
+            if (portfolioBalance <= 0) {
                 showNotification('Erro', 'Não há lucro acumulado para resgatar.');
                 return;
             }
-            if (!confirm(`Deseja resgatar ${walletData.portfolioBalance.toLocaleString('pt-BR')} Golds de lucro acumulado?`)) return;
-            const tax = Math.ceil(walletData.portfolioBalance * TAX_RATE);
-            const finalAmount = walletData.portfolioBalance - tax;
+            const dailyProfit = Math.floor(portfolioBalance / 30);
+            const monthlyProfit = portfolioBalance;
+            const yearlyProfit = Math.floor(portfolioBalance * 12);
+            document.getElementById('profit-withdrawal-content').innerHTML = `
+                <div class="detail-item"><span>Lucro Diário (Est.):</span> <span style="color: var(--reais);">${dailyProfit.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item"><span>Lucro Mensal (Est.):</span> <span style="color: var(--reais);">${monthlyProfit.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item"><span>Lucro Anual (Est.):</span> <span style="color: var(--reais);">${yearlyProfit.toLocaleString('pt-BR')} Golds</span></div>
+                <div class="detail-item" style="border-top: 1px dashed var(--border); margin-top: 0.5rem; padding-top: 0.5rem;">
+                    <span>Valor Disponível para Resgate:</span> <span style="color: var(--reais);">${portfolioBalance.toLocaleString('pt-BR')} Golds</span>
+                </div>
+            `;
+            openModal('profitWithdrawalModal');
+        }
+
+        function resgatarLucro() {
+            const portfolioBalance = walletData.portfolioBalance || 0;
+            if (portfolioBalance <= 0) {
+                showNotification('Erro', 'Não há lucro acumulado para resgatar.');
+                return;
+            }
+            const tax = Math.ceil(portfolioBalance * TAX_RATE);
+            const finalAmount = portfolioBalance - tax;
             if (finalAmount <= 0) {
                 showNotification('Erro', 'Valor insuficiente após taxas.');
                 return;
             }
+            if (!confirm(`Deseja resgatar ${finalAmount.toLocaleString('pt-BR')} Golds de lucro acumulado?`)) return;
             saveWallet({
                 goldsBalance: (walletData.goldsBalance || 0) + finalAmount,
                 portfolioBalance: 0,
@@ -1443,38 +1763,17 @@
                     type: 'withdraw_invest',
                     amount: finalAmount,
                     currency: 'golds',
-                    description: `Resgate de lucro acumulado (${walletData.portfolioBalance} Golds bruto, -${tax} Golds taxa)`,
+                    description: `Resgate de lucro acumulado (${portfolioBalance} Golds bruto, -${tax} Golds taxa)`,
                     date: new Date().toISOString()
                 });
+                closeModal('profitWithdrawalModal');
                 showNotification('Sucesso', `Resgate de ${finalAmount.toLocaleString('pt-BR')} Golds realizado com sucesso!`);
             }).catch(err => {
                 console.error('Erro ao resgatar lucro:', err);
                 showNotification('Erro', 'Falha ao resgatar lucro.');
             });
         }
-        window.openDepositModal = openDepositModal;
-        window.openWithdrawModal = openWithdrawModal;
-        window.openTransferModal = openTransferModal;
-        window.openConvertModal = openConvertModal;
-        window.openInvestModal = openInvestModal;
-        window.openCryptoModal = openCryptoModal;
-        window.openCommercialModal = openCommercialModal;
-        window.openWithdrawInvestmentModal = openWithdrawInvestmentModal;
-        window.renderWithdrawalDetails = renderWithdrawalDetails;
-        window.confirmWithdrawal = confirmWithdrawal;
-        window.openTransactionDetails = openTransactionDetails;
-        window.updateDepositMethodInfo = updateDepositMethodInfo;
-        window.togglePixKeyField = togglePixKeyField;
-        window.processDeposit = processDeposit;
-        window.processWithdrawal = processWithdrawal;
-        window.processTransfer = processTransfer;
-        window.processConversion = processConversion;
-        window.processInvest = processInvest;
-        window.processWithdrawInvestment = confirmWithdrawal;
-        window.closeModal = closeModal;
-        window.showNotification = showNotification;
-        window.navigateTo = navigateTo;
-        window.renderTransactions = renderTransactions;
+
         function navigateTo(page) {
             switch (page) {
                 case 'wallet': window.location.href = "carteira.html"; break;
@@ -1482,11 +1781,94 @@
                 case 'market': window.location.href = "mercado.html"; break;
                 case 'store': window.location.href = "loja.html"; break;
                 case 'yshippcommerce': window.location.href = "yshippcommerce.html"; break;
+                case 'enterprise': window.location.href = "empresarial.html"; break;
                 case 'home': default: window.location.href = "index.html"; break;
             }
         }
+
+        function viewCompany() {
+            const companyId = document.getElementById('invest-company').value;
+            if (!companyId) {
+                showNotification('Aviso', 'Selecione uma empresa primeiro.');
+                return;
+            }
+            showNotification('Aviso', `Visualizando detalhes da empresa: ${INVESTMENT_PLANS[companyId].name}`);
+        }
+
+        function checkCryptoButton() {
+            const cryptoBtn = document.getElementById('analyzeCryptoBtn');
+            const goldsBalance = walletData.goldsBalance || 0;
+            cryptoBtn.disabled = goldsBalance < 1000000;
+        }
+
+        function checkCommercialButton() {
+            const commercialBtn = document.querySelector('.action-btn.commercial');
+            const goldsBalance = walletData.goldsBalance || 0;
+            if (goldsBalance >= 500000) {
+                commercialBtn.style.display = 'block';
+            } else {
+                commercialBtn.style.display = 'none';
+            }
+        }
+
+        function analyzeCrypto() {
+            if (walletData.goldsBalance < 1000000) {
+                showNotification('Aviso', 'Você precisa atingir o Nível 3 (1.000.000 Golds) para analisar sua criptomoeda.');
+                return;
+            }
+            showNotification('Sucesso', 'Análise de criptomoeda disponível para Nível 3!');
+        }
+
+        function showLevelModal(type) {
+            const levels = {
+                golds: [
+                    { level: 1, name: 'Bronze', golds: 0, benefits: ['Acesso a todos os recursos básicos da carteira.'] },
+                    { level: 2, name: 'Prata', golds: 250000, benefits: ['Acesso à Conta Comercial (passo para abrir uma empresa).'] },
+                    { level: 3, name: 'Ouro', golds: 1000000, benefits: ['Liberação para criar sua própria criptomoeda no sistema.'] }
+                ],
+                enterprise: [
+                    { level: 1, name: 'Bronze', golds: 0, benefits: ['Acesso a todos os recursos básicos da carteira.'] },
+                    { level: 2, name: 'Prata', golds: 500000, benefits: ['Acesso à Conta Comercial (passo para abrir uma empresa).'] },
+                    { level: 3, name: 'Ouro', golds: 1000000, benefits: ['Liberação para criar sua própria criptomoeda no sistema.'] }
+                ]
+            };
+
+            const currentLevel = levels[type].find(l => (type === 'golds' ? walletData.goldsBalance : walletData.enterpriseBalance) >= l.golds);
+            const nextLevel = levels[type].find(l => (type === 'golds' ? walletData.goldsBalance : walletData.enterpriseBalance) < l.golds);
+
+            let content = `
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Nível Atual: ${currentLevel.name} (${currentLevel.level})</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Saldo: ${(type === 'golds' ? walletData.goldsBalance : walletData.enterpriseBalance).toLocaleString('pt-BR')} Golds</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">Benefícios:</div>
+                    <ul style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; padding-left: 1rem;">
+                        ${currentLevel.benefits.map(b => `<li>${b}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            if (nextLevel) {
+                content += `
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border);">
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Próximo Nível: ${nextLevel.name} (${nextLevel.level})</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Faltam: ${(nextLevel.golds - (type === 'golds' ? walletData.goldsBalance : walletData.enterpriseBalance)).toLocaleString('pt-BR')} Golds</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">Benefícios:</div>
+                        <ul style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; padding-left: 1rem;">
+                            ${nextLevel.benefits.map(b => `<li>${b}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            document.getElementById('level-modal-content').innerHTML = content;
+            openModal('levelModal');
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL) .then(() => { console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar."); }) .catch((error) => { console.error("❌ Erro configurando persistência:", error); });
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => { console.log("✅ Persistência LOCAL ativada — o mesmo usuário será mantido ao relogar."); })
+            .catch((error) => { console.error("❌ Erro configurando persistência:", error); });
+
             const menuToggles = { 'menu-icon': 'main-menu' };
             Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
                 const toggle = document.getElementById(toggleId);
@@ -1494,24 +1876,24 @@
                 if (!toggle || !menu) { console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`); return; }
                 toggle.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); toggle.classList.toggle('active'); });
             });
+
             document.addEventListener('click', e => {
                 if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
                     Object.values(menuToggles).forEach(menuId => { const menu = document.getElementById(menuId); if (menu) menu.classList.remove('open'); });
                     document.querySelectorAll('.top-bar__icon').forEach(icon => { if (icon) icon.classList.remove('active'); });
                 }
             });
+
             document.addEventListener('keydown', e => {
                 if (e.key === 'Escape') {
                     Object.values(menuToggles).forEach(menuId => { const menu = document.getElementById(menuId); if (menu) menu.classList.remove('open'); });
                     document.querySelectorAll('.top-bar__icon').forEach(icon => { if (icon) icon.classList.remove('active'); });
                 }
             });
+
             document.getElementById("logout-button").addEventListener("click", () => { auth.signOut().then(() => window.location.href = "cadastro.html"); });
         });
-        (function init() {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            console.log('Aguardando autenticação...');
-        })();
+
         auth.onAuthStateChanged(async user => {
             console.log('auth.onAuthStateChanged ->', user ? 'Usuário detectado' : 'Nenhum usuário');
             if (!user) { await ensureAnonymousSignIn(); return; }
