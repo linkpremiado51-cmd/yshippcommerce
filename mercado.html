@@ -2831,7 +2831,7 @@
       const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
       const freelancers = parseInt(document.getElementById("freelancers").value);
       try {
-          // 1. Cria entrada em serviceCards2
+          // 1. Cria entrada em serviceCards
           const serviceCardRef = await db.collection("serviceCards").add({
               userId: user.uid,
               empresa: currentCompanyName,
@@ -3420,7 +3420,7 @@
     let url;
     switch (page) {
         case 'home':
-            url = 'https://linkpremiado51-cmd.github.io/yshippcommerce/index.html';
+            url = 'index.html';
             break;
         case 'yshippcommerce':
             url = 'yshippcommerce.html';
@@ -3438,12 +3438,72 @@
             url = 'https://linkpremiado51-cmd.github.io/yshippcommerce/carteira.html';
             break;
         default:
-            url = 'https://linkpremiado51-cmd.github.io/yshippcommerce/index.html'; // Página padrão caso o parâmetro seja inválido
+            url = 'index.html'; // Página padrão caso o parâmetro seja inválido
             break;
     }
     window.location.href = url; // Redireciona para a URL correspondente
 }
-</script>
+// 🌐 Função pública — exibe todos os serviços ativos disponíveis no mercado
+async function viewPublicServices() {
+    try {
+        const snapshot = await db.collection("services")
+            .where("status", "==", "ativo")
+            .get();
+        
+        let html = `
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h2><i class="fas fa-store"></i> Mercado de Serviços</h2>
+        <button class="btn ghost" onclick="closeModal()">Fechar</button>
+      </div>
+      <p style="margin-bottom:1rem;color:var(--text-secondary);">
+        Aqui estão todos os serviços publicados no sistema que você pode executar e ganhar Golds.
+      </p>
+    `;
+        
+        if (snapshot.empty) {
+            html += `<p>Nenhum serviço disponível no momento. Volte mais tarde.</p>`;
+        } else {
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                html += `
+          <div class="service-card" style="
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+          ">
+            <h3>${data.nome || "(Sem título)"}</h3>
+            <p style="font-size:0.9rem;">${data.descricao || "Sem descrição disponível."}</p>
+            <div style="font-size:0.85rem;margin-top:6px;">
+              <span>Empresa: ${data.empresa || "Independente"}</span><br>
+              <span>Recompensa: ${data.recompensa || 0} Golds</span>
+            </div>
+            <div style="margin-top:10px;">
+              <button style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;"
+                onclick="applyForService('${doc.id}', '${data.nome || ""}')">
+                <i class="fas fa-hand-pointer"></i> Executar Missão
+              </button>
+            </div>
+          </div>
+        `;
+            });
+        }
+        
+        showSimpleModal("Mercado de Serviços", html);
+    } catch (error) {
+        console.error("Erro ao carregar serviços públicos:", error);
+        showNotification("Erro ao carregar o mercado de serviços.");
+    }
+}
 
+// ✋ Função simulada para aplicar em um serviço
+async function applyForService(serviceId, serviceName) {
+    const user = auth.currentUser;
+    if (!user) return showNotification("Você precisa estar autenticado para executar serviços.");
+    
+    showNotification(`Você iniciou a missão: ${serviceName}. (Integração com execução real será implementada depois.)`);
+}
+</script>
 </body>
 </html>
