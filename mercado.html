@@ -651,6 +651,17 @@
         border-top: 2px solid var(--secondary);
         padding-top: 0.5rem;
     }
+    /* Estilo para o aviso de duplicação */
+    .mode-info-box {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.5rem;
+      margin-top: 0.75rem;
+      line-height: 1.3;
+    }
 
     @media (max-width: 768px) {
       .menu {
@@ -794,7 +805,7 @@
   <div class="header-menu">
     <nav aria-label="Navegação principal" class="header" role="navigation">
       <div class="top-bar__section">
-        <h1><i class="fas fa-rocket"></i>Painel YshippCommerce</h1>
+        <h1><i class="fas fa-rocket"></i>Publicar Serviço</h1>
       </div>
       <div class="top-bar__section">
         <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
@@ -816,31 +827,31 @@
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('yshippcommerce')">
             <i class="fas fa-store"></i>
-            <span>YshippCommerce</span>
+            <span>YshippCommerce invest</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('market')">
             <i class="fas fa-briefcase"></i>
-            <span>Mercado de Serviços</span>
+            <span>Publicar Serviço</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('store')">
             <i class="fas fa-shopping-cart"></i>
-            <span>Loja</span>
+            <span>Shopping Shipp</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('generator')">
             <i class="fas fa-ticket-alt"></i>
-            <span>Gerador de Bilhetes</span>
+            <span>Gerador de Golds</span>
           </button>
         </li>
         <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('wallet')">
             <i class="fas fa-wallet"></i>
-            <span>Carteira</span>
+            <span>Carteira e Bank Central</span>
           </button>
         </li>
         <li class="menu__item">
@@ -894,6 +905,9 @@
         <div style="margin-top: 1rem;">
           <label for="calculatedReward">Recompensa Total Estimada por Freelancer</label>
           <input type="text" id="calculatedReward" readonly value="150 Golds (Base)">
+          
+          <div class="mode-info-box" id="modeDuplicationInfo">
+            </div>
         </div>
       </div>
 
@@ -945,6 +959,12 @@
                 <span class="label">Taxa da Empresa (1% + 50 Golds)</span>
                 <span class="value" id="summaryFee">...</span>
             </div>
+            <div class="summary-item" id="summaryDoubledCostRow" style="display: none;">
+                <span class="label">Custo Dobrado (Para Funcionários)</span>
+                <span class="value" id="summaryDoubledCost">...</span>
+            </div>
+            <div class="mode-info-box" id="modeDuplicationSummary" style="margin-top: 0.5rem; display: none;">
+                </div>
             <div class="summary-final-value">
                 <span class="label">Valor Final Total (Golds)</span>
                 <span class="value" id="summaryFinalCost">...</span>
@@ -972,24 +992,22 @@
       <p>Gerencie seus Golds e transações.</p>
       <button class="nav-button" onclick="navigateTo('wallet')">Acessar Carteira</button>
     </div>
-    <section id="dashboard-section" class="dashboard-section fade-in">
+    
+    <section id="dashboard-section-empresarial" class="dashboard-section fade-in">
       <div id="empresasSection">
-        <h2><i class="fas fa-building"></i>Empresas Parceiras</h2>
+        <h2><i class="fas fa-building"></i>Modo Empresarial</h2>
         <p style="margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 0.85rem;">Conheça nossas parceiras e acompanhe seu progresso.</p>
         <div class="carousel-container">
-          <div class="carousel" id="company-carousel">
+          <div class="carousel" id="company-carousel-empresarial">
             <div class="nav-card company-card fade-in" data-card-id="facebook">
               <i class="fab fa-facebook" style="color: #1877f2;"></i>
               <h3>Micro Influenciador do Facebook</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('facebook')">
+                <button class="action-button" onclick="openPublishModal('facebook', 'Micro Influenciador do Facebook', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('facebook')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('facebook', 'Micro Influenciador do Facebook')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('facebook')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1028,18 +1046,16 @@
                 <span class="progress-text" id="facebook-progress-text">0 / 250.000</span>
               </div>
             </div>
+            
             <div class="nav-card company-card fade-in" data-card-id="instagram">
               <i class="fab fa-instagram" style="color: #e4405f;"></i>
               <h3>Micro Influenciador do Instagram</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('instagram')">
+                <button class="action-button" onclick="openPublishModal('instagram', 'Micro Influenciador do Instagram', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('instagram')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('instagram', 'Micro Influenciador do Instagram')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('instagram')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1082,14 +1098,11 @@
               <i class="fas fa-mobile-alt" style="color: #4CAF50;"></i>
               <h3>Aplicativo Móvel</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('mobile')">
+                <button class="action-button" onclick="openPublishModal('mobile', 'Aplicativo Móvel', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('mobile')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('mobile', 'Aplicativo Móvel')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('mobile')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1128,18 +1141,16 @@
                 <span class="progress-text" id="mobile-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="telegram">
               <i class="fab fa-telegram" style="color: #0088cc;"></i>
               <h3>Telegram</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('telegram')">
+                <button class="action-button" onclick="openPublishModal('telegram', 'Telegram', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('telegram')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('telegram', 'Telegram')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('telegram')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1178,18 +1189,16 @@
                 <span class="progress-text" id="telegram-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="tiktok">
               <i class="fab fa-tiktok" style="color: #000000;"></i>
               <h3>TikTok</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('tiktok')">
+                <button class="action-button" onclick="openPublishModal('tiktok', 'TikTok', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('tiktok')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('tiktok', 'TikTok')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('tiktok')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1228,18 +1237,16 @@
                 <span class="progress-text" id="tiktok-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="video">
               <i class="fas fa-video" style="color: #FF0000;"></i>
               <h3>Marketing de Vídeo</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('video')">
+                <button class="action-button" onclick="openPublishModal('video', 'Marketing de Vídeo', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('video')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('video', 'Marketing de Vídeo')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('video')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1278,18 +1285,16 @@
                 <span class="progress-text" id="video-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="discord">
               <i class="fab fa-discord" style="color: #7289DA;"></i>
               <h3>Discord</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('discord')">
+                <button class="action-button" onclick="openPublishModal('discord', 'Discord', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('discord')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('discord', 'Discord')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('discord')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1328,18 +1333,16 @@
                 <span class="progress-text" id="discord-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="blog">
               <i class="fas fa-blog" style="color: #FF9800;"></i>
               <h3>Comente em outros Blogs</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('blog')">
+                <button class="action-button" onclick="openPublishModal('blog', 'Comente em outros Blogs', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('blog')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('blog', 'Comente em outros Blogs')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('blog')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1378,18 +1381,16 @@
                 <span class="progress-text" id="blog-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="reddit">
               <i class="fab fa-reddit" style="color: #FF4500;"></i>
               <h3>Reddit</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('reddit')">
+                <button class="action-button" onclick="openPublishModal('reddit', 'Reddit', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('reddit')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('reddit', 'Reddit')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('reddit')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1428,18 +1429,16 @@
                 <span class="progress-text" id="reddit-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="seo">
               <i class="fas fa-search" style="color: #4285F4;"></i>
               <h3>SEO, Promover Conteúdo</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('seo')">
+                <button class="action-button" onclick="openPublishModal('seo', 'SEO, Promover Conteúdo', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('seo')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('seo', 'SEO, Promover Conteúdo')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('seo')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1478,18 +1477,16 @@
                 <span class="progress-text" id="seo-progress-text">0 / 250.000</span>
               </div>
             </div>
+
             <div class="nav-card company-card fade-in" data-card-id="inscricoes">
               <i class="fas fa-rss" style="color: #FF9800;"></i>
               <h3>Serviços Internacionais</h3>
               <div class="company-actions">
-                <button class="action-button" onclick="contratar('inscricoes')">
+                <button class="action-button" onclick="openPublishModal('inscricoes', 'Serviços Internacionais', 'empresarial')">
                   <i class="fas fa-handshake"></i> Contratar
                 </button>
                 <button class="action-button" onclick="executarMissoes('inscricoes')">
                   <i class="fas fa-tasks"></i> Executar Missões
-                </button>
-                <button class="action-button" onclick="openPublishModal('inscricoes', 'Serviços Internacionais')">
-                  <i class="fas fa-plus"></i> Publicar Serviço
                 </button>
                 <button class="action-button" onclick="viewServices('inscricoes')">
                   <i class="fas fa-eye"></i> Ver Serviços
@@ -1528,10 +1525,554 @@
                 <span class="progress-text" id="inscricoes-progress-text">0 / 250.000</span>
               </div>
             </div>
+
           </div>
         </div>
       </div>
     </section>
+
+    <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+    <section id="dashboard-section-pessoal" class="dashboard-section fade-in">
+      <div id="pessoalSection">
+        <h2><i class="fas fa-user"></i>Modo Pessoal</h2>
+        <p style="margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 0.85rem;">Publique seus pedidos pessoais e realize missões.</p>
+        <div class="carousel-container">
+          <div class="carousel" id="company-carousel-pessoal">
+            <div class="nav-card company-card fade-in" data-card-id="facebook-pessoal">
+              <i class="fab fa-facebook" style="color: #1877f2;"></i>
+              <h3>Micro Influenciador do Facebook</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('facebook', 'Micro Influenciador do Facebook', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('facebook')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('facebook')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="facebook-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="facebook-nivel-pessoal">Iniciante de Campanha</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Colaboradores</span>
+                  <span class="stat-value" id="facebook-seguidores-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="facebook-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="facebook-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="facebook-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="facebook-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="facebook-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+            
+            <div class="nav-card company-card fade-in" data-card-id="instagram-pessoal">
+              <i class="fab fa-instagram" style="color: #e4405f;"></i>
+              <h3>Micro Influenciador do Instagram</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('instagram', 'Micro Influenciador do Instagram', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('instagram')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('instagram')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="instagram-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="instagram-nivel-pessoal">Estagiário de Conteúdo</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Seguidores</span>
+                  <span class="stat-value" id="instagram-seguidores-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="instagram-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="instagram-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="instagram-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="instagram-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="instagram-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+            
+            <div class="nav-card company-card fade-in" data-card-id="mobile-pessoal">
+              <i class="fas fa-mobile-alt" style="color: #4CAF50;"></i>
+              <h3>Aplicativo Móvel</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('mobile', 'Aplicativo Móvel', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('mobile')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('mobile')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Total de Instalações</span>
+                  <span class="stat-value" id="mobile-instalacoes-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="mobile-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="mobile-nivel-pessoal">Programador Iniciante</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="mobile-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="mobile-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="mobile-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="mobile-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="mobile-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="telegram-pessoal">
+              <i class="fab fa-telegram" style="color: #0088cc;"></i>
+              <h3>Telegram</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('telegram', 'Telegram', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('telegram')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('telegram')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Canais Ativos</span>
+                  <span class="stat-value" id="telegram-canais-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="telegram-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="telegram-nivel-pessoal">Criador de Grupo</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="telegram-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="telegram-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="telegram-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="telegram-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="telegram-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="tiktok-pessoal">
+              <i class="fab fa-tiktok" style="color: #000000;"></i>
+              <h3>TikTok</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('tiktok', 'TikTok', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('tiktok')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('tiktok')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Curtidas Recebidas</span>
+                  <span class="stat-value" id="tiktok-curtidas-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="tiktok-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="tiktok-nivel-pessoal">Criador Iniciante</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="tiktok-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="tiktok-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="tiktok-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="tiktok-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="tiktok-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="video-pessoal">
+              <i class="fas fa-video" style="color: #FF0000;"></i>
+              <h3>Marketing de Vídeo</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('video', 'Marketing de Vídeo', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('video')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('video')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Campanhas Publicadas</span>
+                  <span class="stat-value" id="video-campanhas-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="video-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="video-nivel-pessoal">Editor Júnior</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="video-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="video-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="video-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="video-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="video-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="discord-pessoal">
+              <i class="fab fa-discord" style="color: #7289DA;"></i>
+              <h3>Discord</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('discord', 'Discord', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('discord')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('discord')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Servidores Ativos</span>
+                  <span class="stat-value" id="discord-servidores-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="discord-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="discord-nivel-pessoal">Moderador Iniciante</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="discord-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="discord-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="discord-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="discord-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="discord-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="blog-pessoal">
+              <i class="fas fa-blog" style="color: #FF9800;"></i>
+              <h3>Comente em outros Blogs</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('blog', 'Comente em outros Blogs', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('blog')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('blog')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Comentários Publicados</span>
+                  <span class="stat-value" id="blog-comentarios-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="blog-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="blog-nivel-pessoal">Leitor Participativo</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="blog-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="blog-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="blog-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="blog-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="blog-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="reddit-pessoal">
+              <i class="fab fa-reddit" style="color: #FF4500;"></i>
+              <h3>Reddit</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('reddit', 'Reddit', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('reddit')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('reddit')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Upvotes Recebidos</span>
+                  <span class="stat-value" id="reddit-upvotes-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="reddit-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="reddit-nivel-pessoal">Explorador de Tópicos</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="reddit-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="reddit-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="reddit-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="reddit-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="reddit-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="seo-pessoal">
+              <i class="fas fa-search" style="color: #4285F4;"></i>
+              <h3>SEO, Promover Conteúdo</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('seo', 'SEO, Promover Conteúdo', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('seo')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('seo')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Palavras-chave Otimizadas</span>
+                  <span class="stat-value" id="seo-palavras-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="seo-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="seo-nivel-pessoal">Analista de Busca</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="seo-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="seo-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="seo-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="seo-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="seo-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+            <div class="nav-card company-card fade-in" data-card-id="inscricoes-pessoal">
+              <i class="fas fa-rss" style="color: #FF9800;"></i>
+              <h3>Serviços Internacionais</h3>
+              <div class="company-actions">
+                <button class="action-button" onclick="openPublishModal('inscricoes', 'Serviços Internacionais', 'pessoal')">
+                  <i class="fas fa-plus"></i> Publicar Serviço
+                </button>
+                <button class="action-button" onclick="executarMissoes('inscricoes')">
+                  <i class="fas fa-tasks"></i> Executar Missões
+                </button>
+                <button class="action-button" onclick="viewUserServices('inscricoes')">
+                  <i class="fas fa-eye"></i> Ver Serviços Publicados
+                </button>
+              </div>
+              <div class="company-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Inscrições Ativas</span>
+                  <span class="stat-value" id="inscricoes-ativas-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Golds Acumulados</span>
+                  <span class="stat-value" id="inscricoes-golds-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Nível Global</span>
+                  <span class="stat-value" id="inscricoes-nivel-pessoal">Membro Iniciante</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Serviços Publicados</span>
+                  <span class="stat-value" id="inscricoes-published-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ativos</span>
+                  <span class="stat-value" id="inscricoes-active-pessoal">0</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Pendentes</span>
+                  <span class="stat-value" id="inscricoes-pending-pessoal">0</span>
+                </div>
+              </div>
+              <div class="nivel-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="inscricoes-progress-pessoal" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="inscricoes-progress-text-pessoal">0 / 250.000</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
   </main>
   <div id="cookieBanner" class="cookie-banner">
     <div class="content">
@@ -1550,6 +2091,9 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
   <script>
   let selectedCompanyId = null;
+  // NOVO: Variável para armazenar o modo selecionado ('empresarial' ou 'pessoal')
+  let currentMode = 'empresarial'; 
+
     // Inicializa o Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
@@ -2135,7 +2679,27 @@
         document.getElementById("proofImage").checked = true;
         document.getElementById("proofText").checked = false;
         document.getElementById("minProofCount").textContent = "1";
+        
+        // NOVO: Atualiza a info de duplicação na Etapa 2
+        updateModeInfoInStep2();
     }
+
+    // NOVO: Atualiza a info de duplicação na Etapa 2
+    function updateModeInfoInStep2() {
+      const infoBox = document.getElementById("modeDuplicationInfo");
+      if (currentMode === 'empresarial') {
+        infoBox.innerHTML = `
+          <i class="fas fa-handshake" style="color: var(--secondary);"></i>
+          <strong>No modo empresarial,</strong> o valor total dobra, pois a empresa paga os funcionários para executar o serviço mais rapidamente.
+        `;
+      } else {
+        infoBox.innerHTML = `
+          <i class="fas fa-user" style="color: var(--text-secondary);"></i>
+          <strong>No modo pessoal,</strong> o valor não dobra. Somente as taxas padrão são aplicadas.
+        `;
+      }
+    }
+
 
     // Calcula a dificuldade e a prova mínima na Etapa 1
     function calculateDifficultyAndProof() {
@@ -2167,7 +2731,29 @@
         const rewardPerFreelancer = calculateRewardPerFreelancer();
         const freelancers = parseInt(document.getElementById("freelancers").value) || 0;
         const difficulty = document.getElementById("serviceDifficulty").value;
-        const grossCost = rewardPerFreelancer * freelancers;
+        let grossCost = rewardPerFreelancer * freelancers;
+        let doubledCost = 0; // Novo: Custo dobrado para modo empresarial
+        
+        const summaryDoubledCostRow = document.getElementById("summaryDoubledCostRow");
+        const summaryDoubledCostEl = document.getElementById("summaryDoubledCost");
+        const modeDuplicationSummaryEl = document.getElementById("modeDuplicationSummary");
+
+        // NOVO: Lógica de duplicação para Modo Empresarial
+        if (currentMode === 'empresarial') {
+            doubledCost = grossCost;
+            grossCost += doubledCost; // Dobra o custo total (500 para execução + 500 para funcionários)
+            
+            summaryDoubledCostRow.style.display = 'flex';
+            summaryDoubledCostEl.textContent = formatGold(doubledCost, true);
+            modeDuplicationSummaryEl.style.display = 'block';
+            modeDuplicationSummaryEl.innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="color: var(--accent);"></i>
+                No modo empresarial, o valor total dobra: ${formatGold(doubledCost, true)} Golds para execução + ${formatGold(doubledCost, true)} Golds pagos aos funcionários.
+            `;
+        } else {
+            summaryDoubledCostRow.style.display = 'none';
+            modeDuplicationSummaryEl.style.display = 'none';
+        }
 
         // CÁLCULO DA NOVA TAXA: 1% do custo total + 50 Golds FIXOS
         const percentageFee = grossCost * 0.01;
@@ -2208,10 +2794,12 @@
 
 
     // Função para abrir o modal de publicação (Inicia o fluxo guiado)
-    function openPublishModal(companyId, companyName) {
+    // NOVO: Adicionado 'mode'
+    function openPublishModal(companyId, companyName, mode) {
         selectedCompanyId = companyId;
       currentCompanyId = companyId;
       currentCompanyName = companyName;
+      currentMode = mode; // Salva o modo
       document.getElementById("modalCompanyName").textContent = companyName;
       
       // Reseta o estado
@@ -2251,6 +2839,7 @@
       // Opcional: Limpar dados do formulário e resetar estado para a próxima abertura
       currentCompanyId = null;
       currentCompanyName = null;
+      currentMode = 'empresarial'; // Reseta para o padrão
       currentStep = 1;
       serviceSteps = [{ id: 1, description: "" }];
     }
@@ -2293,6 +2882,7 @@
                 serviceCardId: serviceCardRef.id,
                 userId: user.uid,
                 empresa: currentCompanyName,
+                modo: currentMode, // NOVO: Adiciona o modo
                 nome: selectedOption.value, // Nome é a subcategoria
                 descricao: document.getElementById("serviceDescription").value.trim(),
                 recompensa: rewardPerFreelancer,
@@ -2314,7 +2904,7 @@
                     type: 'send',
                     amount: finalCost,
                     currency: 'golds',
-                    description: `Publicação de serviço: ${selectedOption.value}`,
+                    description: `Publicação de serviço (${currentMode}): ${selectedOption.value}`, // NOVO: Adiciona modo na descrição
                     date: new Date().toISOString()
                 })
             });
@@ -2335,14 +2925,89 @@
     // Adiciona event listener para recalcular o resumo sempre que a quantidade de passos mudar
     document.getElementById("serviceStepsContainer").addEventListener("input", prepareSummary);
 
-    // Função para visualizar serviços publicados
+    // Função para visualizar serviços publicados (Modo Empresarial)
     function viewServices(companyId) {
       const user = auth.currentUser;
       if (!user) {
         showNotification("Usuário não autenticado!");
         return;
       }
-      window.location.href = `servicos.html?empresa=${encodeURIComponent(companyId)}`;
+      window.location.href = `servicos.html?empresa=${encodeURIComponent(companyId)}&modo=empresarial`;
+    }
+    
+    // NOVO: Função para visualizar serviços publicados (Modo Pessoal)
+    function viewUserServices(companyId) {
+      const user = auth.currentUser;
+      if (!user) {
+        showNotification("Usuário não autenticado!");
+        return;
+      }
+      
+      // Simulação do Modal para Ver Serviços Publicados (Modo Pessoal)
+      const modalHtml = `
+          <h2><i class="fas fa-eye"></i> Seus Serviços Publicados em ${companyId}</h2>
+          <p style="margin-bottom: 1rem;">Aqui você pode gerenciar seus pedidos pessoais.</p>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <button class="action-button" style="background: var(--secondary); color: white;" onclick="simulateAction('Ver Ativos', '${companyId}')">
+                  <i class="fas fa-check-circle"></i> Ver Ativos
+              </button>
+              <button class="action-button" style="background: var(--gold); color: white;" onclick="simulateAction('Editar Rascunhos', '${companyId}')">
+                  <i class="fas fa-edit"></i> Editar Rascunhos
+              </button>
+              <button class="action-button" style="background: var(--accent); color: white;" onclick="simulateAction('Excluir Antigos', '${companyId}')">
+                  <i class="fas fa-trash"></i> Excluir Antigos
+              </button>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 1rem;">Redirecionaria para a lista de serviços do usuário, filtrada por pedidos pessoais.</p>
+      `;
+      
+      // Cria e exibe um modal temporário simples (já que o guidedPublishModal é complexo)
+      showSimpleModal('Serviços Publicados Pessoais', modalHtml);
+    }
+    
+    function simulateAction(action, companyId) {
+        showNotification(`Ação simulada: ${action} para ${companyId} (Modo Pessoal)`);
+        // closeModal(); // Manter o modal aberto para fins de demonstração
+    }
+    
+    // Função utilitária para mostrar um modal simples (para Ver Serviços Publicados Pessoais)
+    function showSimpleModal(title, content) {
+        const modal = document.getElementById("guidedPublishModal");
+        const modalContent = document.getElementById("modalContent");
+        
+        // Remove classes de step
+        for(let i = 1; i <= totalSteps; i++) {
+          const stepElement = document.getElementById(`step-${i}`);
+          if(stepElement) {
+              stepElement.classList.remove('active', 'fade-in-step');
+          }
+        }
+        document.querySelector('.step-navigation').style.display = 'none';
+        document.querySelector('.step-indicator').style.display = 'none';
+
+        // Atualiza o conteúdo do modal
+        document.getElementById("modalTitle").innerHTML = title;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        modalContent.prepend(tempDiv);
+        
+        modalContent.style.height = 'auto';
+        modal.classList.add("active");
+        
+        // Adiciona lógica de fechar que remove o conteúdo temporário
+        const closeBtn = modalContent.querySelector('.close');
+        closeBtn.onclick = () => {
+            modal.classList.remove("active");
+            tempDiv.remove(); // Remove o conteúdo temporário
+            // Reabilita elementos do modal de fluxo original
+            document.querySelector('.step-navigation').style.display = 'flex';
+            document.querySelector('.step-indicator').style.display = 'block';
+        };
+        
+        // Simulação do botão "Ver Serviços Publicados" do Modo Pessoal
+        document.getElementById("modalTitle").textContent = title;
+        modal.classList.add("active");
+        setTimeout(() => modalContent.style.height = '350px', 50);
     }
 
     // Função para exibir notificações
@@ -2356,10 +3021,12 @@
     }
 
     // Funções para os botões dos cards
+    // Função "Contratar" do Modo Empresarial: Renomeada de "Publicar Serviço"
     function contratar(cardId) {
       const card = document.querySelector(`[data-card-id="${cardId}"]`);
       const title = card.querySelector('h3')?.textContent || 'card';
-      showNotification(`Contratando ${title}... (simulado)`);
+      // Agora, a função "Contratar" chama o modal no modo empresarial, como "Publicar Serviço" fazia antes.
+      openPublishModal(cardId, title, 'empresarial');
     }
 
     function executarMissoes(cardId) {
@@ -2385,6 +3052,7 @@
 
     // Função para atualizar progresso e nível de um card específico
     function atualizarProgressoDoCard(cardId, golds, metricValue) {
+      // Empresarial
       const { nivelAtual, proximaMeta } = determinarNivelGlobal(cardId, golds);
       const percentual = Math.min((Number(golds) / proximaMeta) * 100, 100);
       const fillEl = document.getElementById(`${cardId}-progress`);
@@ -2405,6 +3073,27 @@
       if (nivelEl) nivelEl.textContent = nivelAtual.nome;
       if (goldsEl) goldsEl.textContent = formatGold(golds); // Usando a nova função de formatação
       if (metricEl && metricValue !== undefined) metricEl.textContent = formatGold(metricValue, false); // Sem decimais para métricas
+      
+      // Pessoal (Assume-se que o modo pessoal compartilha o mesmo progresso visualmente, apenas com IDs diferentes)
+      const fillElPessoal = document.getElementById(`${cardId}-progress-pessoal`);
+      const textElPessoal = document.getElementById(`${cardId}-progress-text-pessoal`);
+      const nivelElPessoal = document.getElementById(`${cardId}-nivel-pessoal`);
+      const goldsElPessoal = document.getElementById(`${cardId}-golds-pessoal`);
+      const metricElPessoal = document.getElementById(`${cardId}-${cardId === 'facebook' || cardId === 'instagram' ? 'seguidores' :
+                                                        cardId === 'mobile' ? 'instalacoes' :
+                                                        cardId === 'telegram' ? 'canais' :
+                                                        cardId === 'tiktok' ? 'curtidas' :
+                                                        cardId === 'video' ? 'campanhas' :
+                                                        cardId === 'discord' ? 'servidores' :
+                                                        cardId === 'blog' ? 'comentarios' :
+                                                        cardId === 'reddit' ? 'upvotes' :
+                                                        cardId === 'seo' ? 'palavras' : 'ativas'}-pessoal`);
+      
+      if (fillElPessoal) fillElPessoal.style.width = `${percentual}%`;
+      if (textElPessoal) textElPessoal.textContent = `${formatGold(golds)} / ${formatGold(proximaMeta)}`;
+      if (nivelElPessoal) nivelElPessoal.textContent = nivelAtual.nome;
+      if (goldsElPessoal) goldsElPessoal.textContent = formatGold(golds);
+      if (metricElPessoal && metricValue !== undefined) metricElPessoal.textContent = formatGold(metricValue, false);
     }
 
     // Função para carregar dados dos cards
@@ -2440,36 +3129,67 @@
     }
 
     // Controle do carrossel com toque
-    let currentCard = 0;
-    const carousel = document.getElementById('company-carousel');
-    const cards = carousel.querySelectorAll('.nav-card');
-    const totalCards = cards.length;
+    let currentCardEmpresarial = 0;
+    const carouselEmpresarial = document.getElementById('company-carousel-empresarial');
+    const cardsEmpresarial = carouselEmpresarial.querySelectorAll('.nav-card');
+    const totalCardsEmpresarial = cardsEmpresarial.length;
+
+    let currentCardPessoal = 0;
+    const carouselPessoal = document.getElementById('company-carousel-pessoal');
+    const cardsPessoal = carouselPessoal.querySelectorAll('.nav-card');
+    const totalCardsPessoal = cardsPessoal.length;
+
     let touchStartX = 0;
     let touchEndX = 0;
 
     function updateCarousel() {
-      // Ajuste para garantir que a largura seja calculada corretamente após o layout
-      const firstCard = carousel.querySelector('.nav-card');
-      if (!firstCard) return;
-      // offsetWidth + gap (0.75rem = 12px)
-      const width = firstCard.offsetWidth + 12; 
-      carousel.style.transform = `translateX(-${currentCard * width}px)`;
+      // Carrossel Empresarial
+      const firstCardEmpresarial = carouselEmpresarial.querySelector('.nav-card');
+      if (firstCardEmpresarial) {
+          const widthEmpresarial = firstCardEmpresarial.offsetWidth + 12; // offsetWidth + gap (0.75rem = 12px)
+          carouselEmpresarial.style.transform = `translateX(-${currentCardEmpresarial * widthEmpresarial}px)`;
+      }
+
+      // Carrossel Pessoal
+      const firstCardPessoal = carouselPessoal.querySelector('.nav-card');
+      if (firstCardPessoal) {
+          const widthPessoal = firstCardPessoal.offsetWidth + 12;
+          carouselPessoal.style.transform = `translateX(-${currentCardPessoal * widthPessoal}px)`;
+      }
     }
 
-    carousel.addEventListener('touchstart', (e) => {
+    // Event listeners para o carrossel Empresarial
+    carouselEmpresarial.addEventListener('touchstart', (e) => {
       touchStartX = e.changedTouches[0].screenX;
     });
 
-    carousel.addEventListener('touchend', (e) => {
+    carouselEmpresarial.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].screenX;
       const swipeDistance = touchEndX - touchStartX;
-      if (swipeDistance > 50 && currentCard > 0) {
-        currentCard--;
-      } else if (swipeDistance < -50 && currentCard < totalCards - 1) {
-        currentCard++;
+      if (swipeDistance > 50 && currentCardEmpresarial > 0) {
+        currentCardEmpresarial--;
+      } else if (swipeDistance < -50 && currentCardEmpresarial < totalCardsEmpresarial - 1) {
+        currentCardEmpresarial++;
       }
       updateCarousel();
     });
+
+    // Event listeners para o carrossel Pessoal
+    carouselPessoal.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    carouselPessoal.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const swipeDistance = touchEndX - touchStartX;
+      if (swipeDistance > 50 && currentCardPessoal > 0) {
+        currentCardPessoal--;
+      } else if (swipeDistance < -50 && currentCardPessoal < totalCardsPessoal - 1) {
+        currentCardPessoal++;
+      }
+      updateCarousel();
+    });
+
 
     // Carrega dados do usuário e verifica autenticação
     function carregarDadosUsuario(user) {
@@ -2631,33 +3351,43 @@ async function publishService() {
             return;
         }
         
+        // Garante que o cálculo final está atualizado com o modo atual
+        const { finalCost, fee, grossCost, rewardPerFreelancer } = prepareSummary(); 
+        
         // Pega a empresa selecionada no modal
-        const empresa = selectedCompanyId; // ⚠️ pode ajustar depois
+        const empresa = selectedCompanyId; 
         const freelancers = parseInt(document.getElementById("freelancers").value) || 0;
-        const recompensaBase = 150; // valor base em Golds
-        const passos = document.querySelectorAll(".service-step-input").length || 1;
-        const recompensaFinal = recompensaBase + (passos * 50);
-        const custoBruto = recompensaFinal * freelancers;
+        const subcategorySelect = document.getElementById("subcategory");
+        const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
+
+        // Se o modo for empresarial, a taxa é o fee + o valor dobrado (que já está incluso no finalCost e grossCost)
+        // Se for pessoal, é apenas o fee.
+
+        // O valor a ser deduzido da carteira é o finalCost
         
-        // Calcula a taxa da empresa (1% + 50 Golds fixos)
-        const taxa = Math.round((custoBruto * 0.01) + 50);
-        
-        console.log(`🧾 Taxa de publicação (${empresa}): ${taxa} Golds`);
+        // O valor que a EMPRESA recebe para fins de progressão de nível é o FEE
+        const taxaParaEmpresa = fee;
+
+        console.log(`🧾 Taxa de publicação (${empresa}): ${taxaParaEmpresa} Golds`);
         
         // ===========================================
-        // 1️⃣ Atualiza o campo "golds" da empresa
+        // 1️⃣ Atualiza o campo "golds" da empresa (apenas a taxa)
         // ===========================================
         const empresaRef = db.collection("serviceCards").doc(empresa);
         await db.runTransaction(async (t) => {
             const doc = await t.get(empresaRef);
             const goldsAtuais = doc.exists ? (doc.data().golds || 0) : 0;
-            const novosGolds = goldsAtuais + taxa;
+            const novosGolds = goldsAtuais + taxaParaEmpresa;
             
             t.set(empresaRef, { golds: novosGolds }, { merge: true });
             
             // Atualiza a tela automaticamente
             const elementoGolds = document.getElementById(`${empresa}-golds`);
             if (elementoGolds) elementoGolds.innerText = formatGold(novosGolds, false);
+            
+            // NOVO: Atualiza a tela pessoal também (compartilha o mesmo valor)
+            const elementoGoldsPessoal = document.getElementById(`${empresa}-golds-pessoal`);
+            if (elementoGoldsPessoal) elementoGoldsPessoal.innerText = formatGold(novosGolds, false);
         });
         
         // ===========================================
@@ -2665,13 +3395,26 @@ async function publishService() {
         // ===========================================
         const walletRef = db.collection("wallets").doc(currentUser.uid);
         await walletRef.update({
-            goldsBalance: firebase.firestore.FieldValue.increment(-taxa)
+            goldsBalance: firebase.firestore.FieldValue.increment(-finalCost),
+            transactions: firebase.firestore.FieldValue.arrayUnion({
+                type: 'send',
+                amount: finalCost,
+                currency: 'golds',
+                description: `Publicação de serviço (${currentMode}): ${selectedOption.value}`,
+                date: new Date().toISOString()
+            })
         });
         
         // ===========================================
         // 3️⃣ Mostra aviso visual e fecha o modal
         // ===========================================
-        showNotification(`Serviço publicado! A empresa ${empresa} recebeu ${taxa} Golds em taxas.`);
+        let custoExplicacao = `Custo total: ${formatGold(finalCost, true)} Golds.`;
+        if (currentMode === 'empresarial') {
+          const custoExecucao = finalCost / 2;
+          custoExplicacao = `Custo total: ${formatGold(finalCost, true)} Golds (${formatGold(custoExecucao, true)} Golds para execução + ${formatGold(custoExecucao, true)} Golds pagos aos funcionários).`;
+        }
+
+        showNotification(`Serviço publicado! ${custoExplicacao} A empresa ${empresa} recebeu ${formatGold(taxaParaEmpresa)} Golds em taxas.`);
         closeModal();
         
     } catch (error) {
