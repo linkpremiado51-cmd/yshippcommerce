@@ -252,14 +252,14 @@
         }
 
         .balance-card {
-            --card-width: 106%;
+            --card-width: 105.6%;
             --card-height: 140px;
             flex: 0 0 var(--card-width);
             height: var(--card-height);
             scroll-snap-align: start;
             border-radius: 0px;
             padding: 1rem;
-            color: white;
+            color: white#7D90AC;
             position: relative;
             overflow: hidden;
             box-shadow: var(--shadow);
@@ -289,7 +289,7 @@
         }
 
         .balance-card.crypto {
-            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            background: linear-gradient(135deg, #C70325, #F75561);
         }
 
         .balance-label {
@@ -449,7 +449,7 @@
         .action-btn.commercial {
             background: #4a5568;
             color: white;
-            margin-top: 0.5rem;
+            margin-top: 0rem;
         }
 
         .action-btn.resgate {
@@ -2086,7 +2086,7 @@ function confirmWithdrawal() {
             pixKey
         };
 
-        const symbol = currency === 'reais' ? 'R$' : '🪙';
+        const symbol = currency === 'reais' ? 'R$' : '';
         document.getElementById('confirmation-title').textContent = 'Confirmação de Saque';
         document.getElementById('confirmation-message').innerHTML = `
             <p>Confirma o saque de <strong>${amount.toLocaleString('pt-BR')} ${symbol}</strong>?</p>
@@ -2121,7 +2121,7 @@ async function processWithdrawalConfirmed() {
             });
         }
 
-        const symbol = currency === 'reais' ? 'R$' : '🪙';
+        const symbol = currency === 'reais' ? 'R$' : '';
         await pushTransaction({
             type: 'withdraw',
             amount,
@@ -2203,7 +2203,7 @@ async function confirmTransfer() {
             netAmount
         };
 
-        const symbol = currency === 'reais' ? 'R$' : '🪙';
+        const symbol = currency === 'reais' ? 'R$' : '';
         document.getElementById('confirmation-title').textContent = 'Confirmação de Transferência';
         document.getElementById('confirmation-message').innerHTML = `
             <p>Confirma a transferência de <strong>${amount.toLocaleString('pt-BR')} ${symbol}</strong>
@@ -2280,7 +2280,7 @@ async function processTransferConfirmed() {
         await updateSystemReserves(tax, currency);
 
         closeModal('transferModal');
-        const symbol = currency === 'reais' ? 'R$' : '🪙';
+        const symbol = currency === 'reais' ? 'R$' : '';
         showNotification('Sucesso', `Transferência de ${amount.toLocaleString('pt-BR')} ${symbol} realizada com sucesso!`);
     } catch (err) {
         console.error('Erro ao confirmar transferência:', err);
@@ -2339,8 +2339,8 @@ async function processConversion() {
             convertedAmount
         };
 
-        const fromSymbol = from === 'golds' ? '🪙' : 'R$';
-        const toSymbol = to === 'golds' ? '🪙' : 'R$';
+        const fromSymbol = from === 'golds' ? '' : 'R$';
+        const toSymbol = to === 'golds' ? '' : 'R$';
 
         document.getElementById('confirmation-title').textContent = 'Confirmação de Conversão';
         document.getElementById('confirmation-message').innerHTML = `
@@ -2374,7 +2374,7 @@ async function processConversionConfirmed() {
         await saveWallet(updates);
 
         const fromSymbol = from === 'golds' ? '🪙' : 'R$';
-        const toSymbol = to === 'golds' ? '🪙' : 'R$';
+        const toSymbol = to === 'golds' ? '' : 'R$';
 
         await pushTransaction({
             type: 'conversion',
@@ -2433,12 +2433,12 @@ async function processInvest() {
 
         const plan = INVESTMENT_PLANS[companyId];
         if (isNaN(amount) || amount < plan.minInvest) {
-            showNotification('Erro', `Investimento mínimo para ${plan.name} é ${plan.minInvest.toLocaleString('pt-BR')} 🪙`, true);
+            showNotification('Erro', `Investimento mínimo para ${plan.name} é ${plan.minInvest.toLocaleString('pt-BR')} `, true);
             return;
         }
 
         if (amount > MAX_INVESTMENT) {
-            showNotification('Erro', `Investimento máximo é ${MAX_INVESTMENT.toLocaleString('pt-BR')} 🪙`, true);
+            showNotification('Erro', `Investimento máximo é ${MAX_INVESTMENT.toLocaleString('pt-BR')} `, true);
             return;
         }
 
@@ -2460,10 +2460,10 @@ async function processInvest() {
 
         document.getElementById('confirmation-title').textContent = 'Confirmação de Investimento';
         document.getElementById('confirmation-message').innerHTML = `
-            <p>Confirma o investimento de <strong>${amount.toLocaleString('pt-BR')} 🪙</strong>
+            <p>Confirma o investimento de <strong>${amount.toLocaleString('pt-BR')} </strong>
             em <strong>${plan.name}</strong>?</p>
-            <p>Taxa: <strong>${tax.toLocaleString('pt-BR')} 🪙</strong></p>
-            <p>Retorno mensal estimado: <strong>${Math.floor(amount * plan.returnRate).toLocaleString('pt-BR')} 🪙</strong></p>
+            <p>Taxa: <strong>${tax.toLocaleString('pt-BR')} </strong></p>
+            <p>Retorno mensal estimado: <strong>${Math.floor(amount * plan.returnRate).toLocaleString('pt-BR')} </strong></p>
             <p>Período de lock-in: <strong>${plan.lockInDays} dias</strong></p>
         `;
         openModal('confirmationModal');
@@ -2538,7 +2538,7 @@ async function processInvestConfirmed() {
         await updateSystemReserves(tax / GOLD_TO_REAL_RATE, 'reais');
 
         closeModal('investModal');
-        showNotification('Sucesso', `Investimento de ${amount.toLocaleString('pt-BR')} 🪙 em ${plan.name} realizado com sucesso!`);
+        showNotification('Sucesso', `Investimento de ${amount.toLocaleString('pt-BR')}  em ${plan.name} realizado com sucesso!`);
     } catch (err) {
         console.error('Erro ao confirmar investimento:', err);
         await restoreWalletData();
@@ -2577,7 +2577,7 @@ async function confirmWithdrawalInvestment() {
         amountToWithdraw = amountToWithdraw || investedAmount;
 
         if (isNaN(amountToWithdraw) || amountToWithdraw <= 0 || amountToWithdraw > investedAmount) {
-            showNotification('Erro', `Valor inválido. Máximo: ${investedAmount.toLocaleString('pt-BR')} 🪙`, true);
+            showNotification('Erro', `Valor inválido. Máximo: ${investedAmount.toLocaleString('pt-BR')} `, true);
             return;
         }
 
@@ -2608,12 +2608,12 @@ async function confirmWithdrawalInvestment() {
 
         document.getElementById('confirmation-title').textContent = 'Confirmação de Retirada';
         document.getElementById('confirmation-message').innerHTML = `
-            <p>Confirma a retirada de <strong>${finalAmount.toLocaleString('pt-BR')} 🪙</strong>
+            <p>Confirma a retirada de <strong>${finalAmount.toLocaleString('pt-BR')} </strong>
             (líquido) de <strong>${plan.name}</strong>?</p>
-            <p>Valor bruto: <strong>${amountToWithdraw.toLocaleString('pt-BR')} 🪙</strong>
-            (Principal) + <strong>${accumulatedReturn.toLocaleString('pt-BR')} 🪙</strong>
+            <p>Valor bruto: <strong>${amountToWithdraw.toLocaleString('pt-BR')} </strong>
+            (Principal) + <strong>${accumulatedReturn.toLocaleString('pt-BR')} </strong>
             (Retorno)</p>
-            <p>Taxas/Penalidades: <strong>${finalPenalty.toLocaleString('pt-BR')} 🪙</strong></p>
+            <p>Taxas/Penalidades: <strong>${finalPenalty.toLocaleString('pt-BR')} </strong></p>
             ${isLocked ? '<p style="color: var(--accent)"><strong>Atenção:</strong> Este investimento está em período de lock-in. Penalidades aplicadas.</p>' : ''}
         `;
         openModal('confirmationModal');
@@ -2653,7 +2653,7 @@ async function processWithdrawalInvestmentConfirmed() {
                 type: 'withdraw_invest',
                 amount: finalAmount,
                 currency: 'golds',
-                description: `Retirada de ${amountToWithdraw} 🪙 investidos em ${plan.name} (+${accumulatedReturn} 🪙 lucro, -${finalPenalty} 🪙 taxa)`,
+                description: `Retirada de ${amountToWithdraw}  investidos em ${plan.name} (+${accumulatedReturn}  lucro, -${finalPenalty} 🪙 taxa)`,
                 date: new Date().toISOString(),
                 metadata: {
                     company: companyId,
@@ -2680,7 +2680,7 @@ async function processWithdrawalInvestmentConfirmed() {
 
         await batch.commit();
         closeModal('withdrawInvestModal');
-        showNotification('Sucesso', `Retirada de ${finalAmount.toLocaleString('pt-BR')} 🪙 de ${plan.name} realizada com sucesso!`);
+        showNotification('Sucesso', `Retirada de ${finalAmount.toLocaleString('pt-BR')}  de ${plan.name} realizada com sucesso!`);
     } catch (err) {
         console.error('Erro ao confirmar retirada de investimento:', err);
         await restoreWalletData();
@@ -2721,10 +2721,10 @@ async function confirmProfitWithdrawal() {
 
         document.getElementById('confirmation-title').textContent = 'Confirmação de Resgate de Lucro';
         document.getElementById('confirmation-message').innerHTML = `
-            <p>Confirma o resgate de <strong>${portfolioBalance.toLocaleString('pt-BR')} 🪙</strong>
+            <p>Confirma o resgate de <strong>${portfolioBalance.toLocaleString('pt-BR')} </strong>
             de lucro acumulado?</p>
-            <p>Valor líquido após taxa: <strong>${finalAmount.toLocaleString('pt-BR')} 🪙</strong></p>
-            <p>Taxa: <strong>${tax.toLocaleString('pt-BR')} 🪙</strong></p>
+            <p>Valor líquido após taxa: <strong>${finalAmount.toLocaleString('pt-BR')} </strong></p>
+            <p>Taxa: <strong>${tax.toLocaleString('pt-BR')} </strong></p>
         `;
         openModal('confirmationModal');
     } catch (err) {
@@ -2753,7 +2753,7 @@ async function processProfitWithdrawalConfirmed() {
             type: 'profit_withdrawal',
             amount: finalAmount,
             currency: 'golds',
-            description: `Resgate de lucro acumulado (${amount.toLocaleString('pt-BR')} 🪙 bruto, -${tax.toLocaleString('pt-BR')} 🪙 taxa)`,
+            description: `Resgate de lucro acumulado (${amount.toLocaleString('pt-BR')}  bruto, -${tax.toLocaleString('pt-BR')}  taxa)`,
             date: new Date().toISOString(),
             metadata: { canUndo: false }
         });
@@ -2766,7 +2766,7 @@ async function processProfitWithdrawalConfirmed() {
         });
 
         closeModal('profitWithdrawalModal');
-        showNotification('Sucesso', `Resgate de ${finalAmount.toLocaleString('pt-BR')} 🪙 realizado com sucesso!`);
+        showNotification('Sucesso', `Resgate de ${finalAmount.toLocaleString('pt-BR')}  realizado com sucesso!`);
     } catch (err) {
         console.error('Erro ao confirmar resgate de lucro:', err);
         await restoreWalletData();
@@ -2879,7 +2879,7 @@ function renderWallet() {
     if (reaisBalanceEl) reaisBalanceEl.textContent =
         `R$ ${formatCurrency(walletData.reaisBalance || 0)}`;
     if (portfolioBalanceEl) portfolioBalanceEl.textContent =
-        `${(walletData.portfolioBalance || 0).toLocaleString('pt-BR')} 🪙`;
+        `${(walletData.portfolioBalance || 0).toLocaleString('pt-BR')} `;
     if (enterpriseBalanceEl) enterpriseBalanceEl.textContent =
         `${(walletData.enterpriseBalance || 0).toLocaleString('pt-BR')} 🏢`;
     if (cryptoBalanceEl) cryptoBalanceEl.textContent =
@@ -2923,7 +2923,7 @@ function renderWallet() {
     if (totalSentEl) totalSentEl.textContent = totalSent.toLocaleString('pt-BR');
     if (lastWithdrawalEl) lastWithdrawalEl.textContent = lastWithdrawal;
     if (enterpriseProfileEl) enterpriseProfileEl.textContent = `${(walletData.enterpriseBalance || 0).toLocaleString('pt-BR')} 🏢`;
-    if (personalProfileEl) personalProfileEl.textContent = `${((walletData.goldsBalance || 0) - (walletData.enterpriseBalance || 0)).toLocaleString('pt-BR')} 🪙`;
+    if (personalProfileEl) personalProfileEl.textContent = `${((walletData.goldsBalance || 0) - (walletData.enterpriseBalance || 0)).toLocaleString('pt-BR')} `;
 
     // Verifica botões especiais
     checkCryptoButton();
@@ -2994,7 +2994,7 @@ function renderTransactions() {
     listEl.innerHTML = txs.map((tx, index) => {
         const txType = typeMap[tx.type] || { label: tx.type, icon: 'fa-question', color: 'send' };
         const amountLabel = tx.currency === 'golds'
-            ? `${(tx.amount || 0).toLocaleString('pt-BR')} 🪙`
+            ? `${(tx.amount || 0).toLocaleString('pt-BR')} `
             : `R$ ${formatCurrency(tx.amount || 0)}`;
 
         const sign = (tx.type === 'receive' || tx.type === 'withdraw_invest' || tx.type === 'deposit' || tx.type === 'profit_withdrawal')
@@ -3072,13 +3072,13 @@ function renderInvestmentSummary() {
             <div class="investment-card">
                 <div style="flex:1; min-width:0">
                     <div class="invest-name">${plan.name} ${statusTag}</div>
-                    <div class="invest-return">Retorno: +${accumulatedReturn.toLocaleString('pt-BR')} 🪙</div>
+                    <div class="invest-return">Retorno: +${accumulatedReturn.toLocaleString('pt-BR')} </div>
                     <div class="invest-lockin">Liberação: ${unlockDate.toLocaleDateString('pt-BR')}</div>
                 </div>
                 <div style="margin-left:0.75rem; text-align:right">
-                    <div class="invest-amount">${investedAmount.toLocaleString('pt-BR')} 🪙</div>
+                    <div class="invest-amount">${investedAmount.toLocaleString('pt-BR')} </div>
                     <div style="font-size: 0.75rem; color: var(--text-secondary);">
-                        Total: ${totalValue.toLocaleString('pt-BR')} 🪙
+                        Total: ${totalValue.toLocaleString('pt-BR')} 
                     </div>
                 </div>
             </div>
@@ -3087,7 +3087,7 @@ function renderInvestmentSummary() {
 
     // Atualiza saldos de portfólio
     const portfolioBalanceEl = document.getElementById('portfolio-balance');
-    if (portfolioBalanceEl) portfolioBalanceEl.textContent = `${(walletData?.portfolioBalance || 0).toLocaleString('pt-BR')} 🪙`;
+    if (portfolioBalanceEl) portfolioBalanceEl.textContent = `${(walletData?.portfolioBalance || 0).toLocaleString('pt-BR')} `;
 }
 
 /**
@@ -3111,7 +3111,7 @@ function openTransactionDetails(index) {
     };
 
     const amountLabel = tx.currency === 'golds'
-        ? `${(tx.amount || 0).toLocaleString('pt-BR')} 🪙`
+        ? `${(tx.amount || 0).toLocaleString('pt-BR')} `
         : `R$ ${formatCurrency(tx.amount || 0)}`;
 
     const type = typeMap[tx.type] || tx.type;
@@ -3129,7 +3129,7 @@ function openTransactionDetails(index) {
     if (tx.metadata) {
         // Exibe detalhes específicos
         if (tx.metadata.tax) {
-            const taxLabel = tx.currency === 'golds' ? `${(tx.metadata.tax || 0).toLocaleString('pt-BR')} 🪙` : `R$ ${formatCurrency(tx.metadata.tax || 0)}`;
+            const taxLabel = tx.currency === 'golds' ? `${(tx.metadata.tax || 0).toLocaleString('pt-BR')} ` : `R$ ${formatCurrency(tx.metadata.tax || 0)}`;
             detailsHtml += `<div class="detail-item"><strong>Taxa:</strong> <span>${taxLabel}</span></div>`;
         }
         if (tx.metadata.pixKey) {
@@ -3252,7 +3252,7 @@ function populateInvestmentOptions() {
     Object.entries(INVESTMENT_PLANS).forEach(([id, plan]) => {
         const option = document.createElement('option');
         option.value = id;
-        option.textContent = `${plan.name} (Mínimo: ${plan.minInvest.toLocaleString('pt-BR')} 🪙)`;
+        option.textContent = `${plan.name} (Mínimo: ${plan.minInvest.toLocaleString('pt-BR')} )`;
         investSelect.appendChild(option);
     });
 
@@ -3262,7 +3262,7 @@ function populateInvestmentOptions() {
         if (inv.amount > 0 && INVESTMENT_PLANS[id]) {
             const option = document.createElement('option');
             option.value = id;
-            option.textContent = `${INVESTMENT_PLANS[id].name} (${inv.amount.toLocaleString('pt-BR')} 🪙)`;
+            option.textContent = `${INVESTMENT_PLANS[id].name} (${inv.amount.toLocaleString('pt-BR')} )`;
             withdrawSelect.appendChild(option);
         }
     });
@@ -3328,7 +3328,7 @@ function checkCryptoButton() {
     if (cryptoBtn) {
         cryptoBtn.disabled = (walletData?.goldsBalance || 0) < 1000000;
         cryptoBtn.title = (walletData?.goldsBalance || 0) < 1000000
-            ? "Você precisa de 1.000.000 🪙 para acessar esta funcionalidade"
+            ? "Você precisa de 1.000.000  para acessar esta funcionalidade"
             : "Analisar sua criptomoeda YSC";
     }
 }
@@ -3424,7 +3424,7 @@ const updateWithdrawPreview = debounce(function() {
     const tax = amount * getTaxRate('withdraw', currency);
     const netAmount = amount - tax;
 
-    const symbol = currency === 'reais' ? 'R$' : '🪙';
+    const symbol = currency === 'reais' ? 'R$' : '';
     const withdrawPreviewEl = document.getElementById('withdraw-preview');
     if (withdrawPreviewEl) withdrawPreviewEl.textContent =
         `Valor líquido após taxa: ${currency === 'reais'
@@ -3440,7 +3440,7 @@ const updateTransferPreview = debounce(function() {
     const tax = amount * getTaxRate('transfer', currency);
     const netAmount = amount - tax;
 
-    const symbol = currency === 'reais' ? 'R$' : '🪙';
+    const symbol = currency === 'reais' ? 'R$' : '';
     const transferPreviewEl = document.getElementById('transfer-preview');
     if (transferPreviewEl) transferPreviewEl.textContent =
         `Valor líquido após taxa: ${currency === 'reais'
@@ -3469,11 +3469,11 @@ const updateConversionPreview = debounce(function() {
     if (from === 'golds' && to === 'reais') {
         convertedAmount = netAmount / GOLD_TO_REAL_RATE;
         conversionPreviewEl.textContent =
-            `R$ ${formatCurrency(convertedAmount)} (Taxa: ${tax.toLocaleString('pt-BR')} 🪙)`;
+            `R$ ${formatCurrency(convertedAmount)} (Taxa: ${tax.toLocaleString('pt-BR')} )`;
     } else if (from === 'reais' && to === 'golds') {
         convertedAmount = Math.floor(netAmount * GOLD_TO_REAL_RATE);
         conversionPreviewEl.textContent =
-            `${convertedAmount.toLocaleString('pt-BR')} 🪙 (Taxa: R$ ${formatCurrency(tax)})`;
+            `${convertedAmount.toLocaleString('pt-BR')}  (Taxa: R$ ${formatCurrency(tax)})`;
     }
 }, 300);
 
@@ -3588,15 +3588,15 @@ function openProfitWithdrawalModal() {
     contentEl.innerHTML = `
         <div class="detail-item">
             <span>Lucro disponível:</span>
-            <span style="color: var(--reais);">${portfolioBalance.toLocaleString('pt-BR')} 🪙</span>
+            <span style="color: var(--reais);">${portfolioBalance.toLocaleString('pt-BR')} </span>
         </div>
         <div class="detail-item">
             <span>Taxa (${(taxRate * 100).toFixed(2)}%):</span>
-            <span style="color: var(--accent);">${tax.toLocaleString('pt-BR')} 🪙</span>
+            <span style="color: var(--accent);">${tax.toLocaleString('pt-BR')} </span>
         </div>
         <div class="detail-item" style="border-top: 1px dashed var(--border); margin-top: 0.5rem; padding-top: 0.5rem;">
             <span>Valor líquido:</span>
-            <span style="color: var(--reais); font-weight: bold;">${finalAmount.toLocaleString('pt-BR')} 🪙</span>
+            <span style="color: var(--reais); font-weight: bold;">${finalAmount.toLocaleString('pt-BR')} </span>
         </div>
     `;
     openModal('profitWithdrawalModal');
@@ -3605,7 +3605,7 @@ function openProfitWithdrawalModal() {
 // Função para analisar criptomoeda (placeholder)
 function analyzeCrypto() {
     if ((walletData?.goldsBalance || 0) < 1000000) {
-        showNotification('Aviso', 'Você precisa de 1.000.000 🪙 para acessar esta funcionalidade.');
+        showNotification('Aviso', 'Você precisa de 1.000.000  para acessar esta funcionalidade.');
         return;
     }
     showNotification('Sucesso', 'Análise de criptomoeda disponível para Nível 3!');
@@ -3636,7 +3636,7 @@ function showLevelModal(type) {
         <div style="margin-bottom: 1rem;">
             <div style="font-weight: 600; margin-bottom: 0.5rem;">Nível Atual: ${currentLevel.name} (${currentLevel.level})</div>
             <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                Saldo: ${currentBalance.toLocaleString('pt-BR')} ${type === 'golds' ? '🪙' : '🏢'}
+                Saldo: ${currentBalance.toLocaleString('pt-BR')} ${type === 'golds' ? '🪙' : ''}
             </div>
             <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
                 <strong>Benefícios:</strong>
@@ -3696,10 +3696,10 @@ function exportTransactions() {
             tx.date ? new Date(tx.date).toLocaleString('pt-BR') : 'Data inválida',
             tx.type,
             tx.currency,
-            tx.currency === 'golds' ? `${(tx.amount || 0).toLocaleString('pt-BR')} 🪙` : `R$ ${formatCurrency(tx.amount || 0)}`,
+            tx.currency === 'golds' ? `${(tx.amount || 0).toLocaleString('pt-BR')} G` : `R$ ${formatCurrency(tx.amount || 0)}`,
             tx.description || '-',
             tx.from || tx.to || '-',
-            tx.metadata?.tax ? (tx.currency === 'golds' ? `${(tx.metadata.tax || 0).toLocaleString('pt-BR')} 🪙` : `R$ ${formatCurrency(tx.metadata.tax || 0)}`) : '0'
+            tx.metadata?.tax ? (tx.currency === 'golds' ? `${(tx.metadata.tax || 0).toLocaleString('pt-BR')} G` : `R$ ${formatCurrency(tx.metadata.tax || 0)}`) : '0'
         ];
         csvContent += row.join(';') + '\n';
     });
@@ -3739,7 +3739,7 @@ const renderInvestmentDetails = debounce(function() {
         <div class="detail-item"><span>Risco:</span> <span class="risk-indicator ${riskClass}">${plan.risk}</span></div>
         <div class="detail-item"><span>Retorno Mensal:</span> <span>${(plan.returnRate * 100).toFixed(2)}%</span></div>
         <div class="detail-item"><span>Lock-in:</span> <span>${plan.lockInDays} dias</span></div>
-        <div class="detail-item"><span>Investimento Mínimo:</span> <span>${plan.minInvest.toLocaleString('pt-BR')} 🪙</span></div>
+        <div class="detail-item"><span>Investimento Mínimo:</span> <span>${plan.minInvest.toLocaleString('pt-BR')} G</span></div>
         <div class="detail-item"><span>Taxa:</span> <span>${(getTaxRate('invest', 'golds') * 100).toFixed(2)}%</span></div>
     `;
 
@@ -3753,15 +3753,15 @@ const renderInvestmentDetails = debounce(function() {
                 <div style="font-weight: 600; margin-bottom: 0.25rem;">Retorno Estimado:</div>
                 <div class="detail-item">
                     <span>Diário:</span>
-                    <span style="color: var(--reais);">${Math.floor(dailyReturn).toLocaleString('pt-BR')} 🪙</span>
+                    <span style="color: var(--reais);">${Math.floor(dailyReturn).toLocaleString('pt-BR')} G</span>
                 </div>
                 <div class="detail-item">
                     <span>Mensal:</span>
-                    <span style="color: var(--reais);">${Math.floor(monthlyReturn).toLocaleString('pt-BR')} 🪙</span>
+                    <span style="color: var(--reais);">${Math.floor(monthlyReturn).toLocaleString('pt-BR')}G</span>
                 </div>
                 <div class="detail-item">
                     <span>Anual:</span>
-                    <span style="color: var(--reais);">${Math.floor(yearlyReturn).toLocaleString('pt-BR')} 🪙</span>
+                    <span style="color: var(--reais);">${Math.floor(yearlyReturn).toLocaleString('pt-BR')}G</span>
                 </div>
             </div>
         `;
@@ -3855,10 +3855,10 @@ function updateHeaderFooterColor(cardClass) {
     const footer = document.querySelector('#userInfoFooter');
     const colors = {
         'gold': { bg: '#d69e2e', text: '#1a202c' },
-        'reais': { bg: '#10b981', text: '#ffffff' },
-        'portfolio': { bg: '#6b46c1', text: '#ffffff' },
-        'enterprise': { bg: '#3b82f6', text: '#ffffff' },
-        'crypto': { bg: '#8b5cf6', text: '#ffffff' }
+        'reais': { bg: '#10b981', text: '#1a202c' },
+        'portfolio': { bg: '#6b46c1', text: '#1a202c' },
+        'enterprise': { bg: '#3b82f6', text: '#1a202c' },
+        'crypto': { bg: '#F75561', text: '#1a202c' }
     };
 
     const color = colors[cardClass];
