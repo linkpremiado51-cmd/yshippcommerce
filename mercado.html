@@ -2831,7 +2831,7 @@
       const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
       const freelancers = parseInt(document.getElementById("freelancers").value);
       try {
-          // 1. Cria entrada em serviceCards
+          // 1. Cria entrada em serviceCards2
           const serviceCardRef = await db.collection("serviceCards").add({
               userId: user.uid,
               empresa: currentCompanyName,
