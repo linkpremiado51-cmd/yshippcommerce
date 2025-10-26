@@ -2830,6 +2830,7 @@
   // ====================================================================
   // 3. publishService() - SOBRESCRITO: NOVA TRANSAÇÃO ATÔMICA
   // ====================================================================
+  
   async function publishService() {
       if (!validateStep(4)) return;
       const { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare } = prepareSummary();
@@ -2909,29 +2910,35 @@
                   transactions: firebase.firestore.FieldValue.arrayUnion(transactionData)
               });
 
-              // 3. Crédito da Empresa (Atomicamente)
-              if (companyShare > 0) {
-                  const empresaDoc = await t.get(empresaRef);
-                  const empresaGolds = (empresaDoc.exists && empresaDoc.data().goldsEmpresa) || 0;
-                  const publishedCount = (empresaDoc.exists && empresaDoc.data().published) || 0;
-                  const activeCount = (empresaDoc.exists && empresaDoc.data().active) || 0;
-
-                  t.set(empresaRef, {
-                      goldsEmpresa: empresaGolds + companyShare,
-                      published: publishedCount + 1,
-                      active: activeCount + 1,
-                      ownerUserId: empresaDoc.exists ? empresaDoc.data().ownerUserId : user.uid // Garante que o owner seja mantido/criado
-                  }, { merge: true });
-              }
-
-              // 4. Crédito do Banco Central (Atomicamente)
-              const bcDoc = await t.get(bcRef);
-              const bcReserve = (bcDoc.exists && bcDoc.data().reserve) || 0;
-
-              t.set(bcRef, {
-                  reserve: bcReserve + bcShare,
-                  lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-              }, { merge: true });
+await db.runTransaction(async (t) => {
+    // 1. Ler todos os documentos necessários primeiro
+    const empresaDoc = await t.get(empresaRef);
+    const bcDoc = await t.get(bcRef);
+    
+    // 2. Extrair os dados da empresa
+    const empresaGolds = (empresaDoc.exists && empresaDoc.data().goldsEmpresa) || 0;
+    const publishedCount = (empresaDoc.exists && empresaDoc.data().published) || 0;
+    const activeCount = (empresaDoc.exists && empresaDoc.data().active) || 0;
+    const ownerUserId = empresaDoc.exists ? empresaDoc.data().ownerUserId : user.uid;
+    
+    // 3. Extrair os dados do Banco Central
+    const bcReserve = (bcDoc.exists && bcDoc.data().reserve) || 0;
+    
+    // 4. Fazer todas as escritas após as leituras
+    if (companyShare > 0) {
+        t.set(empresaRef, {
+            goldsEmpresa: empresaGolds + companyShare,
+            published: publishedCount + 1,
+            active: activeCount + 1,
+            ownerUserId: ownerUserId
+        }, { merge: true });
+    }
+    
+    t.set(bcRef, {
+        reserve: bcReserve + bcShare,
+        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+});
               
               // 5. Criação do Serviço (Atomicamente)
               // Aqui o serviceCard anterior é substituído pela criação do 'service' (melhorado)
