@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     padding: 10px 20px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    z-index: 99999;
+    z-index: 999999; /* Aumentado */
     font-family: 'Inter', sans-serif;
     font-size: 14px;
   `;
