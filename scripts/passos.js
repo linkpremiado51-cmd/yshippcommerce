@@ -1,47 +1,44 @@
-// passos.js
+// passos.js (continuação)
 // ----------------------------------------------------
-// Este script exibe uma notificação fixa na parte superior da tela indicando que "Passos está ativo".
-// A notificação permanece visível enquanto a página estiver carregada.
+// Gerencia a exibição de subcategorias como cards clicáveis em vez de select.
 // ----------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("🚀 O arquivo passos.js foi carregado com sucesso em mercado.html!");
-  console.log("Verificando ambiente...");
+  // Função para inicializar os cards de subcategorias
+  function initSubcategoryCards() {
+    const container = document.getElementById('subcategory-container');
+    if (!container) return;
 
-  // Cria a notificação
-  const notificacao = document.createElement('div');
-  notificacao.id = 'notificacao-passos';
-  notificacao.textContent = '🚀 Passos está ativo';
-  notificacao.style = `
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2d3748;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    z-index: 999999;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-  `;
+    const cards = [
+      { value: 'curtir-facebook', label: 'Curtir no Facebook' },
+      { value: 'curtidas-50', label: 'Curtidas no Facebook (mais de 50 amigos)' }
+      // Adicione mais opções conforme necessário
+    ];
 
-  // Adiciona a notificação ao body
-  if (document.body) {
-    document.body.appendChild(notificacao);
-    console.log("Notificação adicionada ao body.");
-  } else {
-    console.error("Erro: document.body não encontrado.");
+    // Cria os cards dinamicamente
+    cards.forEach(card => {
+      const div = document.createElement('div');
+      div.className = 'subcategory-card bg-surface p-4 rounded-lg shadow cursor-pointer';
+      div.dataset.value = card.value;
+      div.textContent = card.label;
+      container.appendChild(div);
+    });
+
+    // Adiciona evento de clique
+    document.querySelectorAll('.subcategory-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.subcategory-card').forEach(c => c.classList.remove('border-primary'));
+        card.classList.add('border-primary');
+        // Simula evento de mudança para calculateDifficultyAndProof
+        const event = new Event('change', { bubbles: true });
+        const mockInput = { target: { value: card.dataset.value } };
+        if (typeof calculateDifficultyAndProof === 'function') {
+          calculateDifficultyAndProof(mockInput);
+        }
+      });
+    });
   }
 
-  // Adiciona estilo para garantir compatibilidade
-  const estilo = document.createElement('style');
-  estilo.textContent = `
-    #notificacao-passos {
-      transition: opacity 0.3s ease;
-    }
-  `;
-  document.head.appendChild(estilo);
-  console.log("Estilo adicionado.");
+  // Chama a função após carregar a notificação
+  initSubcategoryCards();
 });
