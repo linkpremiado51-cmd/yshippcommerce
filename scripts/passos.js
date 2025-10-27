@@ -1,21 +1,22 @@
 // passos.js
 // ----------------------------------------------------
-// Este código mostra um aviso visual sempre que o usuário
-// clica no botão "Confirmar publicação", confirmando que
-// o sistema de melhorias está ativo e funcionando.
+// Este script monitora os cliques no botão "Confirmar publicação",
+// mesmo que o botão seja criado depois que a página já foi carregada.
+// Isso é possível graças à "delegação de eventos".
 // ----------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log("🚀 O arquivo passos.js foi carregado com sucesso!");
 
-  // Procura o botão real de confirmação da publicação
-  const botaoConfirmar = document.getElementById('confirmar-publicacao');
+  // Usa o body como "ouvinte" de todos os cliques da página.
+  // Assim, mesmo que o botão ainda não exista no carregamento,
+  // ele será detectado quando aparecer e for clicado.
+  document.body.addEventListener('click', (e) => {
 
-  if (botaoConfirmar) {
-    // Quando o usuário clicar em "Confirmar publicação"
-    botaoConfirmar.addEventListener('click', () => {
+    // Verifica se o elemento clicado tem o ID 'confirmar-publicacao'
+    if (e.target.id === 'confirmar-publicacao') {
 
-      // Cria um aviso visual centralizado com animação
+      // Cria o aviso visual no centro da tela
       const aviso = document.createElement('div');
       aviso.innerHTML = `
         <div id="aviso-yshipp" style="
@@ -40,19 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // Adiciona o aviso ao corpo da página
+      // Mostra o aviso na tela
       document.body.appendChild(aviso);
 
       // Remove o aviso após 3 segundos
       setTimeout(() => aviso.remove(), 3000);
-    });
+    }
+  });
 
-  } else {
-    // Caso o botão não exista ou tenha outro ID
-    console.warn("⚠️ Nenhum botão com ID 'confirmar-publicacao' foi encontrado no HTML.");
-  }
-
-  // Adiciona as animações CSS usadas pelo aviso
+  // Adiciona no HTML o estilo da animação visual
   const estilo = document.createElement('style');
   estilo.textContent = `
     @keyframes aparecerAviso {
