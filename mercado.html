@@ -1278,7 +1278,9 @@
       z-index: 999; /* Garante que fique acima de outros elementos */
       font-family: 'Inter', sans-serif; /* Define a fonte */
     }
-    
+    .subcategory-card { transition: background-color 0.2s ease; }
+.subcategory-card:hover { background: var(--primary-hover); }
+.border-primary { border: 2px solid var(--primary); }
     
     
     
@@ -1482,7 +1484,7 @@
           `onchange="calculateDifficultyAndProof()"` chama uma função para calcular a dificuldade e a prova necessária
           assim que o usuário selecionar uma subcategoria.
         -->
-        <label for="subcategory">1. Selecione a Categoria do Serviço</label>
+        <div id="subcategory-container" class="grid grid-cols-2 gap-4"></div>>1. Selecione a Categoria do Serviço</label>
         <select id="subcategory" required onchange="calculateDifficultyAndProof()">
           <!--
             Opção padrão do menu suspenso, que pede ao usuário para escolher uma subcategoria.
