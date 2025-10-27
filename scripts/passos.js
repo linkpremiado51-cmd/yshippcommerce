@@ -5,7 +5,8 @@
 // ----------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("🚀 O arquivo passos.js foi carregado com sucesso!");
+  console.log("🚀 O arquivo passos.js foi carregado com sucesso em mercado.html!");
+  console.log("Verificando ambiente...");
 
   // Cria a notificação
   const notificacao = document.createElement('div');
@@ -21,13 +22,18 @@ document.addEventListener('DOMContentLoaded', () => {
     padding: 10px 20px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    z-index: 999999; /* Aumentado */
+    z-index: 999999;
     font-family: 'Inter', sans-serif;
     font-size: 14px;
   `;
 
   // Adiciona a notificação ao body
-  document.body.appendChild(notificacao);
+  if (document.body) {
+    document.body.appendChild(notificacao);
+    console.log("Notificação adicionada ao body.");
+  } else {
+    console.error("Erro: document.body não encontrado.");
+  }
 
   // Adiciona estilo para garantir compatibilidade
   const estilo = document.createElement('style');
@@ -37,4 +43,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   `;
   document.head.appendChild(estilo);
+  console.log("Estilo adicionado.");
 });
