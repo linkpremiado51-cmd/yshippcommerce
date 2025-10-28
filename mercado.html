@@ -1123,7 +1123,13 @@
       margin-top: 0.75rem; /* Margem superior */
       line-height: 1.3; /* Espaçamento entre linhas */
     }
-
+/* Estilos para destacar modo Empresarial ou Pessoal */
+.empresarial-mode {
+  border-left: 5px solid var(--accent);
+}
+.pessoal-mode {
+  border-left: 5px solid var(--primary);
+}
     /*
       ===== Design Responsivo para Telas Médias (até 768px) =====
       Ajusta o layout para telas de tablets e celulares maiores.
@@ -1663,7 +1669,7 @@
             <span class="value" id="summaryGrossCost">...</span>
           </div>
           <div class="summary-item">
-            <span class="label">Taxa da Empresa (1% + 50 Golds)</span>
+            <span class="label">Taxa da Empresa</span>
             <span class="value" id="summaryFee">...</span>
           </div>
           <!--
@@ -3666,7 +3672,7 @@ const subcategorias = {
     
     // 📘 Tarefas do Facebook (ações sociais e de engajamento)
     facebook: [
-        { nome: "Curtir no Facebook", goldsBase: 1000, dificuldade: DIFICULDADE.INTERMEDIARIO },
+        { nome: "Curtir no Facebook", goldsBase: 150, dificuldade: DIFICULDADE.INTERMEDIARIO },
         { nome: "Curtidas no Facebook (mais de 50 amigos)", goldsBase: 1200, dificuldade: DIFICULDADE.INTERMEDIARIO },
         { nome: "Curtidas no Facebook (mais de 100 amigos)", goldsBase: 1500, dificuldade: DIFICULDADE.INTERMEDIARIO },
         { nome: "Curtidas no Facebook (mais de 300 amigos)", goldsBase: 2000, dificuldade: DIFICULDADE.INTERMEDIARIO },
@@ -4021,9 +4027,25 @@ function goToStep(stepDelta) {
     // Define direção do deslize
     const direction = stepDelta > 0 ? 'left' : 'right';
 
-    // Marca etapa atual como concluída
-    if (stepDelta > 0) completedSteps.add(currentStep);
+    // Marca as etapas concluídas com base no avanço do usuário
+function markCompletedSteps(stepDelta) {
+    // Só processa se houve avanço
+    if (stepDelta > 0) {
+        // Calcula todas as etapas que foram percorridas
+        const startStep = Math.max(1, currentStep - stepDelta + 1);
+        const endStep = Math.min(currentStep, totalSteps);
+        
+        for (let step = startStep; step <= endStep; step++) {
+            // Adiciona apenas se ainda não estiver marcado
+            if (!completedSteps.has(step)) {
+                completedSteps.add(step);
+            }
+        }
+    }
+    
+    // Atualiza a UI das etapas concluídas
     updateCompletedSteps();
+}
 
     // Anima etapa atual saindo
     currentElement.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
@@ -4234,86 +4256,122 @@ function updateModalSize(callback) {
   // ====================================================================
   // 2. prepareSummary() - SOBRESCRITO: NOVA LÓGICA DE TAXA
   // ====================================================================
-  function prepareSummary() {
-      const rewardPerFreelancer = calculateRewardPerFreelancer();
-      const freelancers = parseInt(document.getElementById("freelancers").value) || 0;
-      const difficulty = document.getElementById("serviceDifficulty").value;
+  async function prepareSummary() {
+    try {
+        // 0️⃣ Pré-validação
+        const freelancersInput = document.getElementById("freelancers").value;
+        const difficulty = document.getElementById("serviceDifficulty").value;
+        if (!freelancersInput || !difficulty) {
+            showTopNotification("⚠️ Preencha todos os campos antes de continuar.");
+            return;
+        }
+        
+        // 1️⃣ Obtém valores
+        const rewardPerFreelancer = calculateRewardPerFreelancer();
+        const freelancers = parseInt(freelancersInput) || 0;
+        
+        // 2️⃣ Custo bruto
+        const grossCost = roundGold(rewardPerFreelancer * freelancers);
+        
+        // 3️⃣ Taxas
+        const feePercent = (currentMode === 'empresarial') ? TAX_EMPRESARIAL : TAX_PERSONAL;
+        const totalFee = roundGold(grossCost * feePercent);
+        
+        let companyShare = 0;
+        let bcShare = 0;
+        if (currentMode === 'empresarial') {
+            companyShare = roundGold(totalFee * COMPANY_SHARE_RATIO);
+            bcShare = roundGold(totalFee - companyShare);
+        } else {
+            bcShare = totalFee;
+        }
+        
+        // 4️⃣ Custo final
+        const finalCost = roundGold(grossCost + totalFee);
+        
+        // 5️⃣ Atualiza UI dinamicamente
+        const summaryDoubledCostRow = document.getElementById("summaryDoubledCostRow");
+        const modeDuplicationSummaryEl = document.getElementById("modeDuplicationSummary");
+        summaryDoubledCostRow.style.display = 'none';
+        modeDuplicationSummaryEl.style.display = 'block';
+        modeDuplicationSummaryEl.innerHTML = `
+      <i class="fas fa-info-circle" style="color: var(--accent);"></i>
+      <strong>Detalhe do Custo Bruto:</strong> ${formatGold(grossCost, true)} Golds pagos aos trabalhadores (Freelancers).
+    `;
+        
+        const summaryFeeEl = document.getElementById("summaryFee");
+        summaryFeeEl.innerHTML = `
+      ${formatGold(totalFee, true)} Golds (${feePercent * 100}%)
+      <span style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px;">
+          Empresa (${currentCompanyName}): ${formatGold(companyShare, true)} Golds<br>
+          Banco Central (BC): ${formatGold(bcShare, true)} Golds
+      </span>
+    `;
+        
+        const currentBalance = walletData.goldsBalance || 0;
+        
+        // Atualiza o resumo com animação de contagem
+        animateNumber(document.getElementById("summaryReward"), 0, rewardPerFreelancer);
+        animateNumber(document.getElementById("summaryFreelancers"), 0, freelancers);
+        animateNumber(document.getElementById("summaryGrossCost"), 0, grossCost);
+        animateNumber(document.getElementById("summaryFinalCost"), 0, finalCost);
+        
+        document.getElementById("summaryUserName").textContent = walletData.name || "Usuário";
+        document.getElementById("summaryUserId").textContent = walletData.id || "---";
+        document.getElementById("summaryDifficulty").textContent = difficulty;
+        
+        // 6️⃣ Validação de saldo
+        const confirmButton = document.getElementById("confirmPublishButton");
+        const summaryWarning = document.getElementById("summaryWarning");
+        if (currentBalance < finalCost) {
+            summaryWarning.textContent = `Saldo insuficiente! Você precisa de ${formatGold(finalCost, true)} Golds. Saldo atual: ${formatGold(currentBalance, true)} Golds.`;
+            summaryWarning.style.display = "block";
+            confirmButton.disabled = true;
+            confirmButton.style.backgroundColor = 'var(--text-secondary)';
+            confirmButton.style.cursor = 'not-allowed';
+        } else {
+            summaryWarning.style.display = "none";
+            confirmButton.disabled = false;
+            confirmButton.style.backgroundColor = 'var(--secondary)';
+            confirmButton.style.cursor = 'pointer';
+        }
+        
+        // 7️⃣ Histórico de simulações
+        const history = JSON.parse(localStorage.getItem('summaryHistory') || '[]');
+        history.push({ date: new Date().toISOString(), finalCost, freelancers });
+        localStorage.setItem('summaryHistory', JSON.stringify(history));
+        
+        // 8️⃣ Detecção de variações
+        const lastSummary = JSON.parse(sessionStorage.getItem('lastSummary'));
+        if (lastSummary && lastSummary.finalCost !== finalCost) {
+            showTopNotification("💡 O custo mudou com base nas novas configurações.");
+        }
+        sessionStorage.setItem('lastSummary', JSON.stringify({ finalCost }));
+        
+        // 9️⃣ Retorna dados
+        return { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare };
+        
+    } catch (error) {
+        console.error("Erro em prepareSummary:", error);
+        showTopNotification("❌ Ocorreu um erro ao preparar o resumo.");
+    }
+}
 
-      // 1. Custo Bruto (valor que vai para os freelancers) id 34
-      const grossCost = rewardPerFreelancer * freelancers;
+// Função auxiliar de arredondamento
+function roundGold(value) {
+    return Math.floor(value * 100) / 100;
+}
 
-      // 2. Cálculo da Taxa (NOVA LÓGICA) id 35
-      const feePercent = (currentMode === 'empresarial') ? TAX_EMPRESARIAL : TAX_PERSONAL;
-      // Arredonda para integer golds para evitar inconsistência id 36
-      const totalFee = Math.round(grossCost * feePercent);
-      
-      let companyShare = 0;
-      let bcShare = 0;
-
-      if (currentMode === 'empresarial') {
-          // Divisão 50/50: 50% para a empresa, 50% para o BC id 37
-          companyShare = Math.round(totalFee * COMPANY_SHARE_RATIO);
-          bcShare = totalFee - companyShare; // Garante que a soma bate, compensando o arredondamento na empresa 
-      } else {
-          // Modo pessoal: 100% para o BC id 38
-          bcShare = totalFee;
-      }
-
-      // 3. Custo Final id 39
-      const finalCost = grossCost + totalFee;
-
-      // ATUALIZAÇÃO DA UI (Remoção de referências a doubledCost / Custo Dobrado) id 40
-      const summaryDoubledCostRow = document.getElementById("summaryDoubledCostRow");
-      const summaryDoubledCostEl = document.getElementById("summaryDoubledCost");
-      const modeDuplicationSummaryEl = document.getElementById("modeDuplicationSummary");
-
-      // Substituir o texto "Custo Dobrado" id 41
-      summaryDoubledCostRow.style.display = 'none'; // Não exibir a linha de "Custo Dobrado" id 42
-      modeDuplicationSummaryEl.style.display = 'block';
-      modeDuplicationSummaryEl.innerHTML = `
-          <i class="fas fa-info-circle" style="color: var(--accent);"></i>
-          <strong>Detalhe do Custo Bruto:</strong> ${formatGold(grossCost, true)} Golds pagos aos trabalhadores (Freelancers).
-      `;
-      // NOVO: Exibir a divisão da taxa (Empresa / BC) id 43
-      const summaryFeeEl = document.getElementById("summaryFee");
-      summaryFeeEl.innerHTML = `
-          ${formatGold(totalFee, true)} Golds (${feePercent * 100}%)
-          <span style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px;">
-              Empresa (${currentCompanyName}): ${formatGold(companyShare, true)} Golds<br>
-              Banco Central (BC): ${formatGold(bcShare, true)} Golds
-          </span>
-      `;
-      
-      const currentBalance = walletData.goldsBalance || 0;
-
-      // Atualiza o Resumo id 44
-      document.getElementById("summaryUserName").textContent = walletData.name || "Usuário";
-      document.getElementById("summaryUserId").textContent = walletData.id || "---";
-      document.getElementById("summaryDifficulty").textContent = difficulty;
-      document.getElementById("summaryReward").textContent = formatGold(rewardPerFreelancer, false);
-      document.getElementById("summaryFreelancers").textContent = formatGold(freelancers, false);
-      document.getElementById("summaryGrossCost").textContent = formatGold(grossCost, true);
-      document.getElementById("summaryFinalCost").textContent = formatGold(finalCost, true);
-
-      // Validação de Saldo id 45
-      const confirmButton = document.getElementById("confirmPublishButton");
-      const summaryWarning = document.getElementById("summaryWarning");
-      if (currentBalance < finalCost) {
-          summaryWarning.textContent = `Saldo insuficiente! Você precisa de ${formatGold(finalCost, true)} Golds. Saldo atual: ${formatGold(currentBalance, true)} Golds.`;
-          summaryWarning.style.display = "block";
-          confirmButton.disabled = true;
-          confirmButton.style.backgroundColor = 'var(--text-secondary)';
-          confirmButton.style.cursor = 'not-allowed';
-      } else {
-          summaryWarning.style.display = "none";
-          confirmButton.disabled = false;
-          confirmButton.style.backgroundColor = 'var(--secondary)';
-          confirmButton.style.cursor = 'pointer';
-      }
-
-      // NOVO: Retorna também os shares para a transação id 46
-      return { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare };
-  }
+// Função auxiliar para animar contagem de números
+function animateNumber(element, start, end, duration = 500) {
+    const startTime = performance.now();
+    const step = (currentTime) => {
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        element.textContent = Math.floor(start + (end - start) * progress);
+        if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+}
 
   // Função para abrir o modal de publicação (mantido) id 47
   function openPublishModal(companyId, companyName, mode) {
@@ -4341,152 +4399,221 @@ function updateModalSize(callback) {
     setTimeout(updateModalSize, 50);
   }
 
-  // Função para fechar o modal (mantido) id 48
-  function closeModal() {
-    for(let i = 1; i <= totalSteps; i++) {
-      const stepElement = document.getElementById(`step-${i}`);
-      if(stepElement) {
-          stepElement.classList.remove('active', 'fade-in-step');
-      }
+// Função para fechar o modal (atualizado para exibir notificação pós-reload)
+function closeModal() {
+    for (let i = 1; i <= totalSteps; i++) {
+        const stepElement = document.getElementById(`step-${i}`);
+        if (stepElement) {
+            stepElement.classList.remove('active', 'fade-in-step');
+        }
     }
+    
     document.getElementById("guidedPublishModal").classList.remove("active");
-
+    
     currentCompanyId = null;
     currentCompanyName = null;
     currentMode = 'empresarial';
     currentStep = 1;
     serviceSteps = [{ id: 1, description: "" }];
-  }
+    
+    // Salva estado temporário
+    const tempState = {
+        selectedCompanyId: null,
+    };
+    sessionStorage.setItem('tempModalState', JSON.stringify(tempState));
+    
+    // 💾 Marca no sessionStorage que a notificação deve aparecer após o reload
+    sessionStorage.setItem('showServiceNotPublished', 'true');
+    
+    
+}
+
+// Quando a página carregar novamente, verifica se deve mostrar a notificação
+document.addEventListener('DOMContentLoaded', () => {
+    const shouldShow = sessionStorage.getItem('showServiceNotPublished');
+    if (shouldShow === 'true') {
+        showTopNotification("⚠️ Serviço não publicado.");
+        // Remove a flag para não aparecer novamente
+        sessionStorage.removeItem('showServiceNotPublished');
+    }
+});
+
+// Função para exibir a notificação superior executiva
+function showTopNotification(message) {
+    let notification = document.getElementById("top-notification");
+    
+    // Cria a notificação se ainda não existir
+    if (!notification) {
+        notification = document.createElement("div");
+        notification.id = "top-notification";
+        document.body.appendChild(notification);
+    }
+    
+    // Define o conteúdo e exibe
+    notification.textContent = message;
+    notification.classList.add("show");
+    
+    // Remove após alguns segundos
+    setTimeout(() => {
+        notification.classList.remove("show");
+    }, 3000);
+}
 
   // ====================================================================
   // 3. publishService() - SOBRESCRITO: NOVA TRANSAÇÃO ATÔMICA
   // ====================================================================
   
-  async function publishService() {
-      if (!validateStep(4)) return;
-      const { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare } = prepareSummary();
-      const user = auth.currentUser;
+  // ... (rest of your code remains the same, including constants like TAX_PERSONAL, etc.)
 
-      if (!user) {
-          showNotification("Usuário não autenticado!");
-          return;
-      }
-      // Validação de saldo no cliente para UX (a validação crítica é na transação) id 49
-      if (walletData.goldsBalance < finalCost) {
-          showNotification("Saldo insuficiente para publicar o serviço.");
-          return;
-      }
-
-      const subcategorySelect = document.getElementById("subcategory");
-      const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
-      const freelancers = parseInt(document.getElementById("freelancers").value);
-
-      const serviceData = {
-          userId: user.uid,
-          empresa: currentCompanyName,
-          empresaId: currentCompanyId,
-          modo: currentMode,
-          nome: selectedOption.value,
-          descricao: document.getElementById("serviceDescription").value.trim(),
-          recompensa: rewardPerFreelancer,
-          freelancers: freelancers,
-          freelancersAtivos: 0,
-          subcategoria: selectedOption.value,
-          dificuldade: selectedOption.dataset.dificuldade,
-          passos: serviceSteps,
-          provaDescricao: document.getElementById("proofDescription").value.trim(),
-          provaTipoImagem: document.getElementById("proofImage").checked,
-          provaTipoTexto: document.getElementById("proofText").checked,
-          status: "ativo",
-          // Novos campos de contabilização id 50
-          fee: totalFee,
-          grossCost: grossCost,
-          finalCost: finalCost,
-          companyShare: companyShare,
-          bcShare: bcShare,
-          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      try {
-          await db.runTransaction(async (t) => {
-              const userWalletRef = db.collection('wallets').doc(user.uid);
-              // Coleção de Empresas: migrando para 'companies' (usando currentCompanyId como ID do documento) id 51
-              const empresaRef = db.collection('companies').doc(currentCompanyId);
-              // Coleção do Banco Central: doc único 'reserve' id 52
-              const bcRef = db.collection('bankCentral').doc('reserve');
-              const serviceRef = db.collection('services').doc(); // Novo documento de serviço id 53
-
-              // 1. Verificar Saldo id 54
-              const walletDoc = await t.get(userWalletRef);
-              if (!walletDoc.exists) throw new Error('Carteira do usuário não encontrada.');
-
-              const currentGoldsBalance = walletDoc.data().goldsBalance || 0;
-              if (currentGoldsBalance < finalCost) {
-                  throw new Error('Saldo insuficiente para esta publicação.');
-              }
-
-              // 2. Débito do Usuário (Atomicamente) id 55
-              const transactionData = {
-                  type: 'debit',
-                  amount: finalCost,
-                  currency: 'golds',
-                  description: `Publicação de serviço (${currentMode}): ${selectedOption.value}`,
-                  companyShare: companyShare, // Para auditoria id 56
-                  bcShare: bcShare,           // Para auditoria id 57
-                  date: new Date().toISOString(),
-                  serviceId: serviceRef.id
-              };
-              t.update(userWalletRef, {
-                  goldsBalance: currentGoldsBalance - finalCost,
-                  transactions: firebase.firestore.FieldValue.arrayUnion(transactionData)
-              });
-
-await db.runTransaction(async (t) => {
-    // 1. Ler todos os documentos necessários primeiro id 58
-    const empresaDoc = await t.get(empresaRef);
-    const bcDoc = await t.get(bcRef);
+async function publishService() {
+    if (!validateStep(4)) return;
     
-    // 2. Extrair os dados da empresa id 59
-    const empresaGolds = (empresaDoc.exists && empresaDoc.data().goldsEmpresa) || 0;
-    const publishedCount = (empresaDoc.exists && empresaDoc.data().published) || 0;
-    const activeCount = (empresaDoc.exists && empresaDoc.data().active) || 0;
-    const ownerUserId = empresaDoc.exists ? empresaDoc.data().ownerUserId : user.uid;
+    const { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare } = prepareSummary();
+    const user = auth.currentUser;
     
-    // 3. Extrair os dados do Banco Central id 60
-    const bcReserve = (bcDoc.exists && bcDoc.data().reserve) || 0;
-    
-    // 4. Fazer todas as escritas após as leituras id 61
-    if (companyShare > 0) {
-        t.set(empresaRef, {
-            goldsEmpresa: empresaGolds + companyShare,
-            published: publishedCount + 1,
-            active: activeCount + 1,
-            ownerUserId: ownerUserId
-        }, { merge: true });
+    if (!user) {
+        showNotification("Usuário não autenticado!");
+        return;
     }
     
-    t.set(bcRef, {
-        reserve: bcReserve + bcShare,
-        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-});
-              
-              // 5. Criação do Serviço (Atomicamente)
-              // Aqui o serviceCard anterior é substituído pela criação do 'service' (melhorado) id 62
-              t.set(serviceRef, serviceData);
-          });
+    if (walletData.goldsBalance < finalCost) {
+        showNotification("Saldo insuficiente para publicar o serviço.");
+        return;
+    }
+    
+    const subcategorySelect = document.getElementById("subcategory");
+    const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
+    const freelancers = parseInt(document.getElementById("freelancers").value);
+    
+    const serviceData = {
+        // Dados do usuário
+        userId: user.uid,
+        userName: walletData.name || "Usuário",
+        
+        // Dados da empresa
+        empresa: currentCompanyName || "", // Guard against undefined
+        empresaId: currentCompanyId || "", // Guard against undefined
+        modo: currentMode || "empresarial", // Default fallback
+        
+        // Dados do serviço
+        nome: selectedOption?.value || "(Sem nome)", // Guard if selectedOption is null
+        descricao: document.getElementById("serviceDescription").value.trim() || "",
+        subcategoria: selectedOption?.value || "",
+        dificuldade: selectedOption?.dataset?.dificuldade || DIFICULDADE.SIMPLES, // Default fallback
+        
+        // Valores e recompensas
+        recompensaPorFreelancer: rewardPerFreelancer || 0,
+        freelancersRequisitados: freelancers || 0,
+        freelancersAtivos: 0,
+        freelancersCompletados: 0,
+        
+        // Passos do serviço
+        passos: serviceSteps.map(step => ({
+            id: step.id,
+            descricao: step.description || ""
+        })),
+        
+        // Requisitos de prova
+        provaDescricao: document.getElementById("proofDescription").value.trim() || "",
+        provaTipoImagem: document.getElementById("proofImage").checked,
+        provaTipoTexto: document.getElementById("proofText").checked,
+        
+        // Contabilização financeira
+        custoTotal: finalCost || 0,
+        custoBruto: grossCost || 0,
+        taxaTotal: totalFee || 0,
+        taxaPercentual: currentMode === 'empresarial' ? TAX_EMPRESARIAL : TAX_PERSONAL,
+        empresaShare: companyShare || 0,
+        bcShare: bcShare || 0,
+        
+        // Status e timestamps
+        status: "ativo",
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+        atualizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+        
+        // Metadados
+        versao: "2.0"
+    };
+    
+    try {
+        await db.runTransaction(async (t) => {
+            const userWalletRef = db.collection('wallets').doc(user.uid);
+            const empresaRef = db.collection('companies').doc(currentCompanyId);
+            const bcRef = db.collection('bankCentral').doc('reserve');
+            const serviceRef = db.collection('services').doc();
+            
+            // 1. Ler todos os documentos necessários (user wallet, empresa, bc)
+            const walletDoc = await t.get(userWalletRef);
+            const empresaDoc = await t.get(empresaRef);
+            const bcDoc = await t.get(bcRef);
+            
+            if (!walletDoc.exists) {
+                throw new Error('Carteira do usuário não encontrada.');
+            }
+            
+            const currentGoldsBalance = walletDoc.data().goldsBalance || 0;
+            
+            if (currentGoldsBalance < finalCost) {
+                throw new Error('Saldo insuficiente para esta publicação.');
+            }
+            
+            // 2. Preparar transactionData com guards contra undefined
+            const transactionData = {
+                type: 'debit',
+                amount: finalCost || 0,
+                currency: 'golds',
+                description: `Publicação de serviço (${currentMode || "desconhecido"}): ${selectedOption?.value || "(sem subcategoria)"}`,
+                companyShare: companyShare || 0,
+                bcShare: bcShare || 0,
+                date: new Date().toISOString(),
+                serviceId: serviceRef.id
+            };
+            
+            // 3. Atualizar carteira do usuário
+            t.update(userWalletRef, {
+                goldsBalance: currentGoldsBalance - finalCost,
+                transactions: firebase.firestore.FieldValue.arrayUnion(transactionData)
+            });
+            
+            // 4. Atualizar empresa (se aplicável, no modo empresarial)
+            if (currentMode === 'empresarial' && companyShare > 0) {
+                const empresaGolds = (empresaDoc.exists ? empresaDoc.data().goldsEmpresa : 0) || 0;
+                const publishedCount = (empresaDoc.exists ? empresaDoc.data().published : 0) || 0;
+                const activeCount = (empresaDoc.exists ? empresaDoc.data().active : 0) || 0;
+                const ownerUserId = (empresaDoc.exists ? empresaDoc.data().ownerUserId : user.uid) || user.uid;
+                
+                t.set(empresaRef, {
+                    goldsEmpresa: empresaGolds + companyShare,
+                    published: publishedCount + 1,
+                    active: activeCount + 1,
+                    ownerUserId: ownerUserId
+                }, { merge: true });
+            }
+            
+            // 5. Atualizar Banco Central
+            const bcReserve = (bcDoc.exists ? bcDoc.data().reserve : 0) || 0;
+            
+            t.set(bcRef, {
+                reserve: bcReserve + bcShare,
+                lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            
+            // 6. Criar o documento do serviço
+            t.set(serviceRef, serviceData);
+        });
+        
+        showNotification("Serviço publicado com sucesso! Contabilização e taxas aplicadas (BC/Empresa).");
+        closeModal();
+        carregarDadosCards();
+        carregarEstatisticasServicos();
+        
+    } catch (error) {
+        console.error("❌ Erro na transação de publicação:", error.message || error);
+        showNotification(`Erro ao publicar serviço: ${error.message || 'Falha na transação.'}`);
+    }
+}
 
-          showNotification("Serviço publicado com sucesso! Contabilização e taxas aplicadas (BC/Empresa).");
-          closeModal();
-          carregarDadosCards();
-          carregarEstatisticasServicos();
-
-      } catch (error) {
-          console.error("❌ Erro na transação de publicação:", error.message || error);
-          showNotification(`Erro ao publicar serviço: ${error.message || 'Falha na transação.'}`);
-          // Se falhar, o Firestore faz o rollback.
-      }
-  }
+// ... (resto do código permanece igual)
 
   // Funções restantes (mantidas) ...
 
@@ -5097,8 +5224,20 @@ async function applyForService(serviceId, serviceName) {
 }
 firebase.initializeApp(firebaseConfig);
 console.log("✅ Firebase inicializado com sucesso.");
-
+// Restaura o estado temporário da memória do navegador após reload
+const tempState = sessionStorage.getItem('tempModalState');
+if (tempState) {
+    const state = JSON.parse(tempState);
+    selectedCompanyId = state.selectedCompanyId; // Restaura o estado (ex: null para atualizar o botão)
+    // Restaure outros campos aqui, ex: currentMode = state.currentMode;
+    
+    // Atualize a UI do botão ou página com base no estado restaurado
+    // Exemplo: updateButtonState(); // Função que você deve implementar para refletir o estado no botão
+    
+    sessionStorage.removeItem('tempModalState'); // Limpa a memória após uso
+}
 </script>
+
 <!-- Arquivo de melhorias -->
 <script src="scripts/passos.js"></script>
 
