@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Meus Serviços Publicados - YshippCommerce">
+  <title>Meus Serviços Publicados - YshippCommerce</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f5f7fa;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --primary: #2d3748;
+      --primary-hover: #1a202c;
+      --secondary: #3182ce;
+      --secondary-hover: #2b6cb0;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --accent: #e53e3e;
+      --gold: #d69e2e;
+      --progress-bg: #edf2f7;
+    }
+    [data-theme="dark"] {
+      --background: #1a202c;
+      --surface: #2d3748;
+      --text-primary: #e2e8f0;
+      --text-secondary: #a0aec0;
+      --border: #4a5568;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --accent: #f56565;
+      --progress-bg: #4a5568;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-top: 60px;
+      overflow-x: hidden;
+    }
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 1001;
+      box-shadow: var(--shadow);
+    }
+    .header h1 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header h1 i {
+      color: var(--primary);
+    }
+    .top-bar__section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-bar__icon {
+      color: var(--text-primary);
+      background: none;
+      border: none;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .top-bar__icon i {
+      font-size: 1.125rem;
+    }
+    .top-bar__icon:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .menu {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 240px;
+      height: calc(100vh - 60px);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+    .menu.open {
+      transform: translateX(0);
+    }
+    .menu__list {
+      list-style: none;
+      padding: 12px 0;
+    }
+    .menu__item {
+      margin: 4px 12px;
+    }
+    .menu__link {
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+      background: transparent;
+    }
+    .menu__link:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .menu__link i {
+      margin-right: 8px;
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      transition: color 0.2s ease;
+    }
+    .menu__link:hover i {
+      color: white;
+    }
+    .premium-button {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: calc(100% - 24px);
+      margin: 12px;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+    .premium-button:hover {
+      background: var(--secondary-hover);
+    }
+    .notification {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 8px 16px;
+      background: var(--surface);
+      color: var(--text-primary);
+      border-radius: 4px;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 2000;
+    }
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .dashboard-section {
+      width: 100%;
+      max-width: 1000px;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      margin: 1rem auto;
+      border: 1px solid var(--border);
+    }
+    .dashboard-section h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dashboard-section h2 i {
+      color: var(--secondary);
+    }
+    .service-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .service-card {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid var(--border);
+    }
+    .service-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .service-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    .service-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+    .service-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    .service-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .action-button {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+    .action-button:hover {
+      background: var(--secondary);
+      color: white;
+      border-color: var(--secondary);
+    }
+    .action-button i {
+      font-size: 0.8rem;
+    }
+    .wallet-card {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      color: var(--text-primary);
+      text-align: center;
+      margin: 1rem auto 0;
+      max-width: 300px;
+      position: relative;
+    }
+    .wallet-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .wallet-card i {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      display: block;
+      color: var(--secondary);
+    }
+    .wallet-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .wallet-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+    .wallet-card .nav-button {
+      width: 100%;
+      padding: 0.5rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .wallet-card .nav-button:hover {
+      background: var(--secondary-hover);
+    }
+    .pessoal-mode {
+      border-left: 5px solid var(--primary);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    footer#userInfoFooter {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 0.3rem;
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      z-index: 999;
+      font-family: 'Inter', sans-serif;
+    }
+    @media (max-width: 768px) {
+      .menu {
+        width: min(80vw, 240px);
+      }
+      .header {
+        padding: 0 12px;
+      }
+      .top-bar__icon {
+        padding: 6px;
+      }
+      .top-bar__icon i {
+        font-size: 1rem;
+      }
+      .menu__link {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
+      .menu__link i {
+        font-size: 1rem;
+      }
+      .premium-button {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+      .notification {
+        right: 8px;
+        bottom: 8px;
+        padding: 8px 12px;
+      }
+      .service-list {
+        grid-template-columns: 1fr;
+      }
+      .wallet-card {
+        padding: 0.75rem;
+        max-width: 100%;
+      }
+      .wallet-card i {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="header-menu">
+    <nav aria-label="Navegação principal" class="header" role="navigation">
+      <div class="top-bar__section">
+        <h1>
+          <i class="fas fa-list"></i>Meus Serviços Publicados
+        </h1>
+      </div>
+      <div class="top-bar__section">
+        <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
+          <i class="fas fa-bars"></i>
+        </button>
+        <button aria-label="Alternar tema claro/escuro" class="top-bar__icon" id="theme-toggle" title="Alternar tema">
+          <i class="fas fa-adjust"></i>
+        </button>
+      </div>
+    </nav>
+    <nav aria-label="Menu principal" class="menu" id="main-menu">
+      <ul class="menu__list">
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('home')">
+            <i class="fas fa-home"></i>
+            <span>Página Principal</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('yshippcommerce')">
+            <i class="fas fa-store"></i>
+            <span>YshippCommerce invest</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('market')">
+            <i class="fas fa-briefcase"></i>
+            <span>Publicar Serviço</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('store')">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Shopping Shipp</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('generator')">
+            <i class="fas fa-ticket-alt"></i>
+            <span>Gerador de Golds</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Carteira e Bank Central</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" id="logout-button">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="notification" id="notification"></div>
+  <main style="width:100%; max-width:1000px; padding:0 0.75rem 120px; margin:0 auto;">
+    <div id="wallet-card" class="wallet-card fade-in">
+      <i class="fas fa-wallet"></i>
+      <h3>Carteira</h3>
+      <p>Gerencie seus Golds e transações.</p>
+      <button class="nav-button" onclick="navigateTo('wallet')">Acessar Carteira</button>
+    </div>
+    <section id="dashboard-section-pessoal" class="dashboard-section fade-in pessoal-mode">
+      <div id="pessoalSection">
+        <h2><i class="fas fa-list"></i>Meus Serviços Publicados</h2>
+        <p style="margin-bottom: 0.75rem; color: var(--text-secondary); font-size: 0.85rem;">
+          Aqui estão todos os serviços que você publicou no modo pessoal.
+        </p>
+        <div class="service-list" id="serviceList">
+          <!-- Os serviços publicados serão carregados aqui -->
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer id="userInfoFooter">
+    Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
+  </footer>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+      authDomain: "yshippcommerce.firebaseapp.com",
+      projectId: "yshippcommerce",
+      storageBucket: "yshippcommerce.appspot.com",
+      messagingSenderId: "680576769517",
+      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    function refWalletUsuario(uid) {
+      return db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(uid);
+    }
+    function refServicePessoal(userId) {
+      return db.collection('companies').doc('services_pessoal').collection('usuarios');
+    }
+
+    let currentUser = null;
+    let walletData = { goldsBalance: 0, reaisBalance: 0, name: "Usuário", id: "..." };
+
+    const GOLD_FORMAT = new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    });
+
+    function formatGold(value, includeDecimals = true) {
+      if (value === undefined || value === null) return "0";
+      const numericValue = parseFloat(value);
+      if (isNaN(numericValue)) return "0";
+      return includeDecimals ? GOLD_FORMAT.format(numericValue) : GOLD_FORMAT.format(numericValue);
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      if (!notification) {
+        console.warn('Elemento #notification não encontrado. Mensagem:', message);
+        return;
+      }
+      notification.textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    function navigateTo(page) {
+      let url;
+      switch (page) {
+        case 'home':
+          url = 'index.html';
+          break;
+        case 'yshippcommerce':
+          url = 'yshippcommerce.html';
+          break;
+        case 'market':
+          url = 'https://linkpremiado51-cmd.github.io/yshippcommerce/mercado.html';
+          break;
+        case 'store':
+          url = 'store.html';
+          break;
+        case 'generator':
+          url = 'https://linkpremiado51-cmd.github.io/yshippcommerce/gerador.html';
+          break;
+        case 'wallet':
+          url = 'https://linkpremiado51-cmd.github.io/yshippcommerce/carteira.html';
+          break;
+        default:
+          url = 'index.html';
+          break;
+      }
+      window.location.href = url;
+    }
+
+    function carregarDadosUsuario(user) {
+      const userId = user.uid;
+      refWalletUsuario(userId).get()
+        .then(doc => {
+          if (doc.exists) {
+            const data = doc.data();
+            walletData = { ...data, id: userId };
+            document.getElementById("footerUserName").textContent = data.name || "Usuário";
+            document.getElementById("footerUserId").textContent = userId;
+          } else {
+            document.getElementById("footerUserName").textContent = "Usuário";
+            document.getElementById("footerUserId").textContent = userId;
+          }
+          carregarServicosPublicados(userId);
+        })
+        .catch(error => {
+          console.error("❌ Erro ao carregar dados:", error);
+          document.getElementById("footerUserName").textContent = "Usuário";
+          document.getElementById("footerUserId").textContent = userId;
+          carregarServicosPublicados(userId);
+        });
+    }
+
+    function carregarServicosPublicados(userId) {
+      refServicePessoal(userId)
+        .where("userId", "==", userId)
+        .where("modo", "==", "pessoal")
+        .get()
+        .then(snapshot => {
+          const serviceList = document.getElementById("serviceList");
+          serviceList.innerHTML = "";
+          if (snapshot.empty) {
+            serviceList.innerHTML = `
+              <div style="text-align: center; grid-column: 1 / -1; padding: 2rem;">
+                <i class="fas fa-box-open" style="font-size: 2.5rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-secondary);">Nenhum serviço publicado ainda.</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
+                  Publique um novo serviço no <a href="#" onclick="navigateTo('market')" style="color: var(--secondary);">Modo Pessoal</a> para vê-lo aqui.
+                </p>
+              </div>
+            `;
+          } else {
+            snapshot.forEach(doc => {
+              const data = doc.data();
+              const card = document.createElement("div");
+              card.className = "service-card fade-in";
+              card.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                  <i class="fas fa-${getIconForService(data.empresaId)}" style="color: ${getColorForService(data.empresaId)}; font-size: 1.2rem;"></i>
+                  <h3>${escapeHtml(data.nome || "Sem título")}</h3>
+                </div>
+                <p>${escapeHtml(data.descricao || "Sem descrição")}</p>
+                <div class="service-meta">
+                  <span><i class="fas fa-coins"></i> ${formatGold(data.recompensa)} Golds</span>
+                  <span><i class="fas fa-users"></i> ${data.freelancers || 0} Freelancers</span>
+                </div>
+                <div class="service-meta">
+                  <span><i class="fas fa-calendar-alt"></i> ${formatDate(data.createdAt?.toDate() || new Date())}</span>
+                  <span style="color: ${getStatusColor(data.status)};">
+                    <i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 0.3rem;"></i> ${data.status || "Desconhecido"}
+                  </span>
+                </div>
+                <div class="service-actions">
+                  <button class="action-button" onclick="viewServiceDetails('${doc.id}')">
+                    <i class="fas fa-eye"></i> Detalhes
+                  </button>
+                  <button class="action-button" onclick="editService('${doc.id}')">
+                    <i class="fas fa-edit"></i> Editar
+                  </button>
+                  <button class="action-button" style="background: var(--accent); border-color: var(--accent); color: white;" onclick="deleteService('${doc.id}')">
+                    <i class="fas fa-trash"></i> Excluir
+                  </button>
+                </div>
+              `;
+              serviceList.appendChild(card);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Erro ao carregar serviços publicados:", error);
+          showNotification("Erro ao carregar serviços publicados.");
+        });
+    }
+
+    function getIconForService(serviceId) {
+      const icons = {
+        facebook: "facebook",
+        instagram: "instagram",
+        mobile: "mobile-alt",
+        telegram: "telegram",
+        tiktok: "tiktok",
+        video: "video",
+        discord: "discord",
+        blog: "blog",
+        reddit: "reddit",
+        seo: "search",
+        inscricoes: "rss"
+      };
+      return icons[serviceId] || "question";
+    }
+
+    function getColorForService(serviceId) {
+      const colors = {
+        facebook: "#1877f2",
+        instagram: "#e4405f",
+        mobile: "#4CAF50",
+        telegram: "#0088cc",
+        tiktok: "#000000",
+        video: "#FF0000",
+        discord: "#7289DA",
+        blog: "#FF9800",
+        reddit: "#FF4500",
+        seo: "#4285F4",
+        inscricoes: "#FF9800"
+      };
+      return colors[serviceId] || "#666";
+    }
+
+    function getStatusColor(status) {
+      const colors = {
+        ativo: "#4CAF50",
+        pendente: "#FF9800",
+        concluído: "#2196F3",
+        cancelado: "#F44336"
+      };
+      return colors[status] || "#666";
+    }
+
+    function formatDate(date) {
+      if (!(date instanceof Date)) return "Data desconhecida";
+      return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function viewServiceDetails(serviceId) {
+      showNotification(`Visualizando detalhes do serviço ${serviceId}`);
+    }
+
+    function editService(serviceId) {
+      showNotification(`Editando serviço ${serviceId}`);
+    }
+
+    function deleteService(serviceId) {
+      if (confirm("Tem certeza que deseja excluir este serviço?")) {
+        refServicePessoal(currentUser.uid).doc(serviceId).delete()
+          .then(() => {
+            showNotification("Serviço excluído com sucesso!");
+            carregarServicosPublicados(currentUser.uid);
+          })
+          .catch(error => {
+            console.error("Erro ao excluir serviço:", error);
+            showNotification("Erro ao excluir serviço.");
+          });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          carregarDadosUsuario(user);
+        } else {
+          document.getElementById("footerUserName").textContent = "Nenhum usuário ativo";
+          document.getElementById("footerUserId").textContent = "---";
+          window.location.href = "cadastro.html";
+        }
+      });
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', currentTheme);
+        localStorage.setItem('theme', currentTheme);
+      });
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      body.setAttribute('data-theme', savedTheme);
+      const menuToggles = {
+        'menu-icon': 'main-menu'
+      };
+      Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
+        const toggle = document.getElementById(toggleId);
+        const menu = document.getElementById(menuId);
+        if (!toggle || !menu) {
+          console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`);
+          return;
+        }
+        toggle.addEventListener('click', e => {
+          e.stopPropagation();
+          menu.classList.toggle('open');
+          toggle.classList.toggle('active');
+        });
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          Object.values(menuToggles).forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.remove('open');
+          });
+          document.querySelectorAll('.top-bar__icon').forEach(icon => {
+            if (icon) icon.classList.remove('active');
+          });
+        }
+      });
+      document.getElementById("logout-button").addEventListener("click", () => {
+        auth.signOut().then(() => window.location.href = "cadastro.html");
+      });
+    });
+  </script>
+</body>
+</html>
