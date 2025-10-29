@@ -1781,7 +1781,7 @@ async function saveWallet(updated) {
 
     try {
         // Salva no Firebase
-        await db.collection('wallets').doc(currentUser.uid).set(updated, { merge: true });
+        await db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid).set(updated, { merge: true });
 
         // Salva no localStorage como backup
         localStorage.setItem(`wallet_${currentUser.uid}`, JSON.stringify(updated));
@@ -1935,7 +1935,7 @@ function validateBalance(currency, amount, tax = 0) {
 async function validateUserId(userId) {
     if (!userId || userId === currentUser?.uid) return false;
     try {
-        const userDoc = await db.collection('wallets').doc(userId).get();
+        const userDoc = await db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(userId).get();
         return userDoc.exists;
     } catch (err) {
         console.error('Erro ao validar usuário:', err);
@@ -2230,8 +2230,8 @@ async function processTransferConfirmed() {
         const { recipientId, currency, amount, tax } = pendingAction;
 
         const batch = db.batch();
-        const senderRef = db.collection('wallets').doc(currentUser.uid);
-        const recipientRef = db.collection('wallets').doc(recipientId);
+        const senderRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
+        const recipientRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(recipientId);
 
         // Atualiza o remetente
         batch.update(senderRef, {
@@ -2485,7 +2485,7 @@ async function processInvestConfirmed() {
         const { companyId, amount, tax, totalCost, plan } = pendingAction;
 
         const batch = db.batch();
-        const walletRef = db.collection('wallets').doc(currentUser.uid);
+        const walletRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
         const currentInvestment = walletData.investments?.[companyId] || { amount: 0 };
         const newInvestmentAmount = (currentInvestment.amount || 0) + amount;
 
@@ -2635,7 +2635,7 @@ async function processWithdrawalInvestmentConfirmed() {
         const { companyId, amountToWithdraw, finalPenalty, finalAmount, plan, accumulatedReturn } = pendingAction;
 
         const batch = db.batch();
-        const walletRef = db.collection('wallets').doc(currentUser.uid);
+        const walletRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
 
         // O lucro total acumulado do investimento deve ser zerado ao retirar
         const totalProfitToDeduct = accumulatedReturn;
@@ -2796,11 +2796,15 @@ async function undoLastTransaction() {
     try {
         await backupWalletData();
         const batch = db.batch();
-        const walletRef = db.collection('wallets').doc(currentUser.uid);
+        const walletRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
 
         if (lastTx.type === 'send') {
             // Reverte uma transferência
-            const recipientRef = db.collection('wallets').doc(lastTx.to);
+            const recipientRef = db
+    .collection('bankCentral')
+    .doc('wallets_usuarios')
+    .collection('usuarios')
+    .doc(lastTx.to);
 
             // Reverte o saldo e remove a transação do remetente
             batch.update(walletRef, {
@@ -3174,10 +3178,10 @@ async function undoTransaction(index) {
     try {
         await backupWalletData();
         const batch = db.batch();
-        const walletRef = db.collection('wallets').doc(currentUser.uid);
+        const walletRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
 
         if (tx.type === 'send') {
-            const recipientRef = db.collection('wallets').doc(tx.to);
+            const recipientRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(tx.to);
 
             // Reverte o saldo e remove a transação do remetente
             batch.update(walletRef, {
@@ -3350,7 +3354,7 @@ function checkCommercialButton() {
 async function loadWalletData(uid) {
     console.log(`Carteira carregada para ${uid}`);
     try {
-        const ref = db.collection('wallets').doc(uid);
+        const ref = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(uid);
         const snap = await ref.get();
 
         if (!snap.exists) {
@@ -4080,7 +4084,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 populateInvestmentOptions();
 
                 // 4. Configura ouvinte em tempo real para sincronização dos dados da carteira
-                db.collection('wallets').doc(user.uid).onSnapshot((doc) => {
+                db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(user.uid).onSnapshot((doc) => {
                     if (doc.exists) {
                         walletData = doc.data();
                         allTransactions = walletData.transactions || [];
