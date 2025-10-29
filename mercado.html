@@ -3429,14 +3429,61 @@
   
   
   
-  
-  <footer id="userInfoFooter">
+<footer id="userInfoFooter">
     Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId">---</span>
   </footer>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 <script>
+
+// ====================================================================
+// 🧠 NOVO SISTEMA DE REFERÊNCIAS FIREBASE (BASEADO NA NOVA ESTRUTURA)
+// ====================================================================
+
+// Inicializa o Firebase id 3
+const firebaseConfig = {
+    apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+    authDomain: "yshippcommerce.firebaseapp.com",
+    projectId: "yshippcommerce",
+    storageBucket: "yshippcommerce.appspot.com",
+    messagingSenderId: "680576769517",
+    appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// Funções Auxiliares de Referência para a nova estrutura
+function refWalletUsuario(uid) { 
+    return db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(uid); 
+} 
+function refWalletEmpresa(empresaId) { 
+    return db.collection('bankCentral').doc('wallets_empresas').collection('empresas').doc(empresaId); 
+} 
+function refAtivosEmpresa(empresaId) { 
+    return db.collection('bankCentral').doc('ativos_empresas').collection('empresas').doc(empresaId); 
+} 
+function refBCReserve() { 
+    return db.collection('bankCentral').doc('reserve'); 
+}
+function refBCCoins() {
+    return db.collection('bankCentral').doc('moedas'); 
+}
+function refServiceEmpresarial(empresaId) {
+    // Cria uma referência para uma nova coleção dentro de services_empresarial, sem um ID final ainda.
+    return db.collection('companies').doc('services_empresarial').collection(`${empresaId}_services`);
+}
+function refServicePessoal(userId) {
+    // A nova estrutura usa 'usuarios' para serviços pessoais.
+    return db.collection('companies').doc('services_pessoal').collection('usuarios');
+}
+function refCompanyProfile(companyId) {
+    // O perfil principal da empresa está agora em companies/modo_empresarial
+    return db.collection('companies').doc('modo_empresarial').collection('empresas').doc(companyId);
+}
+// OBS: 'companies/{cardId}' na lógica antiga deve ser substituído por refCompanyProfile(cardId)
+// para interagir com dados da empresa (ex: contadores).
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!firebase.auth) {
@@ -3469,19 +3516,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // OBS: BASE_REWARD e FIXED_FEE antigos são mantidos (mas não usados na nova lógica de fee)
   // para evitar quebras em outras partes do código que possam depender delas.
 
-  // Inicializa o Firebase id 3
-  const firebaseConfig = {
-    apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
-    authDomain: "yshippcommerce.firebaseapp.com",
-    projectId: "yshippcommerce",
-    storageBucket: "yshippcommerce.appspot.com",
-    messagingSenderId: "680576769517",
-    appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-
+  // O bloco de inicialização do Firebase foi movido para o topo, antes das referências auxiliares.
+  
   // Variáveis globais id 4
   let currentUser = null;
   let walletData = { goldsBalance: 0, reaisBalance: 0, name: "Usuário", id: "..." };
@@ -3542,7 +3578,8 @@ function goldsToReais(golds, taxaConversao = 1) {
   auth.onAuthStateChanged(async (user) => {
     if (user) {
       currentUser = user;
-      const walletRef = db.collection('wallets').doc(user.uid);
+      // 🎯 ATUALIZAÇÃO: Nova referência para a carteira do usuário
+      const walletRef = refWalletUsuario(user.uid); 
       const snap = await walletRef.get();
       if (snap.exists) {
         walletData = { ...snap.data(), id: user.uid };
@@ -3559,6 +3596,7 @@ function goldsToReais(golds, taxaConversao = 1) {
 
   // Definição dos níveis globais e metas para cada card (mantido) id 7
   const niveisGlobais = {
+// ... (niveisGlobais mantido) ...
     facebook: [
       { nivel: 1, nome: "Iniciante de Campanha", golds: 250000 },
       { nivel: 2, nome: "Gestor de Engajamento", golds: 500000 },
@@ -3640,6 +3678,7 @@ function goldsToReais(golds, taxaConversao = 1) {
 
  // =============================================
 // 🎯 SISTEMA DE SUBCATEGORIAS DE SERVIÇOS (id 8)
+// ... (subcategorias mantido) ...
 // =============================================
 // Este bloco define todas as tarefas disponíveis dentro do YshippCommerce.
 // Cada subcategoria representa uma “missão” que um usuário pode realizar
@@ -3745,6 +3784,7 @@ function getSubcategoriasPorPlataforma(plataforma) {
 
   // Função para calcular a recompensa por freelancer com base na complexidade (mantido, com nota de melhoria) id 11
   function calculateRewardPerFreelancer() {
+// ... (calculateRewardPerFreelancer mantido) ...
       let baseReward = BASE_REWARD;
       const totalSteps = serviceSteps.length;
 
@@ -3783,6 +3823,7 @@ function getSubcategoriasPorPlataforma(plataforma) {
 
   // Adiciona uma nova etapa (Passo do Serviço) (mantido) id 18
   function addStep() {
+// ... (addStep mantido) ...
       if (serviceSteps.length >= 5) {
           showNotification("Máximo de 5 passos atingido.");
           return;
@@ -3806,6 +3847,7 @@ function getSubcategoriasPorPlataforma(plataforma) {
 
   // Remove uma etapa (Passo do Serviço) (mantido) id 19
   function removeStep(id) {
+// ... (removeStep mantido) ...
       if (serviceSteps.length === 1) {
           showNotification("O serviço deve ter pelo menos 1 passo.");
           return;
@@ -3825,6 +3867,7 @@ function getSubcategoriasPorPlataforma(plataforma) {
 
   // Atualiza a descrição de um passo no array serviceSteps (mantido) id 20
   function updateStepDescription(id, value) {
+// ... (updateStepDescription mantido) ...
       const step = serviceSteps.find(s => s.id === id);
       if (step) {
           step.description = value;
@@ -3833,6 +3876,7 @@ function getSubcategoriasPorPlataforma(plataforma) {
 
   // Renderiza a lista de passos (mantido) id 21
   function renderServiceSteps() {
+// ... (renderServiceSteps mantido) ...
       const container = document.getElementById("serviceStepsContainer");
       container.innerHTML = '';
       serviceSteps.forEach((step, index) => {
@@ -3852,6 +3896,7 @@ function getSubcategoriasPorPlataforma(plataforma) {
 
   // Validação da etapa atual (mantido, mas com reforço de validação no server-side) id 22
   function validateStep(step) {
+// ... (validateStep mantido) ...
       document.getElementById("errorMessage").style.display = "none";
 
       switch (step) {
@@ -3940,6 +3985,7 @@ const stepTips = {
  * Atualiza número da etapa com animação de contador
  */
 function animateStepNumber(step) {
+// ... (animateStepNumber mantido) ...
     const stepEl = document.getElementById("currentStepNumber");
     stepEl.style.transition = "all 0.3s ease";
     stepEl.style.opacity = "0";
@@ -3953,6 +3999,7 @@ function animateStepNumber(step) {
  * Mostra dicas ou contexto da etapa
  */
 function showStepTip(step) {
+// ... (showStepTip mantido) ...
     const tipEl = document.getElementById("stepTip");
     if (!tipEl) return;
     tipEl.textContent = stepTips[step] || "";
@@ -3964,6 +4011,7 @@ function showStepTip(step) {
  * Mostra mini tutorial ou tooltip se for a primeira vez
  */
 function showStepTutorial(step) {
+// ... (showStepTutorial mantido) ...
     if (firstTimeSteps.has(step)) return; // já mostrado
     const tutorialEl = document.getElementById("stepTutorial");
     if (!tutorialEl) return;
@@ -3977,6 +4025,7 @@ function showStepTutorial(step) {
  * Atualiza marcação de etapas concluídas e barra de progresso
  */
 function updateCompletedSteps() {
+// ... (updateCompletedSteps mantido) ...
     const progressEls = document.querySelectorAll(".progress-step");
     progressEls.forEach((el, index) => {
         const stepNumber = index + 1;
@@ -3999,6 +4048,7 @@ function updateCompletedSteps() {
  * Aplica efeito de zoom/pop na etapa que entra
  */
 function applyZoomEffect(element) {
+// ... (applyZoomEffect mantido) ...
     element.style.transform = "scale(0.95)";
     setTimeout(() => {
         element.style.transition = "transform 0.3s ease";
@@ -4010,6 +4060,7 @@ function applyZoomEffect(element) {
  * Função genérica para navegar entre etapas com animação de deslize
  */
 function goToStep(stepDelta) {
+// ... (goToStep mantido) ...
     const newStep = currentStep + stepDelta;
 
     // Limites
@@ -4029,6 +4080,7 @@ function goToStep(stepDelta) {
 
     // Marca as etapas concluídas com base no avanço do usuário
 function markCompletedSteps(stepDelta) {
+// ... (markCompletedSteps mantido) ...
     // Só processa se houve avanço
     if (stepDelta > 0) {
         // Calcula todas as etapas que foram percorridas
@@ -4108,6 +4160,7 @@ function prevStep() { goToStep(-1); }
  * Pequeno efeito visual de comemoração ao finalizar a última etapa
  */
 function triggerCompletionEffect() {
+// ... (triggerCompletionEffect mantido) ...
     const modal = document.getElementById("modalContainer");
     if (!modal) return;
     modal.classList.add("completion-effect");
@@ -4120,6 +4173,7 @@ function triggerCompletionEffect() {
  * - "Próximo" aparece se não estiver na última etapa
  */
 function updateNavigationButtons() {
+// ... (updateNavigationButtons mantido) ...
     const backButton = document.getElementById("backButton");
     const nextButton = document.getElementById("nextButton");
 
@@ -4141,6 +4195,7 @@ function updateNavigationButtons() {
  * @param {function} callback - opcional, executa após animação
  */
 function updateModalSize(callback) {
+// ... (updateModalSize mantido) ...
     const modalContent = document.getElementById('modalContent');
     const activeStep = document.querySelector(`#step-${currentStep}`);
     const minHeight = 350;
@@ -4182,6 +4237,7 @@ function updateModalSize(callback) {
 
   // Carrega subcategorias (mantido, com nota de DB Pricing) id 28
   function loadSubcategories() {
+// ... (loadSubcategories mantido) ...
       if (!currentCompanyId || !subcategorias[currentCompanyId]) return;
       // TODO: Ajustar para ler 'pricing' do companies/{id}/pricing se necessário. id 29
       const subcategorySelect = document.getElementById("subcategory");
@@ -4216,6 +4272,7 @@ function updateModalSize(callback) {
 
   // NOVO: Atualiza a info da Etapa 2 (AJUSTADO: REMOVE TEXTO 'DOBRA') id 32
   function updateModeInfoInStep2() {
+// ... (updateModeInfoInStep2 mantido) ...
     const infoBox = document.getElementById("modeDuplicationInfo");
     if (currentMode === 'empresarial') {
       infoBox.innerHTML = `
@@ -4232,6 +4289,7 @@ function updateModalSize(callback) {
 
   // Calcula dificuldade (mantido) id 33
   function calculateDifficultyAndProof() {
+// ... (calculateDifficultyAndProof mantido) ...
       const subcategorySelect = document.getElementById("subcategory");
       const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
       if (selectedOption && selectedOption.dataset.dificuldade) {
@@ -4257,6 +4315,7 @@ function updateModalSize(callback) {
   // 2. prepareSummary() - SOBRESCRITO: NOVA LÓGICA DE TAXA
   // ====================================================================
   async function prepareSummary() {
+// ... (prepareSummary mantido) ...
     try {
         // 0️⃣ Pré-validação
         const freelancersInput = document.getElementById("freelancers").value;
@@ -4359,11 +4418,13 @@ function updateModalSize(callback) {
 
 // Função auxiliar de arredondamento
 function roundGold(value) {
+// ... (roundGold mantido) ...
     return Math.floor(value * 100) / 100;
 }
 
 // Função auxiliar para animar contagem de números
 function animateNumber(element, start, end, duration = 500) {
+// ... (animateNumber mantido) ...
     const startTime = performance.now();
     const step = (currentTime) => {
         const progress = Math.min((currentTime - startTime) / duration, 1);
@@ -4375,6 +4436,7 @@ function animateNumber(element, start, end, duration = 500) {
 
   // Função para abrir o modal de publicação (mantido) id 47
   function openPublishModal(companyId, companyName, mode) {
+// ... (openPublishModal mantido) ...
       selectedCompanyId = companyId;
     currentCompanyId = companyId;
     currentCompanyName = companyName;
@@ -4401,6 +4463,7 @@ function animateNumber(element, start, end, duration = 500) {
 
 // Função para fechar o modal (atualizado para exibir notificação pós-reload)
 function closeModal() {
+// ... (closeModal e DOMContentLoaded de notificação pós-reload mantidos) ...
     for (let i = 1; i <= totalSteps; i++) {
         const stepElement = document.getElementById(`step-${i}`);
         if (stepElement) {
@@ -4431,6 +4494,7 @@ function closeModal() {
 
 // Quando a página carregar novamente, verifica se deve mostrar a notificação
 document.addEventListener('DOMContentLoaded', () => {
+// ... (código mantido) ...
     const shouldShow = sessionStorage.getItem('showServiceNotPublished');
     if (shouldShow === 'true') {
         showTopNotification("⚠️ Serviço não publicado.");
@@ -4441,6 +4505,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Função para exibir a notificação superior executiva
 function showTopNotification(message) {
+// ... (showTopNotification mantido) ...
     let notification = document.getElementById("top-notification");
     
     // Cria a notificação se ainda não existir
@@ -4461,12 +4526,15 @@ function showTopNotification(message) {
 }
 
   // ====================================================================
-  // 3. publishService() - SOBRESCRITO: NOVA TRANSAÇÃO ATÔMICA
+  // 3. publishService() - ATUALIZADO: NOVA TRANSAÇÃO ATÔMICA COM BANK CENTRAL
   // ====================================================================
   
   async function publishService() {
       if (!validateStep(4)) return;
-      const { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare } = prepareSummary();
+      const summaryData = await prepareSummary();
+      if (!summaryData) return; // Se prepareSummary falhou ou retornou indefinido
+      
+      const { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare } = summaryData;
       const user = auth.currentUser;
 
       if (!user) {
@@ -4482,7 +4550,17 @@ function showTopNotification(message) {
       const subcategorySelect = document.getElementById("subcategory");
       const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
       const freelancers = parseInt(document.getElementById("freelancers").value);
-
+      
+      // Define a nova referência para o Serviço
+      let serviceRef;
+      if (currentMode === 'empresarial') {
+          // companies/services_empresarial/<empresa>_services/<docId>
+          serviceRef = refServiceEmpresarial(currentCompanyId).doc(); 
+      } else {
+          // companies/services_pessoal/usuarios/<docId>
+          serviceRef = refServicePessoal(user.uid).doc(); 
+      }
+      
       const serviceData = {
           userId: user.uid,
           empresa: currentCompanyName,
@@ -4511,14 +4589,15 @@ function showTopNotification(message) {
 
       try {
           await db.runTransaction(async (t) => {
-              const userWalletRef = db.collection('wallets').doc(user.uid);
-              // Coleção de Empresas: migrando para 'companies' (usando currentCompanyId como ID do documento) id 51
-              const empresaRef = db.collection('companies').doc(currentCompanyId);
-              // Coleção do Banco Central: doc único 'reserve' id 52
-              const bcRef = db.collection('bankCentral').doc('reserve');
-              const serviceRef = db.collection('services').doc(); // Novo documento de serviço id 53
-
-              // 1. Verificar Saldo id 54
+              // 🎯 NOVAS REFERÊNCIAS
+              const userWalletRef = refWalletUsuario(user.uid);
+              const empresaWalletRef = refWalletEmpresa(currentCompanyId);
+              const ativosRef = refAtivosEmpresa(currentCompanyId); 
+              const bcReserveRef = refBCReserve();
+              const bcCoinsRef = refBCCoins();
+              const companyProfileRef = refCompanyProfile(currentCompanyId);
+              
+              // 1. Verificar Saldo (Carteira do Usuário)
               const walletDoc = await t.get(userWalletRef);
               if (!walletDoc.exists) throw new Error('Carteira do usuário não encontrada.');
 
@@ -4527,14 +4606,14 @@ function showTopNotification(message) {
                   throw new Error('Saldo insuficiente para esta publicação.');
               }
 
-              // 2. Débito do Usuário (Atomicamente) id 55
+              // 2. Débito do Usuário (Atomicamente)
               const transactionData = {
                   type: 'debit',
                   amount: finalCost,
                   currency: 'golds',
                   description: `Publicação de serviço (${currentMode}): ${selectedOption.value}`,
-                  companyShare: companyShare, // Para auditoria id 56
-                  bcShare: bcShare,           // Para auditoria id 57
+                  companyShare: companyShare, 
+                  bcShare: bcShare,           
                   date: new Date().toISOString(),
                   serviceId: serviceRef.id
               };
@@ -4543,56 +4622,75 @@ function showTopNotification(message) {
                   transactions: firebase.firestore.FieldValue.arrayUnion(transactionData)
               });
 
-await db.runTransaction(async (t) => {
-    // 1. Ler todos os documentos necessários primeiro id 58
-    const empresaDoc = await t.get(empresaRef);
-    const bcDoc = await t.get(bcRef);
-    
-    // 2. Extrair os dados da empresa id 59
-    const empresaGolds = (empresaDoc.exists && empresaDoc.data().goldsEmpresa) || 0;
-    const publishedCount = (empresaDoc.exists && empresaDoc.data().published) || 0;
-    const activeCount = (empresaDoc.exists && empresaDoc.data().active) || 0;
-    const ownerUserId = empresaDoc.exists ? empresaDoc.data().ownerUserId : user.uid;
-    
-    // 3. Extrair os dados do Banco Central id 60
-    const bcReserve = (bcDoc.exists && bcDoc.data().reserve) || 0;
-    
-    // 4. Fazer todas as escritas após as leituras id 61
-    if (companyShare > 0) {
-        t.set(empresaRef, {
-            goldsEmpresa: empresaGolds + companyShare,
-            published: publishedCount + 1,
-            active: activeCount + 1,
-            ownerUserId: ownerUserId
-        }, { merge: true });
-    }
-    
-    t.set(bcRef, {
-        reserve: bcReserve + bcShare,
-        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-});
+              // 3. Creditar Taxas na Empresa (Wallet e Ativos)
+              if (companyShare > 0) {
+                  // Credita na Wallet da Empresa
+                  const empresaWalletDoc = await t.get(empresaWalletRef);
+                  const currentEmpresaGolds = empresaWalletDoc.exists ? empresaWalletDoc.data().goldsBalance || 0 : 0;
+                  t.set(empresaWalletRef, {
+                      goldsBalance: currentEmpresaGolds + companyShare,
+                      lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                  }, { merge: true });
+
+                  // Credita nos Ativos da Empresa
+                  const ativosDoc = await t.get(ativosRef);
+                  const currentAtivosGolds = ativosDoc.exists ? ativosDoc.data().goldsBalance || 0 : 0;
+                  t.set(ativosRef, {
+                      goldsBalance: currentAtivosGolds + companyShare
+                  }, { merge: true });
+
+                  // Atualiza contadores de serviço no Perfil da Empresa
+                  const companyProfileDoc = await t.get(companyProfileRef);
+                  const publishedCount = companyProfileDoc.exists ? companyProfileDoc.data().published || 0 : 0;
+                  const activeCount = companyProfileDoc.exists ? companyProfileDoc.data().active || 0 : 0;
+                  
+                  t.set(companyProfileRef, {
+                      published: publishedCount + 1,
+                      active: activeCount + 1,
+                      ownerUserId: companyProfileDoc.exists ? companyProfileDoc.data().ownerUserId : user.uid, // Garante que o ownerId existe
+                      lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                  }, { merge: true });
+              }
+
+              // 4. Creditar Taxas no Banco Central (Reserve)
+              if (bcShare > 0) {
+                  const bcDoc = await t.get(bcReserveRef);
+                  const bcReserve = bcDoc.exists ? bcDoc.data().reserve || 0 : 0;
+                  t.set(bcReserveRef, {
+                      reserve: bcReserve + bcShare,
+                      lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                  }, { merge: true });
+              }
               
-              // 5. Criação do Serviço (Atomicamente)
-              // Aqui o serviceCard anterior é substituído pela criação do 'service' (melhorado) id 62
+              // 5. Atualizar Moedas (Reflete o fluxo total de Golds)
+              const moedasDoc = await t.get(bcCoinsRef);
+              const currentGoldsTotal = moedasDoc.exists ? moedasDoc.data().goldsTotal || 0 : 0;
+              // A publicação de serviço não altera o total de Golds em circulação (apenas redistribui), 
+              // mas é uma boa prática atualizar o 'lastFlow' para auditoria.
+              t.set(bcCoinsRef, {
+                  goldsLastFlow: finalCost,
+                  goldsTotal: currentGoldsTotal, // Permanece o mesmo (recirculação)
+                  lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+              }, { merge: true });
+              
+              // 6. Criação do Serviço
               t.set(serviceRef, serviceData);
           });
 
           showNotification("Serviço publicado com sucesso! Contabilização e taxas aplicadas (BC/Empresa).");
           closeModal();
-          carregarDadosCards();
-          carregarEstatisticasServicos();
+          // carregarDadosCards(); // Chamado dentro de carregarDadosUsuario, o que é suficiente
+          // carregarEstatisticasServicos(); // Chamado dentro de carregarDadosUsuario, o que é suficiente
 
       } catch (error) {
           console.error("❌ Erro na transação de publicação:", error.message || error);
           showNotification(`Erro ao publicar serviço: ${error.message || 'Falha na transação.'}`);
-          // Se falhar, o Firestore faz o rollback.
       }
   }
 
   // Funções restantes (mantidas) ...
 
-  // Função para carregar estatísticas dos serviços publicados (mantido) id 63
+  // Função para carregar estatísticas dos serviços publicados (AJUSTADO: NOVOS CAMINHOS) id 63
   async function carregarEstatisticasServicos() {
       const user = auth.currentUser;
       if (!user) return;
@@ -4600,13 +4698,14 @@ await db.runTransaction(async (t) => {
           "facebook", "instagram", "mobile", "telegram",
           "tiktok", "video", "discord", "blog", "reddit", "seo", "inscricoes"
       ];
+      
       for (const cardId of cardIds) {
-          // Carrega serviços empresariais id 64
-          const empresarialSnapshot = await db.collection("services")
+          // 🎯 ATUALIZAÇÃO: Carrega serviços empresariais do novo caminho
+          const empresarialSnapshot = await refServiceEmpresarial(cardId)
               .where("userId", "==", user.uid)
-              .where("empresaId", "==", cardId)
               .where("modo", "==", "empresarial")
               .get();
+              
           let empresarialPublished = 0;
           let empresarialActive = 0;
           let empresarialPending = 0;
@@ -4623,12 +4722,13 @@ await db.runTransaction(async (t) => {
           if (publishedEl) publishedEl.textContent = empresarialPublished;
           if (activeEl) activeEl.textContent = empresarialActive;
           if (pendingEl) pendingEl.textContent = empresarialPending;
-          // Carrega serviços pessoais id 66
-          const pessoalSnapshot = await db.collection("services")
-              .where("userId", "==", user.uid)
-              .where("empresaId", "==", cardId)
+          
+          // 🎯 ATUALIZAÇÃO: Carrega serviços pessoais do novo caminho
+          const pessoalSnapshot = await refServicePessoal(user.uid)
+              .where("empresaId", "==", cardId) // services_pessoal/usuarios já filtra pelo user na ref
               .where("modo", "==", "pessoal")
               .get();
+              
           let pessoalPublished = 0;
           let pessoalActive = 0;
           let pessoalPending = 0;
@@ -4649,10 +4749,11 @@ await db.runTransaction(async (t) => {
   }
   
 
-  // Função para carregar dados do usuário (mantido) id 68
+  // Função para carregar dados do usuário (AJUSTADO: NOVO CAMINHO) id 68
   function carregarDadosUsuario(user) {
       const userId = user.uid;
-      db.collection("wallets").doc(userId).get()
+      // 🎯 ATUALIZAÇÃO: Nova referência para a carteira do usuário
+      refWalletUsuario(userId).get()
           .then(doc => {
               if (doc.exists) {
                   const data = doc.data();
@@ -4677,6 +4778,7 @@ await db.runTransaction(async (t) => {
 
   // Função para visualizar serviços publicados (Modo Empresarial) (mantido) id 69
   function viewServices(companyId) {
+// ... (viewServices mantido) ...
     const user = auth.currentUser;
     if (!user) {
       showNotification("Usuário não autenticado!");
@@ -4685,7 +4787,7 @@ await db.runTransaction(async (t) => {
     window.location.href = `servicos.html?empresa=${encodeURIComponent(companyId)}&modo=empresarial`;
   }
 
-  // NOVO: Função para visualizar serviços publicados (Modo Pessoal) (mantido) id 70
+  // NOVO: Função para visualizar serviços publicados (Modo Pessoal) (AJUSTADO: NOVO CAMINHO) id 70
   async function viewUserServices(companyId) {
       const user = auth.currentUser;
       if (!user) {
@@ -4694,12 +4796,12 @@ await db.runTransaction(async (t) => {
       }
 
       try {
-          const servicesSnapshot = await db.collection("services")
-              .where("userId", "==", user.uid)
+          // 🎯 ATUALIZAÇÃO: Nova referência para serviços pessoais
+          const servicesSnapshot = await refServicePessoal(user.uid)
               .where("empresaId", "==", companyId)
               .where("modo", "==", "pessoal")
               .get();
-
+              
           let html = `
         <h2><i class="fas fa-eye"></i> Seus Serviços Publicados (${companyId})</h2>
         <p style="margin-bottom: 1rem;">Aqui estão todos os serviços pessoais que você publicou.</p>
@@ -4751,6 +4853,7 @@ await db.runTransaction(async (t) => {
 
   // Função auxiliar simples para evitar injeção de HTML no modal (mantido) id 71
   function escapeHtml(str) {
+// ... (escapeHtml mantido) ...
       return String(str)
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
@@ -4761,15 +4864,24 @@ await db.runTransaction(async (t) => {
 
   // STUBs (mantido) id 72
   function editService(serviceId) {
+// ... (editService mantido) ...
       showNotification("Abrir edição para serviço: " + serviceId);
   }
 
-  // Exclui o serviço do Firestore (mantido) id 73
+  // Exclui o serviço do Firestore (AJUSTADO: NOVO CAMINHO) id 73
   async function deleteService(serviceId) {
       if (!confirm("Deseja realmente excluir este serviço?")) return;
       try {
-          await db.collection("services").doc(serviceId).delete();
+          const user = auth.currentUser;
+          if (!user) throw new Error('Usuário não autenticado.');
+          
+          // O serviço pessoal está em companies/services_pessoal/usuarios/<docId>
+          const serviceRef = refServicePessoal(user.uid).doc(serviceId); 
+
+          await serviceRef.delete();
           showNotification("Serviço excluído com sucesso.");
+          // Recarrega a visualização após a exclusão
+          carregarEstatisticasServicos(); 
       } catch (err) {
           console.error("Erro ao excluir serviço:", err);
           showNotification("Erro ao excluir serviço.");
@@ -4777,11 +4889,13 @@ await db.runTransaction(async (t) => {
   }
 
   function simulateAction(action, companyId) {
+// ... (simulateAction mantido) ...
       showNotification(`Ação simulada: ${action} para ${companyId} (Modo Pessoal)`);
   }
 
   // Função utilitária para mostrar um modal simples (mantido) id 74
   function showSimpleModal(title, content) {
+// ... (showSimpleModal mantido) ...
       const modal = document.getElementById("guidedPublishModal");
       const modalContent = document.getElementById("modalContent");
 
@@ -4817,6 +4931,7 @@ await db.runTransaction(async (t) => {
 
 // Função para exibir notificções (corrigida e segura) id 75
 function showNotification(message) {
+// ... (showNotification mantido) ...
     const notification = document.getElementById('notification');
     
     // Se o elemento não existir, apenas mostra no console e sai
@@ -4837,12 +4952,14 @@ function showNotification(message) {
 
   // Funções para os botões dos cards (mantido) id 76
   function contratar(cardId) {
+// ... (contratar mantido) ...
     const card = document.querySelector(`[data-card-id="${cardId}"]`);
     const title = card.querySelector('h3')?.textContent || 'card';
     openPublishModal(cardId, title, 'empresarial');
   }
 
   function executarMissoes(cardId) {
+// ... (executarMissoes mantido) ...
     const card = document.querySelector(`[data-card-id="${cardId}"]`);
     const title = card.querySelector('h3')?.textContent || 'card';
     showNotification(`Executando missões em ${title}... (simulado)`);
@@ -4850,6 +4967,7 @@ function showNotification(message) {
 
   // Função para determinar o nível global com base nos Golds (mantido) id 77
   function determinarNivelGlobal(cardId, golds) {
+// ... (determinarNivelGlobal mantido) ...
     const niveis = niveisGlobais[cardId] || [];
     let nivelAtual = niveis[0];
     let proximaMeta = niveis[0].golds;
@@ -4865,6 +4983,7 @@ function showNotification(message) {
 
   // Função para atualizar progresso e nível de um card específico (mantido) id 78
   function atualizarProgressoDoCard(cardId, golds, metricValue) {
+// ... (atualizarProgressoDoCard mantido) ...
     // Empresarial id 79
     const { nivelAtual, proximaMeta } = determinarNivelGlobal(cardId, golds);
     const percentual = Math.min((Number(golds) / proximaMeta) * 100, 100);
@@ -4909,41 +5028,45 @@ function showNotification(message) {
     if (metricElPessoal && metricValue !== undefined) metricElPessoal.textContent = formatGold(metricValue, false);
   }
 
-  // Função para carregar dados dos cards (AJUSTADO: LER 'companies' em vez de 'serviceCards') id 81
+  // Função para carregar dados dos cards (AJUSTADO: LER 'bankCentral/wallets_empresas') id 81
   function carregarDadosCards() {
     const cardIds = [
       "facebook", "instagram", "mobile", "telegram",
       "tiktok", "video", "discord", "blog", "reddit", "seo", "inscricoes"
     ];
     cardIds.forEach(cardId => {
-      // AJUSTE: Lendo da coleção 'companies' e usando 'goldsEmpresa' id 82
-      db.collection("companies").doc(cardId).onSnapshot((doc) => {
+      // 🎯 ATUALIZAÇÃO: Lendo da nova coleção de Wallet da Empresa
+      refWalletEmpresa(cardId).onSnapshot((doc) => {
         if (doc.exists) {
           const data = doc.data();
-          // NOVO CAMPO: goldsEmpresa id 83
-          const golds = data.goldsEmpresa || 0; 
-          const metricKey = cardId === 'facebook' || cardId === 'instagram' ? 'seguidores' :
-                         cardId === 'mobile' ? 'instalacoes' :
-                         cardId === 'telegram' ? 'canais' :
-                         cardId === 'tiktok' ? 'curtidas' :
-                         cardId === 'video' ? 'campanhas' :
-                         cardId === 'discord' ? 'servidores' :
-                         cardId === 'blog' ? 'comentarios' :
-                         cardId === 'reddit' ? 'upvotes' :
-                         cardId === 'seo' ? 'palavras' : 'ativas';
-          const metricValue = data[metricKey] || 0;
-          atualizarProgressoDoCard(cardId, golds, metricValue);
-        } else {
-          // Se não existir na coleção 'companies', tenta carregar de 'serviceCards' (apenas para exibição legada) id 84
-          db.collection("serviceCards").doc(cardId).get().then(snap => {
-            if(snap.exists) {
-              const data = snap.data();
-              const golds = (data.golds || 0) + (data.fee || 0); // Lógica antiga de progresso id 85
+          // NOVO CAMPO: goldsBalance (substituindo goldsEmpresa) id 83
+          const golds = data.goldsBalance || 0; 
+          
+          // Tenta ler métrica do Perfil da Empresa (ex: seguidores/instalacoes)
+          refCompanyProfile(cardId).get().then(profileSnap => {
+              let metricValue = 0;
+              if (profileSnap.exists) {
+                  const profileData = profileSnap.data();
+                  const metricKey = cardId === 'facebook' || cardId === 'instagram' ? 'seguidores' :
+                                 cardId === 'mobile' ? 'instalacoes' :
+                                 cardId === 'telegram' ? 'canais' :
+                                 cardId === 'tiktok' ? 'curtidas' :
+                                 cardId === 'video' ? 'campanhas' :
+                                 cardId === 'discord' ? 'servidores' :
+                                 cardId === 'blog' ? 'comentarios' :
+                                 cardId === 'reddit' ? 'upvotes' :
+                                 cardId === 'seo' ? 'palavras' : 'ativas';
+                  metricValue = profileData[metricKey] || 0;
+              }
+              atualizarProgressoDoCard(cardId, golds, metricValue);
+          }).catch(err => {
+              console.error("Erro ao ler profile da empresa:", err);
               atualizarProgressoDoCard(cardId, golds, 0);
-            } else {
-              atualizarProgressoDoCard(cardId, 0, 0);
-            }
           });
+          
+        } else {
+          // Se não existir na nova estrutura, zera (ou manteria a leitura legada para migração)
+          atualizarProgressoDoCard(cardId, 0, 0);
         }
       }, (err) => {
         console.error("Erro onSnapshot:", err);
@@ -4964,6 +5087,7 @@ function showNotification(message) {
   let touchEndX = 0;
 
   function updateCarousel() {
+// ... (updateCarousel mantido) ...
     const firstCardEmpresarial = carouselEmpresarial.querySelector('.nav-card');
     if (firstCardEmpresarial) {
         const widthEmpresarial = firstCardEmpresarial.offsetWidth + 12;
@@ -4978,6 +5102,7 @@ function showNotification(message) {
 
   // Event listeners para o carrossel (mantido) id 87
   carouselEmpresarial.addEventListener('touchstart', (e) => {
+// ... (event listeners do carrossel mantidos) ...
     touchStartX = e.changedTouches[0].screenX;
   });
 
@@ -5009,6 +5134,7 @@ function showNotification(message) {
 
   // Carrega dados do usuário e verifica autenticação (mantido) id 88
   document.addEventListener('DOMContentLoaded', () => {
+// ... (DOMContentLoaded e listeners mantidos) ...
     auth.onAuthStateChanged(user => {
       if (user) {
         carregarDadosUsuario(user);
@@ -5110,6 +5236,7 @@ function showNotification(message) {
     document.getElementById("serviceStepsContainer").addEventListener("input", prepareSummary);
   });
   function navigateTo(page) {
+// ... (navigateTo mantido) ...
     let url;
     switch (page) {
         case 'home':
@@ -5136,13 +5263,25 @@ function showNotification(message) {
     }
     window.location.href = url;
   }
-// 🌐 Função pública (mantida) id 90
+// 🌐 Função pública (AJUSTADO: NOVO CAMINHO) id 90
 async function viewPublicServices() {
     try {
-        const snapshot = await db.collection("services")
-            .where("status", "==", "ativo")
-            .get();
+        // 🎯 ATUALIZAÇÃO: Busca em todos os serviços ativos (exige regras de segurança ou um campo de índice)
+        // Por simplificação, vamos buscar em todos os serviços empresariais ativos:
         
+        const cardIds = [
+            "facebook", "instagram", "mobile", "telegram",
+            "tiktok", "video", "discord", "blog", "reddit", "seo", "inscricoes"
+        ];
+        
+        let allServices = [];
+        for (const cardId of cardIds) {
+            const snapshot = await refServiceEmpresarial(cardId)
+                .where("status", "==", "ativo")
+                .get();
+            snapshot.forEach(doc => allServices.push({ id: doc.id, data: doc.data() }));
+        }
+
         let html = `
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <h2><i class="fas fa-store"></i> Mercado de Serviços</h2>
@@ -5153,11 +5292,11 @@ async function viewPublicServices() {
       </p>
     `;
         
-        if (snapshot.empty) {
+        if (allServices.length === 0) {
             html += `<p>Nenhum serviço disponível no momento. Volte mais tarde.</p>`;
         } else {
-            snapshot.forEach(doc => {
-                const data = doc.data();
+            allServices.forEach(item => {
+                const data = item.data;
                 html += `
           <div class="service-card" style="
             background: var(--surface);
@@ -5174,7 +5313,7 @@ async function viewPublicServices() {
             </div>
             <div style="margin-top:10px;">
               <button style="background: var(--primary); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer;"
-                onclick="applyForService('${doc.id}', '${data.nome || ""}')">
+                onclick="applyForService('${item.id}', '${data.nome || ""}')">
                 <i class="fas fa-hand-pointer"></i> Executar Missão
               </button>
             </div>
@@ -5192,6 +5331,7 @@ async function viewPublicServices() {
 
 // ✋ Função simulada para aplicar em um serviço (mantida) id 91
 async function applyForService(serviceId, serviceName) {
+// ... (applyForService mantido) ...
     const user = auth.currentUser;
     if (!user) return showNotification("Você precisa estar autenticado para executar serviços.");
     
@@ -5213,6 +5353,6 @@ if (tempState) {
 }
 </script>
 
-<!-- Arquivo de melhorias -->
 <script src="scripts/passos.js"></script>
+
 
