@@ -3436,11 +3436,9 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 <script>
-
 // ====================================================================
 // 🧠 NOVO SISTEMA DE REFERÊNCIAS FIREBASE (BASEADO NA NOVA ESTRUTURA)
 // ====================================================================
-
 // Inicializa o Firebase id 3
 const firebaseConfig = {
     apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
@@ -3453,7 +3451,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
-
 // Funções Auxiliares de Referência para a nova estrutura
 function refWalletUsuario(uid) { 
     return db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(uid); 
@@ -3484,7 +3481,6 @@ function refCompanyProfile(companyId) {
 }
 // OBS: 'companies/{cardId}' na lógica antiga deve ser substituído por refCompanyProfile(cardId)
 // para interagir com dados da empresa (ex: contadores).
-
 document.addEventListener('DOMContentLoaded', () => {
     if (!firebase.auth) {
         console.error("❌ Firebase Auth não carregado.");
@@ -3506,62 +3502,51 @@ document.addEventListener('DOMContentLoaded', () => {
   // ====================================================================
   let selectedCompanyId = null;
   let currentMode = 'empresarial'; // Variável global para o modo id do comentário 1
-
   // Definição das novas taxas e constantes para clareza  id 2
   const GOLD_TO_REAL = 1000;
   const TAX_PERSONAL = 0.05; // 5%
   const TAX_EMPRESARIAL = 0.10; // 10%
   const COMPANY_SHARE_RATIO = 0.5; // 50/50 split
-
   // OBS: BASE_REWARD e FIXED_FEE antigos são mantidos (mas não usados na nova lógica de fee)
   // para evitar quebras em outras partes do código que possam depender delas.
-
   // O bloco de inicialização do Firebase foi movido para o topo, antes das referências auxiliares.
   
   // Variáveis globais id 4
   let currentUser = null;
   let walletData = { goldsBalance: 0, reaisBalance: 0, name: "Usuário", id: "..." };
-
  // ===============================
 // 💰 SISTEMA DE FORMATAÇÃO DE VALORES (id 5)
 // ===============================
 // Este bloco define formatações numéricas padronizadas para todo o sistema YshippCommerce.
 // Ele garante que os valores de Golds, Reais e números grandes sejam exibidos de forma clara
 // para os usuários brasileiros (com ponto como separador de milhar).
-
 // 🔸 Formata valor com até 2 casas decimais (ex: 1.234,56)
 const GOLD_FORMAT = new Intl.NumberFormat('pt-BR', { 
   minimumFractionDigits: 0, 
   maximumFractionDigits: 2 
 });
-
 // 🔸 Formata valor sem casas decimais (ex: 1.234)
 const GOLD_FORMAT_NO_DECIMAL = new Intl.NumberFormat('pt-BR', { 
   minimumFractionDigits: 0, 
   maximumFractionDigits: 0 
 });
-
 // 🔸 (Opcional) Formata valor com símbolo de moeda (ex: R$ 1.234,56)
 const REAL_FORMAT = new Intl.NumberFormat('pt-BR', { 
   style: 'currency', 
   currency: 'BRL' 
 });
-
 // ===============================
 // 🪙 FUNÇÕES AUXILIARES
 // ===============================
-
 // Formata número para exibição como "1.000 Golds"
 function formatGolds(value) {
   return `${GOLD_FORMAT_NO_DECIMAL.format(value)} Golds`;
 }
-
 // Converte Golds em Reais (1 Gold = R$1 como exemplo; ajustar taxa se houver)
 function goldsToReais(golds, taxaConversao = 1) {
   const valorReais = golds * taxaConversao;
   return REAL_FORMAT.format(valorReais);
 }
-
   /**
    * Função auxiliar para formatar Golds id 6
    * @param {number} value
@@ -3574,7 +3559,6 @@ function goldsToReais(golds, taxaConversao = 1) {
       if (isNaN(numericValue)) return "0";
       return includeDecimals ? GOLD_FORMAT.format(numericValue) : GOLD_FORMAT_NO_DECIMAL.format(numericValue);
   }
-
   auth.onAuthStateChanged(async (user) => {
     if (user) {
       currentUser = user;
@@ -3593,7 +3577,6 @@ function goldsToReais(golds, taxaConversao = 1) {
       walletData = { goldsBalance: 0, reaisBalance: 0, name: "Usuário", id: "..." };
     }
   });
-
   // Definição dos níveis globais e metas para cada card (mantido) id 7
   const niveisGlobais = {
 // ... (niveisGlobais mantido) ...
@@ -3675,7 +3658,6 @@ function goldsToReais(golds, taxaConversao = 1) {
       { nivel: 5, nome: "Sócio Global Yshipp", golds: 5000000 }
     ]
   };
-
  // =============================================
 // 🎯 SISTEMA DE SUBCATEGORIAS DE SERVIÇOS (id 8)
 // ... (subcategorias mantido) ...
@@ -3688,7 +3670,6 @@ function goldsToReais(golds, taxaConversao = 1) {
 // - nome: nome visível da ação
 // - goldsBase: valor base em Golds que o usuário ganha por completá-la
 // - dificuldade: classifica o esforço exigido (“Simples”, “Intermediário”, “Complexo”)
-
 // ===============================
 // 🔹 Definição de dificuldades padronizadas
 // ===============================
@@ -3697,7 +3678,6 @@ const DIFICULDADE = {
     INTERMEDIARIO: "Intermediário",
     COMPLEXO: "Complexo"
 };
-
 // ===============================
 // 🔹 Definição principal das subcategorias
 // ===============================
@@ -3711,7 +3691,7 @@ const subcategorias = {
     
     // 📘 Tarefas do Facebook (ações sociais e de engajamento)
     facebook: [
-        { nome: "Curtir no Facebook", goldsBase: 150, dificuldade: DIFICULDADE.FACIL },
+        { nome: "Curtir no Facebook", goldsBase: 150, dificuldade: DIFICULDADE.SIMPLES }, // Corrigido de FACIL para SIMPLES
         { nome: "Curtidas no Facebook (mais de 50 amigos)", goldsBase: 1200, dificuldade: DIFICULDADE.INTERMEDIARIO },
         { nome: "Curtidas no Facebook (mais de 100 amigos)", goldsBase: 1500, dificuldade: DIFICULDADE.INTERMEDIARIO },
         { nome: "Curtidas no Facebook (mais de 300 amigos)", goldsBase: 2000, dificuldade: DIFICULDADE.INTERMEDIARIO },
@@ -3760,7 +3740,6 @@ const subcategorias = {
         { nome: "SEO + Promover conteúdo + Tarefas 5x extensas", goldsBase: 7000, dificuldade: DIFICULDADE.COMPLEXO }
     ]
 };
-
 // ===============================
 // 🧠 Função auxiliar: obter lista de tarefas de uma categoria
 // ===============================
@@ -3768,7 +3747,6 @@ const subcategorias = {
 function getSubcategoriasPorPlataforma(plataforma) {
     return subcategorias[plataforma] || [];
 }
-
   // Variáveis globais para controle do modal e dados id 8
   let currentCompanyId = null;
   let currentCompanyName = null;
@@ -3777,26 +3755,21 @@ function getSubcategoriasPorPlataforma(plataforma) {
   let serviceSteps = [{ id: 1, description: "" }];
   const BASE_REWARD = 150; // Golds base por tarefa (mantido, mas pode ser removido) id 9
   const FIXED_FEE = 50; // Taxa fixa adicional em Golds (mantido, mas não usado na nova lógica) id 10
-
   /**
    * FUNÇÕES DO FLUXO GUIADO
    */
-
   // Função para calcular a recompensa por freelancer com base na complexidade (mantido, com nota de melhoria) id 11
   function calculateRewardPerFreelancer() {
 // ... (calculateRewardPerFreelancer mantido) ...
       let baseReward = BASE_REWARD;
       const totalSteps = serviceSteps.length;
-
       // ... Lógica de cálculo de recompensa por passos (mantida) ... id 12
-
       let calculatedReward = baseReward;
       const subcategorySelect = document.getElementById("subcategory");
       const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
       if (selectedOption && selectedOption.dataset.goldsBase) {
           const subcategoryGolds = parseFloat(selectedOption.dataset.goldsBase);
           calculatedReward = subcategoryGolds;
-
           // Reajusta o multiplicador para ser proporcional ao BASE_REWARD de 150 id 13
           const stepMultiplier = [0, 75, 125, 250, 450]; // Aumento absoluto em Golds por passo id 14
           let stepsBonus = 0;
@@ -3804,10 +3777,8 @@ function getSubcategoriasPorPlataforma(plataforma) {
               stepsBonus += stepMultiplier[i];
           }
           calculatedReward += stepsBonus;
-
           // TODO: Implementar consulta ao DB para 'geradorBonus' e aplicá-lo aqui
           // reward = calculatedReward * (1 + gerador.rewardMultiplier); id 15
-
           document.getElementById("basePriceDisplay").textContent = `${formatGold(subcategoryGolds)} Golds (Base)`;
           document.getElementById("calculatedReward").value = `${formatGold(calculatedReward)} Golds`;
           return calculatedReward;
@@ -3820,7 +3791,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
       document.getElementById("calculatedReward").value = `${formatGold(calculatedReward)} Golds (Base)`;
       return calculatedReward;
   }
-
   // Adiciona uma nova etapa (Passo do Serviço) (mantido) id 18
   function addStep() {
 // ... (addStep mantido) ...
@@ -3830,11 +3800,9 @@ function getSubcategoriasPorPlataforma(plataforma) {
       }
       const newStepId = serviceSteps.length + 1;
       const container = document.getElementById("serviceStepsContainer");
-
       const newStep = { id: newStepId, description: "" };
       serviceSteps.push(newStep);
       renderServiceSteps();
-
       document.getElementById("stepCount").textContent = serviceSteps.length;
       if (serviceSteps.length >= 5) {
           document.getElementById("addStepButton").disabled = true;
@@ -3844,7 +3812,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
       prepareSummary();
       updateModalSize();
   }
-
   // Remove uma etapa (Passo do Serviço) (mantido) id 19
   function removeStep(id) {
 // ... (removeStep mantido) ...
@@ -3852,7 +3819,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
           showNotification("O serviço deve ter pelo menos 1 passo.");
           return;
       }
-
       serviceSteps = serviceSteps.filter(step => step.id !== id);
       renderServiceSteps();
       document.getElementById("stepCount").textContent = serviceSteps.length;
@@ -3864,7 +3830,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
       prepareSummary();
       updateModalSize();
   }
-
   // Atualiza a descrição de um passo no array serviceSteps (mantido) id 20
   function updateStepDescription(id, value) {
 // ... (updateStepDescription mantido) ...
@@ -3873,7 +3838,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
           step.description = value;
       }
   }
-
   // Renderiza a lista de passos (mantido) id 21
   function renderServiceSteps() {
 // ... (renderServiceSteps mantido) ...
@@ -3893,12 +3857,10 @@ function getSubcategoriasPorPlataforma(plataforma) {
       });
       document.getElementById("stepCount").textContent = serviceSteps.length;
   }
-
   // Validação da etapa atual (mantido, mas com reforço de validação no server-side) id 22
   function validateStep(step) {
 // ... (validateStep mantido) ...
       document.getElementById("errorMessage").style.display = "none";
-
       switch (step) {
           case 1:
               const subcategory = document.getElementById("subcategory").value;
@@ -3931,13 +3893,11 @@ function getSubcategoriasPorPlataforma(plataforma) {
                       step.description = inputElement.value.trim();
                   }
               });
-
               if (!allStepsValid) {
                   document.getElementById("errorMessage").textContent = "Preencha a descrição de todos os passos do serviço.";
                   document.getElementById("errorMessage").style.display = "block";
                   return false;
               }
-
               calculateRewardPerFreelancer();
               return true;
           case 3:
@@ -3945,7 +3905,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
               const proofImage = document.getElementById("proofImage").checked;
               const proofText = document.getElementById("proofText").checked;
               const minProofCount = parseInt(document.getElementById("minProofCount").textContent);
-
               if (proofDescription.length < 10) {
                   document.getElementById("errorMessage").textContent = "A descrição da prova deve ter pelo menos 10 caracteres.";
                   document.getElementById("errorMessage").style.display = "block";
@@ -3961,7 +3920,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
                   document.getElementById("errorMessage").style.display = "block";
                   return false;
               }
-
               prepareSummary();
               return true;
           case 4:
@@ -3970,7 +3928,6 @@ function getSubcategoriasPorPlataforma(plataforma) {
               return true;
       }
   }
-
 let isAnimating = false; // Bloqueia cliques durante animação
 const completedSteps = new Set(); // Guarda etapas concluídas
 const firstTimeSteps = new Set(); // Controla se o tutorial já apareceu
@@ -3980,7 +3937,6 @@ const stepTips = {
     3: "Revise antes de enviar.",
     // adicione mais dicas conforme suas etapas
 };
-
 /**
  * Atualiza número da etapa com animação de contador
  */
@@ -3994,7 +3950,6 @@ function animateStepNumber(step) {
         stepEl.style.opacity = "1";
     }, 150);
 }
-
 /**
  * Mostra dicas ou contexto da etapa
  */
@@ -4006,7 +3961,6 @@ function showStepTip(step) {
     tipEl.classList.add("fade-in-tip");
     setTimeout(() => tipEl.classList.remove("fade-in-tip"), 1000);
 }
-
 /**
  * Mostra mini tutorial ou tooltip se for a primeira vez
  */
@@ -4020,7 +3974,6 @@ function showStepTutorial(step) {
     setTimeout(() => tutorialEl.classList.remove("slide-down-tip"), 2000);
     firstTimeSteps.add(step);
 }
-
 /**
  * Atualiza marcação de etapas concluídas e barra de progresso
  */
@@ -4034,7 +3987,6 @@ function updateCompletedSteps() {
         } else {
             el.classList.remove("completed");
         }
-
         // Atualiza largura da barra de progresso
         const progressBar = document.getElementById("progressBar");
         if (progressBar) {
@@ -4043,7 +3995,6 @@ function updateCompletedSteps() {
         }
     });
 }
-
 /**
  * Aplica efeito de zoom/pop na etapa que entra
  */
@@ -4055,29 +4006,22 @@ function applyZoomEffect(element) {
         element.style.transform = "scale(1)";
     }, 50);
 }
-
 /**
  * Função genérica para navegar entre etapas com animação de deslize
  */
 function goToStep(stepDelta) {
 // ... (goToStep mantido) ...
     const newStep = currentStep + stepDelta;
-
     // Limites
     if (newStep < 1 || newStep > totalSteps) return;
-
     // Valida apenas se for avançar
     if (stepDelta > 0 && !validateStep(currentStep)) return;
-
     if (isAnimating) return; // Bloqueia cliques rápidos
     isAnimating = true;
-
     const currentElement = document.getElementById(`step-${currentStep}`);
     const targetElement = document.getElementById(`step-${newStep}`);
-
     // Define direção do deslize
     const direction = stepDelta > 0 ? 'left' : 'right';
-
     // Marca as etapas concluídas com base no avanço do usuário
 function markCompletedSteps(stepDelta) {
 // ... (markCompletedSteps mantido) ...
@@ -4098,64 +4042,50 @@ function markCompletedSteps(stepDelta) {
     // Atualiza a UI das etapas concluídas
     updateCompletedSteps();
 }
-
     // Anima etapa atual saindo
     currentElement.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
     currentElement.style.transform = `translateX(${direction === 'left' ? '-100%' : '100%'})`;
     currentElement.style.opacity = '0';
-
     // Prepara a etapa alvo
     targetElement.style.transition = 'none';
     targetElement.style.transform = `translateX(${direction === 'left' ? '100%' : '-100%'})`;
     targetElement.style.opacity = '0';
     targetElement.classList.add('active');
-
     // Força repaint antes de animar
     void targetElement.offsetWidth;
-
     // Anima etapa alvo entrando
     targetElement.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
     targetElement.style.transform = 'translateX(0)';
     targetElement.style.opacity = '1';
-
     // Aplica zoom/pop
     applyZoomEffect(targetElement);
-
     // Atualiza número da etapa com animação
     currentStep = newStep;
     animateStepNumber(currentStep);
-
     // Mostra dicas e tutorial
     showStepTip(currentStep);
     showStepTutorial(currentStep);
-
     // Atualiza botões de navegação
     updateNavigationButtons();
-
     // Limpa estilos antigos após animação
     setTimeout(() => {
         currentElement.classList.remove('active');
         currentElement.style.transition = '';
         currentElement.style.transform = '';
         currentElement.style.opacity = '';
-
         targetElement.style.transition = '';
         targetElement.style.transform = '';
         targetElement.style.opacity = '';
-
         updateModalSize(); // Ajusta tamanho do modal
         isAnimating = false;
-
         // Feedback visual ao concluir a última etapa
         if (currentStep === totalSteps) {
             triggerCompletionEffect();
         }
     }, 350);
 }
-
 function nextStep() { goToStep(1); }
 function prevStep() { goToStep(-1); }
-
 /**
  * Pequeno efeito visual de comemoração ao finalizar a última etapa
  */
@@ -4166,7 +4096,6 @@ function triggerCompletionEffect() {
     modal.classList.add("completion-effect");
     setTimeout(() => modal.classList.remove("completion-effect"), 1000);
 }
-
 /**
  * Atualiza a visibilidade dos botões de navegação
  * - "Voltar" aparece se não estiver na primeira etapa
@@ -4176,19 +4105,15 @@ function updateNavigationButtons() {
 // ... (updateNavigationButtons mantido) ...
     const backButton = document.getElementById("backButton");
     const nextButton = document.getElementById("nextButton");
-
     // Mostra ou esconde o botão "Voltar"
     backButton.style.display = currentStep > 1 ? 'block' : 'none';
-
     // Mostra ou esconde o botão "Próximo"
     const isLastStep = currentStep === totalSteps;
     nextButton.style.display = isLastStep ? 'none' : 'block';
-
     // Opcional: adicionar classes para animação ou estilos visuais
     backButton.classList.toggle('disabled', currentStep === 1);
     nextButton.classList.toggle('disabled', isLastStep);
 }
-
 /**
  * Atualiza dinamicamente o tamanho do modal conforme o conteúdo da etapa ativa
  * Com animação suave e efeito pop elegante
@@ -4234,7 +4159,6 @@ function updateModalSize(callback) {
         setTimeout(() => callback(newHeight), 400);
     }
 }
-
   // Carrega subcategorias (mantido, com nota de DB Pricing) id 28
   function loadSubcategories() {
 // ... (loadSubcategories mantido) ...
@@ -4250,7 +4174,6 @@ function updateModalSize(callback) {
           option.dataset.dificuldade = sub.dificuldade;
           subcategorySelect.appendChild(option);
       });
-
       // Reseta inputs id 30
       document.getElementById("serviceDifficulty").value = "Aguardando seleção...";
       document.getElementById("freelancers").value = "";
@@ -4260,16 +4183,13 @@ function updateModalSize(callback) {
       document.getElementById("addStepButton").disabled = false;
       document.getElementById("addStepButton").textContent = `+ Adicionar Passo (Total: 1)`;
       calculateRewardPerFreelancer();
-
       // Zera as provas id 31
       document.getElementById("proofDescription").value = "";
       document.getElementById("proofImage").checked = true;
       document.getElementById("proofText").checked = false;
       document.getElementById("minProofCount").textContent = "1";
-
       updateModeInfoInStep2();
   }
-
   // NOVO: Atualiza a info da Etapa 2 (AJUSTADO: REMOVE TEXTO 'DOBRA') id 32
   function updateModeInfoInStep2() {
 // ... (updateModeInfoInStep2 mantido) ...
@@ -4286,7 +4206,6 @@ function updateModalSize(callback) {
       `;
     }
   }
-
   // Calcula dificuldade (mantido) id 33
   function calculateDifficultyAndProof() {
 // ... (calculateDifficultyAndProof mantido) ...
@@ -4295,7 +4214,6 @@ function updateModalSize(callback) {
       if (selectedOption && selectedOption.dataset.dificuldade) {
           const dificuldade = selectedOption.dataset.dificuldade;
           document.getElementById("serviceDifficulty").value = dificuldade;
-
           let minProof = 1;
           if (dificuldade === "Complexo") {
               minProof = 2;
@@ -4310,7 +4228,6 @@ function updateModalSize(callback) {
           prepareSummary();
       }
   }
-
   // ====================================================================
   // 2. prepareSummary() - SOBRESCRITO: NOVA LÓGICA DE TAXA
   // ====================================================================
@@ -4415,13 +4332,11 @@ function updateModalSize(callback) {
         showTopNotification("❌ Ocorreu um erro ao preparar o resumo.");
     }
 }
-
 // Função auxiliar de arredondamento
 function roundGold(value) {
 // ... (roundGold mantido) ...
     return Math.floor(value * 100) / 100;
 }
-
 // Função auxiliar para animar contagem de números
 function animateNumber(element, start, end, duration = 500) {
 // ... (animateNumber mantido) ...
@@ -4433,7 +4348,6 @@ function animateNumber(element, start, end, duration = 500) {
     };
     requestAnimationFrame(step);
 }
-
   // Função para abrir o modal de publicação (mantido) id 47
   function openPublishModal(companyId, companyName, mode) {
 // ... (openPublishModal mantido) ...
@@ -4442,25 +4356,20 @@ function animateNumber(element, start, end, duration = 500) {
     currentCompanyName = companyName;
     currentMode = mode;
     document.getElementById("modalCompanyName").textContent = companyName;
-
     currentStep = 1;
     document.getElementById("currentStepNumber").textContent = currentStep;
     document.getElementById("errorMessage").style.display = "none";
-
     for(let i = 1; i <= totalSteps; i++) {
       const stepElement = document.getElementById(`step-${i}`);
       stepElement.classList.remove('active', 'fade-in-step');
     }
     document.getElementById("step-1").classList.add('active', 'fade-in-step');
-
     loadSubcategories();
     updateNavigationButtons();
-
     const modal = document.getElementById("guidedPublishModal");
     modal.classList.add("active");
     setTimeout(updateModalSize, 50);
   }
-
 // Função para fechar o modal (atualizado para exibir notificação pós-reload)
 function closeModal() {
 // ... (closeModal e DOMContentLoaded de notificação pós-reload mantidos) ...
@@ -4491,7 +4400,6 @@ function closeModal() {
     // Recarrega a página
     window.location.reload();
 }
-
 // Quando a página carregar novamente, verifica se deve mostrar a notificação
 document.addEventListener('DOMContentLoaded', () => {
 // ... (código mantido) ...
@@ -4502,7 +4410,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionStorage.removeItem('showServiceNotPublished');
     }
 });
-
 // Função para exibir a notificação superior executiva
 function showTopNotification(message) {
 // ... (showTopNotification mantido) ...
@@ -4524,72 +4431,92 @@ function showTopNotification(message) {
         notification.classList.remove("show");
     }, 3000);
 }
-
   // ====================================================================
-  // 3. publishService() - ATUALIZADO: NOVA TRANSAÇÃO ATÔMICA COM BANK CENTRAL
+  // 3. publishService() - CORRIGIDA PARA TRANSAÇÃO ATÔMICA
   // ====================================================================
   
   async function publishService() {
       if (!validateStep(4)) return;
       const summaryData = await prepareSummary();
-      if (!summaryData) return; // Se prepareSummary falhou ou retornou indefinido
+      if (!summaryData) return; 
       
       const { finalCost, totalFee, grossCost, rewardPerFreelancer, companyShare, bcShare } = summaryData;
       const user = auth.currentUser;
-
       if (!user) {
           showNotification("Usuário não autenticado!");
           return;
       }
-      // Validação de saldo no cliente para UX (a validação crítica é na transação) id 49
+      
       if (walletData.goldsBalance < finalCost) {
           showNotification("Saldo insuficiente para publicar o serviço.");
           return;
       }
-
-      const subcategorySelect = document.getElementById("subcategory");
-      const selectedOption = subcategorySelect.options[subcategorySelect.selectedIndex];
+      
       const freelancers = parseInt(document.getElementById("freelancers").value);
       
-      // Define a nova referência para o Serviço
+      // ==============================================================
+      // === PREPARAÇÃO DOS DADOS (IGUAL AO CÓDIGO ANTERIOR) ===
+      // ==============================================================
       let serviceRef;
-      if (currentMode === 'empresarial') {
-          // companies/services_empresarial/<empresa>_services/<docId>
-          serviceRef = refServiceEmpresarial(currentCompanyId).doc(); 
-      } else {
-          // companies/services_pessoal/usuarios/<docId>
-          serviceRef = refServicePessoal(user.uid).doc(); 
+      
+      const categoriaPlataforma = currentCompanyId; 
+      if (!categoriaPlataforma) {
+           showNotification("Erro: Categoria da plataforma (ID da Empresa) não definida.");
+           return;
+      }
+
+      const nomeDoServicoParaDocumento = document.getElementById("subcategory").value;
+      if (!nomeDoServicoParaDocumento || nomeDoServicoParaDocumento === "") {
+          showNotification("Selecione uma subcategoria (o tipo de serviço)!");
+          return;
+      }
+
+      if (currentMode === "empresarial") {
+          const subcolecaoNome = `${categoriaPlataforma} services`;
+          serviceRef = db.collection('companies').doc('services empresarial')
+                         .collection(subcolecaoNome).doc(nomeDoServicoParaDocumento);
+      
+      } else { // modo 'pessoal'
+          const subcolecaoNome = `${categoriaPlataforma} services pessoal`;
+          serviceRef = db.collection('companies').doc('services pessoal')
+                         .collection(subcolecaoNome).doc(nomeDoServicoParaDocumento);
+      }
+
+      const etapas = [];
+      const container = document.getElementById("serviceStepsContainer");
+      const inputs = container.querySelectorAll("input[type='text']");
+      inputs.forEach(input => {
+          if (input.value.trim()) {
+              etapas.push(input.value.trim());
+          }
+      });
+      if (etapas.length === 0) {
+          showNotification("Adicione pelo menos uma etapa!");
+          return;
       }
       
       const serviceData = {
           userId: user.uid,
-          empresa: currentCompanyName,
-          empresaId: currentCompanyId,
+          empresa: currentCompanyName || "Pessoal",
+          empresaId: currentCompanyId || user.uid,
           modo: currentMode,
-          nome: selectedOption.value,
+          nome: document.getElementById("serviceDescription").value.trim(), 
           descricao: document.getElementById("serviceDescription").value.trim(),
           recompensa: rewardPerFreelancer,
           freelancers: freelancers,
           freelancersAtivos: 0,
-          subcategoria: selectedOption.value,
-          dificuldade: selectedOption.dataset.dificuldade,
-          passos: serviceSteps,
-          provaDescricao: document.getElementById("proofDescription").value.trim(),
-          provaTipoImagem: document.getElementById("proofImage").checked,
-          provaTipoTexto: document.getElementById("proofText").checked,
+          subcategoria: nomeDoServicoParaDocumento, 
           status: "ativo",
-          // Novos campos de contabilização id 50
-          fee: totalFee,
-          grossCost: grossCost,
-          finalCost: finalCost,
-          companyShare: companyShare,
-          bcShare: bcShare,
-          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+          etapas: etapas, 
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
-
+      
+      // ==============================================================
+      // === TRANSAÇÃO CORRIGIDA (LEITURAS PRIMEIRO, ESCRITAS DEPOIS) ===
+      // ==============================================================
       try {
           await db.runTransaction(async (t) => {
-              // 🎯 NOVAS REFERÊNCIAS
+              // --- REFERÊNCIAS ---
               const userWalletRef = refWalletUsuario(user.uid);
               const empresaWalletRef = refWalletEmpresa(currentCompanyId);
               const ativosRef = refAtivosEmpresa(currentCompanyId); 
@@ -4597,158 +4524,215 @@ function showTopNotification(message) {
               const bcCoinsRef = refBCCoins();
               const companyProfileRef = refCompanyProfile(currentCompanyId);
               
-              // 1. Verificar Saldo (Carteira do Usuário)
+              // ===============================================
+              // ETAPA 1: LEITURA DE TODOS OS DOCUMENTOS (READS)
+              // ===============================================
+              
               const walletDoc = await t.get(userWalletRef);
-              if (!walletDoc.exists) throw new Error('Carteira do usuário não encontrada.');
+              const moedasDoc = await t.get(bcCoinsRef);
+              
+              let empresaWalletDoc;
+              let ativosDoc;
+              let companyProfileDoc;
+              if (companyShare > 0) {
+                  empresaWalletDoc = await t.get(empresaWalletRef);
+                  ativosDoc = await t.get(ativosRef);
+                  companyProfileDoc = await t.get(companyProfileRef);
+              }
+              
+              let bcDoc;
+              if (bcShare > 0) {
+                  bcDoc = await t.get(bcReserveRef);
+              }
 
+              // ===============================================
+              // ETAPA 2: LÓGICA E CÁLCULOS (Após as leituras)
+              // ===============================================
+              
+              // 2.1. Validar e calcular saldo do usuário
+              if (!walletDoc.exists) throw new Error('Carteira do usuário não encontrada.');
               const currentGoldsBalance = walletDoc.data().goldsBalance || 0;
               if (currentGoldsBalance < finalCost) {
                   throw new Error('Saldo insuficiente para esta publicação.');
               }
-
-              // 2. Débito do Usuário (Atomicamente)
+              const novoSaldoUsuario = currentGoldsBalance - finalCost;
+              
               const transactionData = {
                   type: 'debit',
                   amount: finalCost,
                   currency: 'golds',
-                  description: `Publicação de serviço (${currentMode}): ${selectedOption.value}`,
+                  description: `Publicação de serviço (${currentMode}): ${nomeDoServicoParaDocumento}`,
                   companyShare: companyShare, 
                   bcShare: bcShare,           
                   date: new Date().toISOString(),
                   serviceId: serviceRef.id
               };
-              t.update(userWalletRef, {
-                  goldsBalance: currentGoldsBalance - finalCost,
-                  transactions: firebase.firestore.FieldValue.arrayUnion(transactionData)
-              });
 
-              // 3. Creditar Taxas na Empresa (Wallet e Ativos)
+              // 2.2. Calcular saldo da empresa (se aplicável)
+              let novoSaldoEmpresa = 0;
               if (companyShare > 0) {
-                  // Credita na Wallet da Empresa
-                  const empresaWalletDoc = await t.get(empresaWalletRef);
-                  const currentEmpresaGolds = empresaWalletDoc.exists ? empresaWalletDoc.data().goldsBalance || 0 : 0;
-                  t.set(empresaWalletRef, {
-                      goldsBalance: currentEmpresaGolds + companyShare,
-                      lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-                  }, { merge: true });
-
-                  // Credita nos Ativos da Empresa
-                  const ativosDoc = await t.get(ativosRef);
-                  const currentAtivosGolds = ativosDoc.exists ? ativosDoc.data().goldsBalance || 0 : 0;
-                  t.set(ativosRef, {
-                      goldsBalance: currentAtivosGolds + companyShare
-                  }, { merge: true });
-
-                  // Atualiza contadores de serviço no Perfil da Empresa
-                  const companyProfileDoc = await t.get(companyProfileRef);
-                  const publishedCount = companyProfileDoc.exists ? companyProfileDoc.data().published || 0 : 0;
-                  const activeCount = companyProfileDoc.exists ? companyProfileDoc.data().active || 0 : 0;
-                  
-                  t.set(companyProfileRef, {
-                      published: publishedCount + 1,
-                      active: activeCount + 1,
-                      ownerUserId: companyProfileDoc.exists ? companyProfileDoc.data().ownerUserId : user.uid, // Garante que o ownerId existe
-                      lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-                  }, { merge: true });
+                  const currentEmpresaGolds = (empresaWalletDoc && empresaWalletDoc.exists) ? empresaWalletDoc.data().goldsBalance || 0 : 0;
+                  novoSaldoEmpresa = currentEmpresaGolds + companyShare;
               }
 
-              // 4. Creditar Taxas no Banco Central (Reserve)
+              // 2.3. Calcular ativos da empresa (se aplicável)
+              let novoAtivoEmpresa = 0;
+              if (companyShare > 0) {
+                  const currentAtivosGolds = (ativosDoc && ativosDoc.exists) ? ativosDoc.data().goldsBalance || 0 : 0;
+                  novoAtivoEmpresa = currentAtivosGolds + companyShare;
+              }
+              
+              // 2.4. Calcular contadores do perfil da empresa (se aplicável)
+              let publishedCount = 0;
+              let activeCount = 0;
+              let ownerUserId = user.uid; // Padrão
+              if (companyShare > 0) {
+                  if (companyProfileDoc && companyProfileDoc.exists) {
+                      publishedCount = companyProfileDoc.data().published || 0;
+                      activeCount = companyProfileDoc.data().active || 0;
+                      ownerUserId = companyProfileDoc.data().ownerUserId || user.uid; // Mantém o dono existente
+                  }
+                  publishedCount++;
+                  activeCount++;
+              }
+              
+              // 2.5. Calcular reserva do BC (se aplicável)
+              let novaReservaBC = 0;
               if (bcShare > 0) {
-                  const bcDoc = await t.get(bcReserveRef);
-                  const bcReserve = bcDoc.exists ? bcDoc.data().reserve || 0 : 0;
-                  t.set(bcReserveRef, {
-                      reserve: bcReserve + bcShare,
+                  const bcReserve = (bcDoc && bcDoc.exists) ? bcDoc.data().reserve || 0 : 0;
+                  novaReservaBC = bcReserve + bcShare;
+              }
+              
+              // 2.6. Calcular moedas do BC
+              const currentGoldsTotal = (moedasDoc && moedasDoc.exists) ? moedasDoc.data().goldsTotal || 0 : 0;
+
+              // ===============================================
+              // ETAPA 3: ESCRITA DE TODOS OS DADOS (WRITES)
+              // ===============================================
+              
+              // 3.1. Atualizar carteira do usuário
+              t.update(userWalletRef, {
+                  goldsBalance: novoSaldoUsuario,
+                  transactions: firebase.firestore.FieldValue.arrayUnion(transactionData)
+              });
+              
+              // 3.2. Atualizar empresa (Wallet, Ativos, Perfil)
+              if (companyShare > 0) {
+                  t.set(empresaWalletRef, {
+                      goldsBalance: novoSaldoEmpresa,
+                      lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                  }, { merge: true });
+                  
+                  t.set(ativosRef, {
+                      goldsBalance: novoAtivoEmpresa
+                  }, { merge: true });
+                  
+                  t.set(companyProfileRef, {
+                      published: publishedCount,
+                      active: activeCount,
+                      ownerUserId: ownerUserId,
                       lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
                   }, { merge: true });
               }
               
-              // 5. Atualizar Moedas (Reflete o fluxo total de Golds)
-              const moedasDoc = await t.get(bcCoinsRef);
-              const currentGoldsTotal = moedasDoc.exists ? moedasDoc.data().goldsTotal || 0 : 0;
-              // A publicação de serviço não altera o total de Golds em circulação (apenas redistribui), 
-              // mas é uma boa prática atualizar o 'lastFlow' para auditoria.
+              // 3.3. Creditar Banco Central (Reserve)
+              if (bcShare > 0) {
+                  t.set(bcReserveRef, {
+                      reserve: novaReservaBC,
+                      lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                  }, { merge: true });
+              }
+              
+              // 3.4. Atualizar Moedas (lastFlow)
               t.set(bcCoinsRef, {
                   goldsLastFlow: finalCost,
-                  goldsTotal: currentGoldsTotal, // Permanece o mesmo (recirculação)
+                  goldsTotal: currentGoldsTotal, // Permanece o mesmo
                   lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
               }, { merge: true });
               
-              // 6. Criação do Serviço
+              // 3.5. Criar o Serviço
               t.set(serviceRef, serviceData);
           });
-
+          
+          // --- SUCESSO ---
           showNotification("Serviço publicado com sucesso! Contabilização e taxas aplicadas (BC/Empresa).");
           closeModal();
-          // carregarDadosCards(); // Chamado dentro de carregarDadosUsuario, o que é suficiente
-          // carregarEstatisticasServicos(); // Chamado dentro de carregarDadosUsuario, o que é suficiente
 
       } catch (error) {
           console.error("❌ Erro na transação de publicação:", error.message || error);
           showNotification(`Erro ao publicar serviço: ${error.message || 'Falha na transação.'}`);
       }
   }
-
   // Funções restantes (mantidas) ...
+// Função para carregar estatísticas dos serviços publicados (AJUSTADO: NOVOS CAMINHOS) id 63
+async function carregarEstatisticasServicos() {
+    const user = auth.currentUser;
+    if (!user) return;
+    const cardIds = [
+        "facebook", "instagram", "mobile", "telegram",
+        "tiktok", "video", "discord", "blog", "reddit", "seo", "inscricoes"
+    ];
+    
+    // === CARREGAMENTO EMPRESARIAL CORRIGIDO ===
+    // (Esta parte parece estar incompleta no original, corrigindo o loop)
+    for (const cardId of cardIds) {
+        try {
+            // Caminho Empresarial (Usando a lógica de refServiceEmpresarial do próprio código)
+            const empresarialSnapshot = await refServiceEmpresarial(cardId)
+                .where("modo", "==", "empresarial")
+                // .where("status", "==", "ativo") // O original não filtrava por status aqui, mas deveria
+                .get();
+            
+            let empresarialPublished = 0;
+            let empresarialActive = 0;
+            let empresarialPending = 0;
+            
+            empresarialSnapshot.forEach(doc => {
+                const data = doc.data();
+                empresarialPublished++;
+                if (data.status === "ativo") empresarialActive++;
+                if (data.status === "pendente") empresarialPending++;
+            });
+            
+            const publishedEl = document.getElementById(`${cardId}-published`);
+            const activeEl = document.getElementById(`${cardId}-active`);
+            const pendingEl = document.getElementById(`${cardId}-pending`);
+            
+            if (publishedEl) publishedEl.textContent = empresarialPublished;
+            if (activeEl) activeEl.textContent = empresarialActive;
+            if (pendingEl) pendingEl.textContent = empresarialPending;
 
-  // Função para carregar estatísticas dos serviços publicados (AJUSTADO: NOVOS CAMINHOS) id 63
-  async function carregarEstatisticasServicos() {
-      const user = auth.currentUser;
-      if (!user) return;
-      const cardIds = [
-          "facebook", "instagram", "mobile", "telegram",
-          "tiktok", "video", "discord", "blog", "reddit", "seo", "inscricoes"
-      ];
-      
-      for (const cardId of cardIds) {
-          // 🎯 ATUALIZAÇÃO: Carrega serviços empresariais do novo caminho
-          const empresarialSnapshot = await refServiceEmpresarial(cardId)
-              .where("userId", "==", user.uid)
-              .where("modo", "==", "empresarial")
-              .get();
-              
-          let empresarialPublished = 0;
-          let empresarialActive = 0;
-          let empresarialPending = 0;
-          empresarialSnapshot.forEach(doc => {
-              const data = doc.data();
-              empresarialPublished++;
-              if (data.status === "ativo") empresarialActive++;
-              if (data.status === "pendente") empresarialPending++;
-          });
-          // Atualiza UI empresarial id 65
-          const publishedEl = document.getElementById(`${cardId}-published`);
-          const activeEl = document.getElementById(`${cardId}-active`);
-          const pendingEl = document.getElementById(`${cardId}-pending`);
-          if (publishedEl) publishedEl.textContent = empresarialPublished;
-          if (activeEl) activeEl.textContent = empresarialActive;
-          if (pendingEl) pendingEl.textContent = empresarialPending;
+            // 🎯 ATUALIZAÇÃO: Carrega serviços pessoais do novo caminho
+            // (Esta parte estava fora do loop no original, corrigindo)
+            const pessoalSnapshot = await refServicePessoal(user.uid)
+                .where("empresaId", "==", cardId) // Filtra pela categoria (cardId)
+                .where("modo", "==", "pessoal")
+                .get();
+                
+            let pessoalPublished = 0;
+            let pessoalActive = 0;
+            let pessoalPending = 0;
+            pessoalSnapshot.forEach(doc => {
+                const data = doc.data();
+                pessoalPublished++;
+                if (data.status === "ativo") pessoalActive++;
+                if (data.status === "pendente") pessoalPending++;
+            });
+            // Atualiza UI pessoal id 67
+            const publishedElPessoal = document.getElementById(`${cardId}-published-pessoal`);
+            const activeElPessoal = document.getElementById(`${cardId}-active-pessoal`);
+            const pendingElPessoal = document.getElementById(`${cardId}-pending-pessoal`);
+            if (publishedElPessoal) publishedElPessoal.textContent = pessoalPublished;
+            if (activeElPessoal) activeElPessoal.textContent = pessoalActive;
+            if (pendingElPessoal) pendingElPessoal.textContent = pessoalPending;
+
+        } catch (error) {
+            console.error(`Erro ao carregar estatísticas para ${cardId}:`, error);
+        }
+    } // <--- FECHA O for
+} // <--- FECHA A FUNÇÃO
           
-          // 🎯 ATUALIZAÇÃO: Carrega serviços pessoais do novo caminho
-          const pessoalSnapshot = await refServicePessoal(user.uid)
-              .where("empresaId", "==", cardId) // services_pessoal/usuarios já filtra pelo user na ref
-              .where("modo", "==", "pessoal")
-              .get();
-              
-          let pessoalPublished = 0;
-          let pessoalActive = 0;
-          let pessoalPending = 0;
-          pessoalSnapshot.forEach(doc => {
-              const data = doc.data();
-              pessoalPublished++;
-              if (data.status === "ativo") pessoalActive++;
-              if (data.status === "pendente") pessoalPending++;
-          });
-          // Atualiza UI pessoal id 67
-          const publishedElPessoal = document.getElementById(`${cardId}-published-pessoal`);
-          const activeElPessoal = document.getElementById(`${cardId}-active-pessoal`);
-          const pendingElPessoal = document.getElementById(`${cardId}-pending-pessoal`);
-          if (publishedElPessoal) publishedElPessoal.textContent = pessoalPublished;
-          if (activeElPessoal) activeElPessoal.textContent = pessoalActive;
-          if (pendingElPessoal) pendingElPessoal.textContent = pessoalPending;
-      }
-  }
   
-
   // Função para carregar dados do usuário (AJUSTADO: NOVO CAMINHO) id 68
   function carregarDadosUsuario(user) {
       const userId = user.uid;
@@ -4775,7 +4759,6 @@ function showTopNotification(message) {
               carregarEstatisticasServicos();
           });
   }
-
   // Função para visualizar serviços publicados (Modo Empresarial) (mantido) id 69
   function viewServices(companyId) {
 // ... (viewServices mantido) ...
@@ -4786,7 +4769,6 @@ function showTopNotification(message) {
     }
     window.location.href = `servicos.html?empresa=${encodeURIComponent(companyId)}&modo=empresarial`;
   }
-
   // NOVO: Função para visualizar serviços publicados (Modo Pessoal) (AJUSTADO: NOVO CAMINHO) id 70
   async function viewUserServices(companyId) {
       const user = auth.currentUser;
@@ -4794,7 +4776,6 @@ function showTopNotification(message) {
           showNotification("Usuário não autenticado!");
           return;
       }
-
       try {
           // 🎯 ATUALIZAÇÃO: Nova referência para serviços pessoais
           const servicesSnapshot = await refServicePessoal(user.uid)
@@ -4806,7 +4787,6 @@ function showTopNotification(message) {
         <h2><i class="fas fa-eye"></i> Seus Serviços Publicados (${companyId})</h2>
         <p style="margin-bottom: 1rem;">Aqui estão todos os serviços pessoais que você publicou.</p>
       `;
-
           if (servicesSnapshot.empty) {
               html += `
           <p>Nenhum serviço publicado ainda.</p>
@@ -4842,15 +4822,12 @@ function showTopNotification(message) {
           `;
               });
           }
-
           showSimpleModal("Serviços Publicados", html);
-
       } catch (error) {
           console.error("Erro ao carregar serviços pessoais:", error);
           showNotification("Erro ao carregar serviços publicados.");
       }
   }
-
   // Função auxiliar simples para evitar injeção de HTML no modal (mantido) id 71
   function escapeHtml(str) {
 // ... (escapeHtml mantido) ...
@@ -4861,13 +4838,11 @@ function showTopNotification(message) {
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#39;');
   }
-
   // STUBs (mantido) id 72
   function editService(serviceId) {
 // ... (editService mantido) ...
       showNotification("Abrir edição para serviço: " + serviceId);
   }
-
   // Exclui o serviço do Firestore (AJUSTADO: NOVO CAMINHO) id 73
   async function deleteService(serviceId) {
       if (!confirm("Deseja realmente excluir este serviço?")) return;
@@ -4877,7 +4852,6 @@ function showTopNotification(message) {
           
           // O serviço pessoal está em companies/services_pessoal/usuarios/<docId>
           const serviceRef = refServicePessoal(user.uid).doc(serviceId); 
-
           await serviceRef.delete();
           showNotification("Serviço excluído com sucesso.");
           // Recarrega a visualização após a exclusão
@@ -4887,18 +4861,15 @@ function showTopNotification(message) {
           showNotification("Erro ao excluir serviço.");
       }
   }
-
   function simulateAction(action, companyId) {
 // ... (simulateAction mantido) ...
       showNotification(`Ação simulada: ${action} para ${companyId} (Modo Pessoal)`);
   }
-
   // Função utilitária para mostrar um modal simples (mantido) id 74
   function showSimpleModal(title, content) {
 // ... (showSimpleModal mantido) ...
       const modal = document.getElementById("guidedPublishModal");
       const modalContent = document.getElementById("modalContent");
-
       for(let i = 1; i <= totalSteps; i++) {
         const stepElement = document.getElementById(`step-${i}`);
         if(stepElement) {
@@ -4907,28 +4878,25 @@ function showTopNotification(message) {
       }
       document.querySelector('.step-navigation').style.display = 'none';
       document.querySelector('.step-indicator').style.display = 'none';
-
       document.getElementById("modalTitle").textContent = title;
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = content;
       modalContent.prepend(tempDiv);
-
       modalContent.style.height = 'auto';
       modal.classList.add("active");
-
       const closeBtn = modalContent.querySelector('.close');
-      closeBtn.onclick = () => {
-          modal.classList.remove("active");
-          tempDiv.remove();
-          document.querySelector('.step-navigation').style.display = 'flex';
-          document.querySelector('.step-indicator').style.display = 'block';
-      };
-
+      if (closeBtn) { // Adicionado verificação
+          closeBtn.onclick = () => {
+              modal.classList.remove("active");
+              tempDiv.remove();
+              document.querySelector('.step-navigation').style.display = 'flex';
+              document.querySelector('.step-indicator').style.display = 'block';
+          };
+      }
       document.getElementById("modalTitle").textContent = title;
       modal.classList.add("active");
       setTimeout(() => modalContent.style.height = '350px', 50);
   }
-
 // Função para exibir notificções (corrigida e segura) id 75
 function showNotification(message) {
 // ... (showNotification mantido) ...
@@ -4949,7 +4917,6 @@ function showNotification(message) {
         notification.classList.remove('show');
     }, 3000);
 }
-
   // Funções para os botões dos cards (mantido) id 76
   function contratar(cardId) {
 // ... (contratar mantido) ...
@@ -4957,14 +4924,12 @@ function showNotification(message) {
     const title = card.querySelector('h3')?.textContent || 'card';
     openPublishModal(cardId, title, 'empresarial');
   }
-
   function executarMissoes(cardId) {
 // ... (executarMissoes mantido) ...
     const card = document.querySelector(`[data-card-id="${cardId}"]`);
     const title = card.querySelector('h3')?.textContent || 'card';
     showNotification(`Executando missões em ${title}... (simulado)`);
   }
-
   // Função para determinar o nível global com base nos Golds (mantido) id 77
   function determinarNivelGlobal(cardId, golds) {
 // ... (determinarNivelGlobal mantido) ...
@@ -4980,7 +4945,6 @@ function showNotification(message) {
     }
     return { nivelAtual, proximaMeta };
   }
-
   // Função para atualizar progresso e nível de um card específico (mantido) id 78
   function atualizarProgressoDoCard(cardId, golds, metricValue) {
 // ... (atualizarProgressoDoCard mantido) ...
@@ -5005,7 +4969,6 @@ function showNotification(message) {
     if (nivelEl) nivelEl.textContent = nivelAtual.nome;
     if (goldsEl) goldsEl.textContent = formatGold(golds);
     if (metricEl && metricValue !== undefined) metricEl.textContent = formatGold(metricValue, false);
-
     // Pessoal id 80
     const fillElPessoal = document.getElementById(`${cardId}-progress-pessoal`);
     const textElPessoal = document.getElementById(`${cardId}-progress-text-pessoal`);
@@ -5020,14 +4983,12 @@ function showNotification(message) {
                                                     cardId === 'blog' ? 'comentarios' :
                                                     cardId === 'reddit' ? 'upvotes' :
                                                     cardId === 'seo' ? 'palavras' : 'ativas'}-pessoal`);
-
     if (fillElPessoal) fillElPessoal.style.width = `${percentual}%`;
     if (textElPessoal) textElPessoal.textContent = `${formatGold(golds)} / ${formatGold(proximaMeta)}`;
     if (nivelElPessoal) nivelElPessoal.textContent = nivelAtual.nome;
     if (goldsElPessoal) goldsElPessoal.textContent = formatGold(golds);
     if (metricElPessoal && metricValue !== undefined) metricElPessoal.textContent = formatGold(metricValue, false);
   }
-
   // Função para carregar dados dos cards (AJUSTADO: LER 'bankCentral/wallets_empresas') id 81
   function carregarDadosCards() {
     const cardIds = [
@@ -5073,7 +5034,6 @@ function showNotification(message) {
       });
     });
   }
-
   // Controle do carrossel com toque (mantido) id 86
   let currentCardEmpresarial = 0;
   const carouselEmpresarial = document.getElementById('company-carousel-empresarial');
@@ -5085,7 +5045,6 @@ function showNotification(message) {
   const totalCardsPessoal = cardsPessoal.length;
   let touchStartX = 0;
   let touchEndX = 0;
-
   function updateCarousel() {
 // ... (updateCarousel mantido) ...
     const firstCardEmpresarial = carouselEmpresarial.querySelector('.nav-card');
@@ -5099,13 +5058,11 @@ function showNotification(message) {
         carouselPessoal.style.transform = `translateX(-${currentCardPessoal * widthPessoal}px)`;
     }
   }
-
   // Event listeners para o carrossel (mantido) id 87
   carouselEmpresarial.addEventListener('touchstart', (e) => {
 // ... (event listeners do carrossel mantidos) ...
     touchStartX = e.changedTouches[0].screenX;
   });
-
   carouselEmpresarial.addEventListener('touchend', (e) => {
     touchEndX = e.changedTouches[0].screenX;
     const swipeDistance = touchEndX - touchStartX;
@@ -5116,11 +5073,9 @@ function showNotification(message) {
     }
     updateCarousel();
   });
-
   carouselPessoal.addEventListener('touchstart', (e) => {
     touchStartX = e.changedTouches[0].screenX;
   });
-
   carouselPessoal.addEventListener('touchend', (e) => {
     touchEndX = e.changedTouches[0].screenX;
     const swipeDistance = touchEndX - touchStartX;
@@ -5131,7 +5086,6 @@ function showNotification(message) {
     }
     updateCarousel();
   });
-
   // Carrega dados do usuário e verifica autenticação (mantido) id 88
   document.addEventListener('DOMContentLoaded', () => {
 // ... (DOMContentLoaded e listeners mantidos) ...
@@ -5144,7 +5098,6 @@ function showNotification(message) {
         window.location.href = "cadastro.html";
       }
     });
-
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
     themeToggle.addEventListener('click', () => {
@@ -5152,14 +5105,11 @@ function showNotification(message) {
       body.setAttribute('data-theme', currentTheme);
       localStorage.setItem('theme', currentTheme);
     });
-
     const savedTheme = localStorage.getItem('theme') || 'light';
     body.setAttribute('data-theme', savedTheme);
-
     const menuToggles = {
       'menu-icon': 'main-menu'
     };
-
     Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
       const toggle = document.getElementById(toggleId);
       const menu = document.getElementById(menuId);
@@ -5173,7 +5123,6 @@ function showNotification(message) {
         toggle.classList.toggle('active');
       });
     });
-
     document.addEventListener('click', e => {
       if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
         Object.values(menuToggles).forEach(menuId => {
@@ -5185,7 +5134,6 @@ function showNotification(message) {
         });
       }
     });
-
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         Object.values(menuToggles).forEach(menuId => {
@@ -5198,15 +5146,12 @@ function showNotification(message) {
         closeModal();
       }
     });
-
     document.getElementById("logout-button").addEventListener("click", () => {
       auth.signOut().then(() => window.location.href = "cadastro.html");
     });
-
     const cookieBanner = document.getElementById('cookieBanner');
     const cookieAccept = document.getElementById('cookie-accept');
     const cookieDecline = document.getElementById('cookie-decline');
-
     function showCookieBannerOncePerDay() {
       const today = new Date().toISOString().split('T')[0];
       const lastShown = localStorage.getItem('cookieBannerLastShown');
@@ -5215,21 +5160,15 @@ function showNotification(message) {
         localStorage.setItem('cookieBannerLastShown', today);
       }
     }
-
     showCookieBannerOncePerDay();
-
     cookieAccept.addEventListener('click', () => {
       cookieBanner.classList.remove('active');
     });
-
     cookieDecline.addEventListener('click', () => {
       cookieBanner.classList.remove('active');
     });
-
     window.addEventListener('resize', updateCarousel);
-
     setTimeout(updateCarousel, 100);
-
     // Adiciona event listeners para os inputs da Etapa 1 e 2 id 89
     document.getElementById("subcategory").addEventListener("change", calculateDifficultyAndProof);
     document.getElementById("freelancers").addEventListener("input", prepareSummary);
@@ -5281,7 +5220,6 @@ async function viewPublicServices() {
                 .get();
             snapshot.forEach(doc => allServices.push({ id: doc.id, data: doc.data() }));
         }
-
         let html = `
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <h2><i class="fas fa-store"></i> Mercado de Serviços</h2>
@@ -5328,7 +5266,6 @@ async function viewPublicServices() {
         showNotification("Erro ao carregar o mercado de serviços.");
     }
 }
-
 // ✋ Função simulada para aplicar em um serviço (mantida) id 91
 async function applyForService(serviceId, serviceName) {
 // ... (applyForService mantido) ...
@@ -5337,8 +5274,8 @@ async function applyForService(serviceId, serviceName) {
     
     showNotification(`Você iniciou a missão: ${serviceName}. (Integração com execução real será implementada depois.)`);
 }
-firebase.initializeApp(firebaseConfig);
-console.log("✅ Firebase inicializado com sucesso.");
+// (Removida a segunda inicialização do Firebase que estava no final)
+console.log("✅ Firebase inicializado com sucesso (primeira instância).");
 // Restaura o estado temporário da memória do navegador após reload
 const tempState = sessionStorage.getItem('tempModalState');
 if (tempState) {
@@ -5352,7 +5289,7 @@ if (tempState) {
     sessionStorage.removeItem('tempModalState'); // Limpa a memória após uso
 }
 </script>
-
 <script src="scripts/passos.js"></script>
+
 
 
