@@ -398,11 +398,16 @@
       Organiza os cards em uma linha horizontal.
     */
     .carousel {
-      display: flex; /* Organiza os cards em linha */
-      transition: transform 0.5s ease; /* Animação suave ao deslizar */
-      width: 100%; /* Largura total */
-      gap: 0.75rem; /* Espaço entre os cards */
-      touch-action: pan-x; /* Permite deslizar com o dedo em dispositivos touch */
+    display: flex;
+    transition: transform 0.5s ease;
+    width: 100%;
+    gap: 0.75rem;
+    /* Remova ou ajuste: */
+    /* touch-action: pan-x; */
+    /* Ou permita rolagem vertical dentro dos cards: */
+    touch-action: pan-y pan-x;
+    /* Permite ambos os eixos */
+}
     }
 
     /*
@@ -3691,16 +3696,18 @@ const subcategorias = {
     
     // 📘 Tarefas do Facebook (ações sociais e de engajamento)
     facebook: [
-        { nome: "Curtir no Facebook", goldsBase: 150, dificuldade: DIFICULDADE.SIMPLES }, // Corrigido de FACIL para SIMPLES
-        { nome: "Curtidas no Facebook (mais de 50 amigos)", goldsBase: 1200, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Curtidas no Facebook (mais de 100 amigos)", goldsBase: 1500, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Curtidas no Facebook (mais de 300 amigos)", goldsBase: 2000, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Adicionar comentário à conversa existente", goldsBase: 1500, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Adicione-me como amigo", goldsBase: 2000, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Junte-se a um grupo", goldsBase: 1500, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Mude sua foto de perfil (por 1 semana)", goldsBase: 3000, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Postar no Mural", goldsBase: 2000, dificuldade: DIFICULDADE.INTERMEDIARIO },
-        { nome: "Curtir + Comentar + Publicar no Mural", goldsBase: 5000, dificuldade: DIFICULDADE.INTERMEDIARIO }
+        { nome: "Dar curtida em uma publicação", goldsBase: 20, dificuldade: DIFICULDADE.SIMPLES }, // Corrigido de FACIL para SIMPLES
+        { nome: "Curtidas no Facebook (10 postagens)", goldsBase: 200, dificuldade: DIFICULDADE.SIMPLES },
+        { nome: "Curta a minha pagina do Facebook", goldsBase: 50, dificuldade: DIFICULDADE.SIMPLES },
+        { nome: "Compartilhar uma publicação no Feed", goldsBase: 2000, dificuldade: DIFICULDADE.SIMPLES },
+        { nome: "Compartilhar em grupos relacionados", goldsBase: 150, dificuldade: DIFICULDADE.INTERMEDIARIO },
+        { nome: "Adicione-me como amigo", goldsBase: 200, dificuldade: DIFICULDADE.SIMPLES },
+        { nome: "Junte-se a um grupo", goldsBase: 150, dificuldade: DIFICULDADE.INTERMEDIARIO },
+        { nome: "Reagir com emoji específico (amei, haha, uau)", goldsBase: 20, dificuldade: DIFICULDADE.INTERMEDIARIO },
+        { nome: "Postar no Mural", goldsBase: 250, dificuldade: DIFICULDADE.INTERMEDIARIO },
+        { nome: "Curtir + Comentar + Publicar no Mural", goldsBase: 650, dificuldade: DIFICULDADE.INTERMEDIARIO },
+        { nome: "Convidar amigos para curtir uma página", goldsBase: 500, dificuldade: DIFICULDADE.SIMPLES }
+        
     ],
     
     // 📸 Ações no Instagram
