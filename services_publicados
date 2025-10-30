@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Gerencie sua carteira e ganhe Golds visualizando propagandas no YshippCommerce">
+  <title>Mercado de Serviços Pessoal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --background: #f5f7fa;
+      --surface: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --primary: #2d3748;
+      --primary-hover: #1a202c;
+      --secondary: #3182ce;
+      --secondary-hover: #2b6cb0;
+      --border: #e2e8f0;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --accent: #e53e3e;
+      --gold: #d69e2e;
+      --reais: #10b981;
+      --progress-bg: #edf2f7;
+      --tutorial-bg: #3498db;
+      --tutorial-hover: #2980b9;
+      --button-bg: #9ca3af;
+      --button-hover: #6b7280;
+      --nsfw-bg: #e74c3c;
+      --nsfw-hover: #c0392b;
+      --crypto: #e74c3c;
+      --tasks: #8e44ad;
+      --surveys: #27ae60;
+      --afiliado: #d69e2e;
+      --games: #9b59b6;
+      --invite: #f39c12;
+      --facebook: #1877f2;
+      --instagram: #e4405f;
+      --tiktok: #000000;
+      --telegram: #0088cc;
+      --discord: #5865f2;
+      --reddit: #ff4500;
+      --blog: #ff9900;
+      --seo: #4285f4;
+      --inscricoes: #ff0000;
+      --mobile: #34a853;
+      --video: #ff0000;
+    }
+    [data-theme="dark"] {
+      --background: #1a202c;
+      --surface: #2d3748;
+      --text-primary: #e2e8f0;
+      --text-secondary: #a0aec0;
+      --border: #4a5568;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --accent: #f56565;
+      --gold: #e6a24b;
+      --reais: #059669;
+      --progress-bg: #4a5568;
+      --tutorial-bg: #1e90ff;
+      --tutorial-hover: #1c86ee;
+      --button-bg: #6b7280;
+      --button-hover: #4b5563;
+      --nsfw-bg: #c0392b;
+      --nsfw-hover: #a5281a;
+      --crypto: #c0392b;
+      --tasks: #6c3483;
+      --surveys: #1b5e20;
+      --afiliado: #b7791f;
+      --games: #8e44ad;
+      --invite: #e67e22;
+      --facebook: #1877f2;
+      --instagram: #e4405f;
+      --tiktok: #000000;
+      --telegram: #0088cc;
+      --discord: #5865f2;
+      --reddit: #ff4500;
+      --blog: #ff9900;
+      --seo: #4285f4;
+      --inscricoes: #ff0000;
+      --mobile: #34a853;
+      --video: #ff0000;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-top: 60px;
+      overflow-x: hidden;
+    }
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--header-bg, var(--surface)); 
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 1001;
+      box-shadow: var(--shadow);
+      transition: background 0.3s ease; 
+    }
+    .header h1 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #000000; 
+    }
+    .top-bar__section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-bar__icon {
+      color: var(--text-primary);
+      background: none;
+      border: none;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .top-bar__icon i {
+      font-size: 1.125rem;
+    }
+    .top-bar__icon:hover {
+      background: var(--primary);
+      color: black; 
+    }
+    .menu {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 240px;
+      height: calc(100vh - 60px);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+    .menu.open {
+      transform: translateX(0);
+    }
+    .menu__list {
+      list-style: none;
+      padding: 12px 0;
+    }
+    .menu__item {
+      margin: 4px 12px;
+    }
+    .menu__link {
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+      background: transparent;
+    }
+    .menu__link:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .menu__link i {
+      margin-right: 8px;
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      transition: color 0.2s ease;
+    }
+    .menu__link:hover i {
+      color: white;
+    }
+    .notification {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 8px 16px;
+      background: var(--surface);
+      color: var(--text-primary);
+      border-radius: 4px;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 2000;
+    }
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* MODIFICADO: Estilos do Carrossel de Saldo */
+    .balance-carousel-wrapper {
+      width: 100vw;
+      /* Centraliza o wrapper que tem 100vw */
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 0.75rem 0;
+      /* Esconde scrollbar */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .balance-carousel-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+    .balance-cards {
+      /* Modificado de grid para flex */
+      display: flex;
+      gap: 0.75rem;
+      /* Remove max-width para permitir scroll */
+      width: auto;
+      max-width: none;
+      /* Adiciona padding nas laterais dentro do wrapper */
+      padding: 0 0.75rem;
+      margin: 0;
+    }
+    .balance-card {
+      /* Modificado: Define o tamanho de cada card no carrossel */
+      flex: 0 0 calc(100vw - 1.5rem); /* Largura total menos o padding */
+      max-width: calc(100vw - 1.5rem);
+      scroll-snap-align: start;
+      border-radius: 8px;
+      padding: 1rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    /* Fim das modificações do carrossel de saldo */
+
+    .balance-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .balance-card.gold {
+      background: linear-gradient(135deg, var(--gold), #b7791f);
+    }
+    .balance-card.reais {
+      background: linear-gradient(135deg, var(--reais), #059669);
+    }
+    .balance-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    .balance-amount {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .balance-desc {
+      font-size: 0.8rem;
+      opacity: 0.85;
+      margin-top: 0.3rem;
+    }
+    .ads-section {
+      width: 100%;
+      max-width: 1000px;
+      padding: 1rem;
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      margin: 1rem auto;
+      border: 1px solid var(--border);
+    }
+    .ads-section h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ads-section h2 i {
+      color: var(--secondary);
+    }
+    .ads-section > p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    .carousel-container {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      display: flex;
+      gap: 0.75rem;
+      padding: 0 0.75rem 0.75rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .carousel-container::-webkit-scrollbar {
+      display: none;
+    }
+    .carousel-container .ad-card {
+      flex: 0 0 calc(100% - 1.5rem);
+      max-width: 100%;
+      scroll-snap-align: start;
+      min-height: 280px;
+    }
+    .ad-card {
+      background: var(--background);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+      border: 1px solid var(--border);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .ad-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .ad-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+    .ad-card .service-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    .ad-card .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ad-card .user-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .ad-card .service-steps {
+      font-size: 0.8rem;
+      margin: 0.5rem 0;
+      flex-grow: 1;
+    }
+    .ad-card .service-steps ul {
+      list-style-type: disc;
+      padding-left: 1rem;
+      margin-top: 0.3rem;
+    }
+    .ad-card .service-steps li {
+      margin-bottom: 0.2rem;
+      font-size: 0.75rem;
+    }
+    .ad-card .service-reward {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gold);
+      text-align: center;
+      margin: 0.5rem 0;
+    }
+    .ad-card .service-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .ad-card .service-actions button {
+      flex: 1;
+      padding: 0.4rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .ad-card .aceitar-btn {
+      background: var(--secondary);
+      color: white;
+    }
+    .ad-card .aceitar-btn:hover {
+      background: var(--secondary-hover);
+    }
+    .ad-card .detalhes-btn {
+      background: var(--button-bg);
+      color: white;
+    }
+    .ad-card .detalhes-btn:hover {
+      background: var(--button-hover);
+    }
+    .ad-card .service-status {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      text-align: center;
+      margin: 0.3rem 0;
+      font-weight: 500;
+      align-self: flex-start;
+    }
+    .ad-card .service-status.ativo {
+      background: var(--surveys);
+      color: white;
+    }
+    .ad-card .service-status.pendente {
+      background: var(--afiliado);
+      color: white;
+    }
+    .ad-card .service-status.concluido {
+      background: var(--reais);
+      color: white;
+    }
+    
+    .ad-card.propaganda {
+      flex: 0 0 200px; 
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(45deg, var(--surface), var(--background));
+      border: 1px solid var(--border);
+    }
+    .ad-card.propaganda h3 {
+      font-size: 0.9rem;
+      text-align: center;
+      margin: 0;
+      color: var(--text-primary);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 90%;
+      width: 480px;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-content h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .modal-content p {
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .modal-content input {
+      padding: 0.5rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      width: 100%;
+      max-width: 300px;
+    }
+    .modal-content button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .modal-content button.cancel {
+      background: white;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .modal-content button:not(.cancel) {
+      background: var(--secondary);
+      color: white;
+    }
+    .modal-content button:hover:not(.cancel) {
+      background: var(--secondary-hover);
+    }
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--surface);
+      color: var(--text-primary);
+      padding: 0.75rem;
+      box-shadow: var(--shadow);
+      border-top: 1px solid var(--border);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      text-align: center;
+    }
+    .cookie-banner.active {
+      display: flex;
+    }
+    .cookie-banner .content {
+      font-size: 0.8rem;
+    }
+    .cookie-banner .content a {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
+    .cookie-banner .content a:hover {
+      color: var(--secondary-hover);
+    }
+    .cookie-banner .buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .cookie-banner button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .cookie-banner button.accept {
+      background: var(--secondary);
+      color: white;
+    }
+    .cookie-banner button.accept:hover {
+      background: var(--secondary-hover);
+    }
+    .cookie-banner button.decline {
+      background: white;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .cookie-banner button.decline:hover {
+      background: var(--accent);
+      color: white;
+    }
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      font-size: 1rem;
+      z-index: 9999;
+    }
+    #userStatus {
+      background: var(--primary);
+      color: white;
+      padding: 0.3rem 0.5rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      font-size: 0.75rem;
+    }
+    footer#userInfoFooter {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 0.3rem;
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      z-index: 999;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    /* ESTILO PARA ID CLICÁVEL */
+    #footerUserId {
+        cursor: pointer; 
+        text-decoration: underline;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .info-card {
+      width: 100%;
+      max-width: 1000px;
+      border-radius: 8px;
+      padding: 1rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.5rem auto;
+    }
+    .info-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .info-card.games { 
+        background: linear-gradient(135deg, var(--games), #7d3c98);
+        --info-card-color: var(--games); 
+    }
+    .info-card.links {
+      background: linear-gradient(135deg, var(--tutorial-bg), var(--tutorial-hover));
+      --info-card-color: var(--tutorial-bg); 
+    }
+    .info-card.crypto {
+      background: linear-gradient(135deg, var(--crypto), var(--nsfw-hover));
+      --info-card-color: var(--crypto);
+    }
+    .info-card.tasks {
+      background: linear-gradient(135deg, var(--tasks), #6c3483);
+      --info-card-color: var(--tasks);
+    }
+    .info-card.surveys {
+      background: linear-gradient(135deg, var(--surveys), #1b5e20);
+      --info-card-color: var(--surveys);
+    }
+    .info-card.afiliado {
+      background: linear-gradient(135deg, var(--afiliado), #b7791f);
+      --info-card-color: var(--afiliado);
+    }
+    .info-card.invite {
+        background: linear-gradient(135deg, var(--invite), #d35400);
+        --info-card-color: var(--invite);
+    }
+    /* NOVAS CORES PARA OS CARDS DE INSTRUÇÃO */
+    .info-card.facebook {
+        background: linear-gradient(135deg, var(--facebook), #1059c7);
+        --info-card-color: var(--facebook); 
+    }
+    .info-card.tiktok {
+        background: linear-gradient(135deg, var(--tiktok), #333333);
+        --info-card-color: var(--tiktok); 
+    }
+    .info-card.discord {
+        background: linear-gradient(135deg, var(--discord), #4e59c2);
+        --info-card-color: var(--discord); 
+    }
+    .info-card.blog {
+        background: linear-gradient(135deg, var(--blog), #e68a00);
+        --info-card-color: var(--blog); 
+    }
+    .info-card.inscricoes {
+        background: linear-gradient(135deg, var(--inscricoes), #cc0000);
+        --info-card-color: var(--inscricoes); 
+    }
+    .info-card.instagram {
+        background: linear-gradient(135deg, var(--instagram), #c13584);
+        --info-card-color: var(--instagram); 
+    }
+    .info-card.telegram {
+        background: linear-gradient(135deg, var(--telegram), #0077b5);
+        --info-card-color: var(--telegram); 
+    }
+    .info-card.reddit {
+        background: linear-gradient(135deg, var(--reddit), #d93a00);
+        --info-card-color: var(--reddit); 
+    }
+    .info-card.seo {
+        background: linear-gradient(135deg, var(--seo), #1a73e8);
+        --info-card-color: var(--seo); 
+    }
+    .info-card.mobile {
+        background: linear-gradient(135deg, var(--mobile), #2e7d32);
+        --info-card-color: var(--mobile); 
+    }
+    .info-card.video {
+        background: linear-gradient(135deg, var(--video), #c4302b);
+        --info-card-color: var(--video); 
+    }
+
+
+    .info-card .info-text {
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+    .info-card .hamburger-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.125rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+    .info-card .hamburger-btn:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    
+    @media (max-width: 768px) {
+      .menu {
+        width: min(80vw, 240px);
+      }
+      .header {
+        padding: 0 12px;
+      }
+      .top-bar__icon {
+        padding: 6px;
+      }
+      .top-bar__icon i {
+        font-size: 1rem;
+      }
+      .menu__link {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
+      .menu__link i {
+        font-size: 1rem;
+      }
+      .notification {
+        right: 8px;
+        bottom: 8px;
+        padding: 8px 12px;
+      }
+      /* Ajuste para carrossel de saldo em mobile */
+      .balance-cards {
+        padding: 0 0.75rem;
+      }
+      .balance-card {
+        padding: 0.75rem;
+        flex: 0 0 calc(100vw - 1.5rem);
+        max-width: calc(100vw - 1.5rem);
+      }
+      .balance-amount {
+        font-size: 1.25rem;
+      }
+      
+      .ads-section {
+        padding: 0.75rem;
+      }
+      .ads-section h2 {
+        font-size: 1.125rem;
+      }
+      .carousel-container .ad-card {
+        flex: 0 0 calc(100% - 1rem);
+      }
+      .ad-card {
+        padding: 0.75rem;
+      }
+      .ad-card h3 {
+        font-size: 1rem;
+      }
+      .ad-card .service-steps {
+        font-size: 0.75rem;
+      }
+      .ad-card .service-reward {
+        font-size: 0.75rem;
+      }
+      .ad-card .service-actions button {
+        font-size: 0.75rem;
+        padding: 0.4rem;
+      }
+      .modal-content {
+        padding: 0.75rem;
+        width: 95%;
+      }
+      .modal-content h2 {
+        font-size: 1rem;
+      }
+      .modal-content p {
+        font-size: 0.8rem;
+      }
+      .modal-content input {
+        font-size: 0.8rem;
+        padding: 0.4rem;
+      }
+      .modal-content button {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+      }
+      .cookie-banner .content {
+        font-size: 0.75rem;
+      }
+      .cookie-banner button {
+        font-size: 0.75rem;
+      }
+      .info-card {
+        padding: 0.75rem;
+      }
+      .info-card .info-text {
+        font-size: 0.75rem;
+      }
+      .info-card .hamburger-btn {
+        font-size: 1rem;
+      }
+    }
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .header h1 {
+        font-size: 1.125rem;
+      }
+      /* Ajuste para carrossel de saldo em tablet */
+      .balance-cards {
+        padding: 0 0.75rem;
+      }
+      .balance-card {
+        /* Em tablet, ainda pode ser 2 por tela se quisermos, mas 1 é mais simples */
+        flex: 0 0 calc(100vw - 1.5rem);
+        max-width: calc(100vw - 1.5rem);
+      }
+      .ads-section {
+        padding: 0.75rem;
+      }
+      .ads-section h2 {
+        font-size: 1.25rem;
+      }
+    }
+    
+    /* Media query para telas maiores onde o grid original funcionava */
+    @media (min-width: 769px) {
+      .balance-carousel-wrapper {
+        /* Desativa o comportamento de carrossel em telas grandes */
+        width: 100%;
+        max-width: 1000px;
+        position: relative;
+        left: 0;
+        transform: none;
+        overflow-x: hidden;
+        padding: 0.75rem;
+        margin: 0 auto;
+      }
+      .balance-cards {
+        /* Retorna ao grid */
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0;
+      }
+      .balance-card {
+        /* Reseta o flex */
+        flex: none;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div id="loadingOverlay">Carregando dados do gerador...</div>
+  <div id="userStatus">Usuário ativo: Carregando...</div>
+  
+  <div class="header-menu">
+    <nav aria-label="Navegação principal" class="header" role="navigation">
+      <div class="top-bar__section">
+        <h1><i class="fas fa-rocket"></i>Mercado de Serviços Pessoal</h1>
+      </div>
+      <div class="top-bar__section">
+        <button aria-label="Alternar menu" class="top-bar__icon" id="menu-icon">
+          <i class="fas fa-bars"></i>
+        </button>
+        <button aria-label="Alternar tema claro/escuro" class="top-bar__icon" id="theme-toggle" title="Alternar tema">
+          <i class="fas fa-adjust"></i>
+        </button>
+      </div>
+    </nav>
+    <nav aria-label="Menu principal" class="menu" id="main-menu">
+      <ul class="menu__list">
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('home')">
+            <i class="fas fa-home"></i>
+            <span>Página Principal</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('yshippcommerce')">
+            <i class="fas fa-store"></i>
+            <span>YshippCommerce</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('market')">
+            <i class="fas fa-briefcase"></i>
+            <span>Mercado de Serviços</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('store')">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Loja</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('generator')">
+            <i class="fas fa-ticket-alt"></i>
+            <span>Serviços disponíveis</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" onclick="navigateTo('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Carteira</span>
+          </button>
+        </li>
+        <li class="menu__item">
+          <button class="menu__link" id="logout-button">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  
+  <div class="notification" id="notification"></div>
+  <div id="overlay" class="overlay"></div>
+
+  <div class="balance-carousel-wrapper">
+    <div class="balance-cards">
+      <div class="balance-card gold fade-in">
+        <div class="balance-label">Saldo em Golds</div>
+        <div id="golds-balance" class="balance-amount">0</div>
+        <div class="balance-desc">Moeda virtual do sistema</div>
+      </div>
+      <div class="balance-card reais fade-in">
+        <div class="balance-label">Saldo em Reais</div>
+        <div id="reais-balance" class="balance-amount">R$ 0,00</div>
+        <div class="balance-desc">Saldo disponível</div>
+      </div>
+    </div>
+  </div>
+
+  <main style="width:100%;max-width:1000px;padding:0 0.75rem 120px;margin:0 auto;">
+    
+    <section class="ads-section fade-in">
+      <h2><i class="fab fa-facebook"></i>Serviços Pessoais - Facebook</h2>
+      <p>Serviços publicados no modo pessoal para Facebook.</p>
+      <div class="carousel-container" id="facebook-services-carousel"></div>
+    </section>
+
+    <div class="info-card facebook fade-in" data-color="var(--facebook)">
+        <div class="info-text">
+            <strong>Instruções Facebook:</strong><br>
+            1. Curta a página ou publicação indicada.<br>
+            2. Compartilhe o post solicitado (se houver).<br>
+            3. Mantenha o curtir por pelo menos 24h.
+        </div>
+        <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+      <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+      <p>Veja as ofertas dos nossos parceiros.</p>
+      <div class="carousel-container" id="propaganda-carousel-1"></div>
+    </section>
+
+    <section class="ads-section fade-in">
+      <h2><i class="fab fa-instagram"></i>Serviços Pessoais - Instagram</h2>
+      <p>Serviços publicados no modo pessoal para Instagram.</p>
+      <div class="carousel-container" id="instagram-services-carousel"></div>
+    </section>
+    
+    <div class="info-card instagram fade-in" data-color="var(--instagram)">
+      <div class="info-text">
+        <strong>Instruções Instagram:</strong><br>
+        1. Siga o perfil indicado.<br>
+        2. Curta as fotos solicitadas.<br>
+        3. A recompensa será validada.
+      </div>
+      <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+    
+    <section class="ads-section fade-in">
+      <h2><i class="fab fa-tiktok"></i>Serviços Pessoais - TikTok</h2>
+      <p>Serviços publicados no modo pessoal para TikTok.</p>
+      <div class="carousel-container" id="tiktok-services-carousel"></div>
+    </section>
+
+    <div class="info-card tiktok fade-in" data-color="var(--tiktok)">
+        <div class="info-text">
+            <strong>Instruções TikTok:</strong><br>
+            1. Siga o perfil indicado.<br>
+            2. Curta e comente o vídeo solicitado.<br>
+            3. Não deixe de seguir por 48h.
+        </div>
+        <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Aproveite promoções exclusivas.</p>
+        <div class="carousel-container" id="propaganda-carousel-2"></div>
+    </section>
+
+    <section class="ads-section fade-in">
+      <h2><i class="fab fa-telegram"></i>Serviços Pessoais - Telegram</h2>
+      <p>Serviços publicados no modo pessoal para Telegram.</p>
+      <div class="carousel-container" id="telegram-services-carousel"></div>
+    </section>
+
+    <div class="info-card telegram fade-in" data-color="var(--telegram)">
+      <div class="info-text">
+        <strong>Instruções Telegram:</strong><br>
+        1. Entre no grupo ou canal.<br>
+        2. Permaneça pelo tempo solicitado.<br>
+        3. Válido apenas para novos membros.
+      </div>
+      <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in">
+      <h2><i class="fab fa-discord"></i>Serviços Pessoais - Discord</h2>
+      <p>Serviços publicados no modo pessoal para Discord.</p>
+      <div class="carousel-container" id="discord-services-carousel"></div>
+    </section>
+    
+    <div class="info-card discord fade-in" data-color="var(--discord)">
+        <div class="info-text">
+            <strong>Instruções Discord:</strong><br>
+            1. Aceite o convite para o servidor.<br>
+            2. Permaneça no servidor pelo tempo solicitado.<br>
+            3. Não saia antes da validação.
+        </div>
+        <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Novidades das maiores lojas.</p>
+        <div class="carousel-container" id="propaganda-carousel-3"></div>
+    </section>
+    
+    <section class="ads-section fade-in">
+      <h2><i class="fab fa-reddit"></i>Serviços Pessoais - Reddit</h2>
+      <p>Serviços publicados no modo pessoal para Reddit.</p>
+      <div class="carousel-container" id="reddit-services-carousel"></div>
+    </section>
+
+    <div class="info-card reddit fade-in" data-color="var(--reddit)">
+      <div class="info-text">
+        <strong>Instruções Reddit:</strong><br>
+        1. Siga o subreddit.<br>
+        2. Dê Upvote no post indicado.<br>
+        3. Não remova o upvote.
+      </div>
+      <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in">
+      <h2><i class="fas fa-blog"></i>Serviços Pessoais - Blog</h2>
+      <p>Serviços publicados no modo pessoal para Blog.</p>
+      <div class="carousel-container" id="blog-services-carousel"></div>
+    </section>
+
+    <div class="info-card blog fade-in" data-color="var(--blog)">
+        <div class="info-text">
+            <strong>Instruções Blog:</strong><br>
+            1. Acesse a página do blog.<br>
+            2. Navegue e comente no post (se solicitado).<br>
+            3. O tempo de permanência é verificado.
+        </div>
+        <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Produtos e serviços em destaque.</p>
+        <div class="carousel-container" id="propaganda-carousel-4"></div>
+    </section>
+
+    <section class="ads-section fade-in">
+      <h2><i class="fas fa-search"></i>Serviços Pessoais - SEO</h2>
+      <p>Serviços publicados no modo pessoal para SEO.</p>
+      <div class="carousel-container" id="seo-services-carousel"></div>
+    </section>
+    
+    <div class="info-card seo fade-in" data-color="var(--seo)">
+      <div class="info-text">
+        <strong>Instruções SEO:</strong><br>
+        1. Pesquise o termo exato.<br>
+        2. Encontre o site correto.<br>
+        3. Navegue pelas páginas.
+      </div>
+      <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in">
+      <h2><i class="fas fa-rss"></i>Serviços Pessoais - Inscrições</h2>
+      <p>Serviços publicados no modo pessoal para Inscrições.</p>
+      <div class="carousel-container" id="inscricoes-services-carousel"></div>
+    </section>
+    
+    <div class="info-card inscricoes fade-in" data-color="var(--inscricoes)">
+        <div class="info-text">
+            <strong>Instruções Inscrições:</strong><br>
+            1. Clique para se inscrever no canal/lista.<br>
+            2. Ative as notificações (se solicitado).<br>
+            3. Não cancele a inscrição por pelo menos 7 dias.
+        </div>
+        <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Confira estas ofertas imperdíveis.</p>
+        <div class="carousel-container" id="propaganda-carousel-5"></div>
+    </section>
+    
+    <section class="ads-section fade-in">
+      <h2><i class="fas fa-mobile-alt"></i>Serviços Pessoais - Mobile</h2>
+      <p>Serviços publicados no modo pessoal para Mobile.</p>
+      <div class="carousel-container" id="mobile-services-carousel"></div>
+    </section>
+
+    <div class="info-card mobile fade-in" data-color="var(--mobile)">
+      <div class="info-text">
+        <strong>Instruções Mobile:</strong><br>
+        1. Baixe o aplicativo pela loja.<br>
+        2. Abra e complete a ação (ex: cadastro).<br>
+        3. Válido apenas para novas instalações.
+      </div>
+      <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <section class="ads-section fade-in">
+      <h2><i class="fas fa-video"></i>Serviços Pessoais - Vídeo</h2>
+      <p>Serviços publicados no modo pessoal para Vídeo.</p>
+      <div class="carousel-container" id="video-services-carousel"></div>
+    </section>
+
+    <div class="info-card video fade-in" data-color="var(--video)">
+      <div class="info-text">
+        <strong>Instruções Vídeo:</strong><br>
+        1. Assista o vídeo completo.<br>
+        2. Curta e deixe um comentário (se solicitado).<br>
+        3. Não pule o conteúdo.
+      </div>
+      <button class="hamburger-btn"><i class="fas fa-bars"></i></button>
+    </div>
+    
+    <section class="ads-section fade-in" style="background: var(--progress-bg);">
+        <h2><i class="fas fa-bullhorn"></i>Propagandas Patrocinadas</h2>
+        <p>Mais uma seção de ofertas para você.</p>
+        <div class="carousel-container" id="propaganda-carousel-6"></div>
+    </section>
+
+  </main>
+
+  <div id="welcomeModal" class="modal" role="dialog">
+    <div class="modal-content">
+      <h2><i class="fas fa-bell"></i>Aviso</h2>
+      <p id="welcomeModalText"></p>
+      <button onclick="closeModal('welcomeModal')">OK</button>
+    </div>
+  </div>
+  <div id="cookieBanner" class="cookie-banner">
+    <div class="content">
+      <p>Concordo que meu endereço IP seja coletado e enviado ao administrador para identificar atividades.</p>
+    </div>
+    <div class="buttons">
+      <button id="cookie-accept" class="accept" onclick="acceptIPConsent()">Aceitar</button>
+      <button id="cookie-decline" class="decline" onclick="declineIPConsent()">Recusar</button>
+    </div>
+  </div>
+  <footer id="userInfoFooter">
+    Usuário: <span id="footerUserName">Carregando...</span> | ID: <span id="footerUserId" title="Pressione e segure para copiar o ID completo">---</span>
+  </footer>
+
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxygCeFLDbf6Ge6YZHJqq0VvlSSfbc_I",
+      authDomain: "yshippcommerce.firebaseapp.com",
+      projectId: "yshippcommerce",
+      storageBucket: "yshippcommerce.appspot.com",
+      messagingSenderId: "680576769517",
+      appId: "1:680576769517:web:ace30d8e451ee70511dbe4"
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    window._YSHIPP_db = db;
+    window._YSHIPP_auth = auth;
+    console.log("[DEBUG] Firebase conectado. Versão:", firebase.SDK_VERSION || 'compat');
+    const ADMIN_PHONE = "5535984072446";
+
+    // Funções auxiliares
+    function showModal(modalId, message, autoClose = true, type = 'sucesso') {
+      const modal = document.getElementById(modalId);
+      const modalText = modal.querySelector('p');
+      modalText.textContent = message;
+      modalText.style.color = type === 'erro' ? 'var(--accent)' : 'var(--reais)';
+      modal.style.display = 'flex';
+      if (autoClose && !message.includes('redirecionado')) {
+        setTimeout(() => {
+          modal.style.display = 'none';
+        }, 3000);
+      }
+    }
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+    function acceptIPConsent() {
+      localStorage.setItem('ipConsent', 'true');
+      document.getElementById('cookieBanner').classList.remove('active');
+    }
+    function declineIPConsent() {
+      localStorage.setItem('ipConsent', 'false');
+      document.getElementById('cookieBanner').classList.remove('active');
+      showModal('welcomeModal', 'Você deve aceitar a coleta de IP para continuar.', false, 'erro');
+    }
+    async function getUserIP() {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip || 'IP não disponível';
+      } catch (error) {
+        console.error('[DEBUG] Erro ao obter IP:', error);
+        return 'IP não disponível';
+      }
+    }
+    function updateInterface(walletData) {
+      const goldsBalance = walletData.goldsBalance || 0;
+      const reaisBalance = walletData.reaisBalance || 0;
+      // Atualiza o carrossel de saldo
+      const goldsEl = document.getElementById('golds-balance');
+      const reaisEl = document.getElementById('reais-balance');
+      if(goldsEl) goldsEl.textContent = goldsBalance.toLocaleString('pt-BR');
+      if(reaisEl) reaisEl.textContent = `R$ ${reaisBalance.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+    }
+    function updateUserStatus(uid) {
+      const userStatus = document.getElementById("userStatus");
+      if (userStatus) userStatus.textContent = `Usuário ativo: ${uid.substring(0, 4)}...`;
+    }
+    
+    // FUNÇÃO MODIFICADA PARA ID ABREVIADO E COPIÁVEL
+    async function updateFooterUserName(uid) {
+      const footerUserNameEl = document.getElementById("footerUserName");
+      const footerUserIdEl = document.getElementById("footerUserId");
+      let fullUserId = uid;
+
+      try {
+        const userDoc = await db.collection("wallets").doc(uid).get();
+        if (userDoc.exists && userDoc.data().name) {
+          footerUserNameEl.textContent = userDoc.data().name;
+        } else {
+          footerUserNameEl.textContent = "Usuário Anônimo";
+        }
+        
+        // Exibe ID abreviado
+        footerUserIdEl.textContent = fullUserId.substring(0, 4) + '...' + fullUserId.substring(fullUserId.length - 4);
+        
+        // Lógica de Long Press (Pressionar e segurar)
+        let pressTimer;
+        
+        // Função para copiar o ID completo
+        const copyFullId = () => {
+            navigator.clipboard.writeText(fullUserId).then(() => {
+                showNotification('ID completo copiado para a área de transferência!');
+                // Reverte para o ID abreviado após a cópia
+                footerUserIdEl.textContent = fullUserId.substring(0, 4) + '...' + fullUserId.substring(fullUserId.length - 4);
+            }).catch(err => {
+                console.error('Erro ao copiar ID: ', err);
+                showNotification('Erro ao copiar ID. Tente manualmente.');
+            });
+        };
+
+        // Início da pressão (mouse ou touch)
+        const startPress = () => {
+            pressTimer = setTimeout(() => {
+                // Ao segurar por 2s, mostra o ID completo para feedback visual
+                footerUserIdEl.textContent = fullUserId;
+                copyFullId();
+            }, 2000); // 2 segundos
+        };
+
+        // Fim da pressão (mouse ou touch)
+        const endPress = () => {
+            clearTimeout(pressTimer);
+            // Se soltar antes de 2s, o ID volta para o abreviado (se estava no completo)
+            if (footerUserIdEl.textContent === fullUserId) {
+                 footerUserIdEl.textContent = fullUserId.substring(0, 4) + '...' + fullUserId.substring(fullUserId.length - 4);
+            }
+        };
+
+        // Limpa ouvintes antigos para evitar duplicação
+        footerUserIdEl.removeEventListener('mousedown', startPress);
+        footerUserIdEl.removeEventListener('mouseup', endPress);
+        footerUserIdEl.removeEventListener('mouseleave', endPress);
+        footerUserIdEl.removeEventListener('touchstart', startPress);
+        footerUserIdEl.removeEventListener('touchend', endPress);
+
+        // Adiciona novos ouvintes
+        footerUserIdEl.addEventListener('mousedown', startPress);
+        footerUserIdEl.addEventListener('mouseup', endPress);
+        footerUserIdEl.addEventListener('mouseleave', endPress);
+        footerUserIdEl.addEventListener('touchstart', startPress, { passive: true });
+        footerUserIdEl.addEventListener('touchend', endPress);
+
+      } catch (error) {
+        console.error("⚠️ Erro ao buscar nome do usuário:", error);
+        footerUserNameEl.textContent = "Usuário Desconhecido";
+        footerUserIdEl.textContent = "---";
+      }
+    }
+
+    // LÓGICA DE FIREBASE (ATUALIZADA)
+    
+    // Função para carregar serviços (MANTIDA)
+    async function carregarServicosPlataforma(plataforma, carouselId) {
+      try {
+        const carousel = document.getElementById(carouselId);
+        if (!carousel) return;
+
+        carousel.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 1rem; font-size: 0.85rem">Carregando serviços...</p>';
+
+        const collectionRef = db.collection('companies').doc('services pessoal').collection(`${plataforma} services pessoal`);
+        // Adiciona filtro para status 'ativo'
+        const querySnapshot = await collectionRef.where('status', '==', 'ativo').get();
+
+        if (querySnapshot.empty) {
+          carousel.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 1rem; font-size: 0.85rem">Nenhum serviço ativo para ${plataforma.charAt(0).toUpperCase() + plataforma.slice(1)}.</p>`;
+          return;
+        }
+
+        carousel.innerHTML = '';
+        querySnapshot.forEach((doc) => {
+          const service = doc.data();
+          const serviceId = doc.id;
+          // Usa userName se existir, senão 'Usuário'
+          const userName = service.userName || 'Usuário'; 
+          const userInitial = userName.charAt(0).toUpperCase();
+
+          // MODIFICADO: Cálculo de Vagas
+          const totalVagas = service.freelancers || null; // Total de vagas do documento
+          const aceitos = service.acceptedBy ? service.acceptedBy.length : 0;
+          let vagasHtml = '';
+
+          if (totalVagas !== null) {
+            const vagasRestantes = Math.max(0, totalVagas - aceitos);
+            vagasHtml = ` | Vagas: ${vagasRestantes}`;
+            // Se não houver vagas, não renderiza o card
+            if (vagasRestantes === 0) return;
+          }
+
+          const card = document.createElement('div');
+          card.classList.add('ad-card', 'fade-in');
+          
+          card.innerHTML = `
+            <h3>${service.subcategoria || service.nome || 'Sem título'}</h3>
+            <div class="service-meta">
+              <div class="user-info">
+                <div class="user-avatar">${userInitial}</div>
+                <span>${userName}</span>
+              </div>
+              <span>${service.createdAt ? service.createdAt.toDate().toLocaleDateString('pt-BR') : 'Data desconhecida'}</span>
+            </div>
+            <div class="service-steps">
+              <strong>Descrição:</strong>
+              <p>${service.descricao || 'Sem descrição'}</p>
+              ${(service.etapas && service.etapas.length > 0) ? `
+                <strong>Etapas:</strong>
+                <ul>${service.etapas.map(etapa => `<li>${etapa}</li>`).join('')}</ul>
+              ` : ''}
+            </div>
+            <div class="service-reward">
+              <strong>Recompensa:</strong> ${service.recompensa || 0} Golds${vagasHtml}
+            </div>
+            <div class="service-actions">
+              <button class="aceitar-btn" onclick="aceitarServicoPlataforma('${serviceId}', '${plataforma}', ${service.recompensa})">
+                <i class="fas fa-handshake"></i> Aceitar
+              </button>
+              <button class="detalhes-btn" onclick="verDetalhesServico('${serviceId}', '${plataforma}')">
+                <i class="fas fa-info-circle"></i> Detalhes
+              </button>
+            </div>
+          `;
+          carousel.appendChild(card);
+        });
+
+        // Caso todos os cards filtrados tenham vagas = 0
+        if (carousel.innerHTML === '') {
+           carousel.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 1rem; font-size: 0.85rem">Todos os serviços para ${plataforma.charAt(0).toUpperCase() + plataforma.slice(1)} estão com vagas preenchidas.</p>`;
+        }
+
+      } catch (error) {
+        console.error(`Erro ao carregar serviços para ${plataforma}:`, error);
+        const carousel = document.getElementById(carouselId);
+        if (carousel) {
+          carousel.innerHTML = `<p style="text-align: center; color: var(--accent); padding: 1rem; font-size: 0.85rem">Erro ao carregar serviços. Tente novamente.</p>`;
+        }
+      }
+    }
+
+    // Função para aceitar um serviço (MANTIDA)
+    async function aceitarServicoPlataforma(serviceId, plataforma, recompensa) {
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        showNotification('Faça login para aceitar serviços.');
+        return;
+      }
+
+      try {
+        const serviceRef = db.collection('companies').doc('services pessoal').collection(`${plataforma} services pessoal`).doc(serviceId);
+        const walletRef = db.collection('wallets').doc(userId);
+
+        await db.runTransaction(async (transaction) => {
+          const serviceDoc = await transaction.get(serviceRef);
+          if (!serviceDoc.exists) {
+            throw new Error('Serviço não encontrado.');
+          }
+
+          const serviceData = serviceDoc.data();
+          const acceptedBy = serviceData.acceptedBy || [];
+          
+          // MODIFICADO: Lógica de Vagas
+          const totalVagas = serviceData.freelancers || null; // Vagas totais
+
+          if (acceptedBy.includes(userId)) {
+            throw new Error('Você já aceitou este serviço.');
+          }
+
+          // Verifica se o limite de vagas foi atingido
+          if (totalVagas !== null && acceptedBy.length >= totalVagas) {
+            throw new Error('Vagas esgotadas para este serviço.');
+          }
+
+          acceptedBy.push(userId);
+          
+          // Atualiza apenas o array de aceitos
+          transaction.update(serviceRef, {
+            acceptedBy: acceptedBy
+          });
+
+          // Lógica da Carteira (mantida)
+          const walletDoc = await transaction.get(walletRef);
+          if (!walletDoc.exists) {
+            // Se a carteira não existir, cria uma (ou lança erro, dependendo da regra)
+             transaction.set(walletRef, {
+                goldsBalance: recompensa,
+                reaisBalance: 0,
+                transactions: [newTransaction],
+                userId: userId,
+                name: "Usuário Anônimo" // Nome padrão
+            });
+          } else {
+             const walletData = walletDoc.data();
+             const newTransaction = {
+                type: 'receive',
+                amount: recompensa,
+                currency: 'golds',
+                date: new Date().toISOString(),
+                description: `Aceitação do serviço: ${serviceData.subcategoria || serviceData.nome} (${plataforma})`
+             };
+             transaction.update(walletRef, {
+                goldsBalance: (walletData.goldsBalance || 0) + recompensa,
+                transactions: [...(walletData.transactions || []), newTransaction]
+             });
+          }
+        });
+
+        showNotification(`Serviço aceito! Você ganhou ${recompensa} Golds.`);
+        // Recarrega os serviços para atualizar a contagem de vagas
+        carregarServicosPlataforma(plataforma, `${plataforma}-services-carousel`);
+        
+        // Atualiza a interface do saldo
+        const walletDoc = await walletRef.get();
+        if(walletDoc.exists) updateInterface(walletDoc.data());
+
+      } catch (error) {
+        console.error('Erro ao aceitar serviço:', error);
+        showNotification(error.message || 'Erro ao aceitar serviço. Tente novamente.');
+      }
+    }
+
+    // Função para ver detalhes
+    function verDetalhesServico(serviceId, plataforma) {
+      showNotification(`Detalhes do serviço ${serviceId} (${plataforma}) em desenvolvimento.`);
+    }
+
+    // LÓGICA DO CARROSSEL DE PROPAGANDAS
+    const PROPAGANDAS = [
+        { id: 'ad-1', title: 'Shopee: Descontos de até 50%!', url: 'https://shopee.com.br' },
+        { id: 'ad-2', title: 'Amazon: Frete Grátis em Milhares de Itens', url: 'https://amazon.com.br' },
+        { id: 'ad-3', title: 'Mercado Livre: Seu Produto Chega Mais Rápido!', url: 'https://mercadolivre.com.br' },
+        { id: 'ad-4', title: 'Magazine Luiza: Ofertas do Dia', url: 'https://magazineluiza.com.br' },
+        { id: 'ad-5', title: 'Casas Bahia: Liquidação Total!', url: 'https://casasbahia.com.br' }
+    ];
+
+    function createPropagandaCard(ad) {
+        const card = document.createElement('div');
+        card.classList.add('ad-card', 'propaganda', 'fade-in');
+        card.setAttribute('onclick', `window.open('${ad.url}', '_blank')`);
+        card.innerHTML = `<h3>${ad.title}</h3>`;
+        return card;
+    }
+
+    function loadPropagandaCarousel(carouselId, ads) {
+        const carousel = document.getElementById(carouselId);
+        if (!carousel) return; 
+        carousel.innerHTML = '';
+        ads.forEach(ad => {
+            carousel.appendChild(createPropagandaCard(ad));
+        });
+        ads.forEach(ad => {
+            carousel.appendChild(createPropagandaCard(ad));
+        });
+    }
+
+    function autoScrollCarousel(carouselId, scrollTimeMs, cardWidth) {
+        const carousel = document.getElementById(carouselId);
+        if (!carousel) return;
+        
+        let scrollInterval;
+        let isHovering = false;
+
+        const startScroll = () => {
+            scrollInterval = setInterval(() => {
+                if (isHovering) return;
+                const currentScroll = carousel.scrollLeft;
+                const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+                const nextScroll = currentScroll + cardWidth + 12; 
+                if (currentScroll >= maxScroll - 10) {
+                    carousel.scrollLeft = 0;
+                } else {
+                    carousel.scroll({ left: nextScroll, behavior: 'smooth' });
+                }
+            }, scrollTimeMs);
+        };
+        const stopScroll = () => clearInterval(scrollInterval);
+        carousel.addEventListener('mouseenter', () => isHovering = true);
+        carousel.addEventListener('mouseleave', () => isHovering = false);
+        carousel.addEventListener('touchstart', () => isHovering = true, { passive: true });
+        carousel.addEventListener('touchend', () => isHovering = false);
+        startScroll();
+    }
+
+    function setupPropagandaCarousels() {
+        const carouselData = [
+            { id: 'propaganda-carousel-1', delay: 8000, cardWidth: 200 },
+            { id: 'propaganda-carousel-2', delay: 8200, cardWidth: 200 },
+            { id: 'propaganda-carousel-3', delay: 8400, cardWidth: 200 },
+            { id: 'propaganda-carousel-4', delay: 8600, cardWidth: 200 },
+            { id: 'propaganda-carousel-5', delay: 8800, cardWidth: 200 },
+            { id: 'propaganda-carousel-6', delay: 9000, cardWidth: 200 } // Novo carrossel
+        ];
+        carouselData.forEach(data => {
+            loadPropagandaCarousel(data.id, PROPAGANDAS);
+            autoScrollCarousel(data.id, data.delay, data.cardWidth);
+        });
+    }
+
+    // Funções de navegação e tema
+    function navigateTo(page) {
+      switch(page) {
+        case 'wallet': window.location.href = "carteira.html"; break;
+        case 'generator': window.location.href = "gerador.html"; break;
+        case 'market': window.location.href = "mercado.html"; break;
+        case 'store': window.location.href = "loja.html"; break;
+        case 'yshippcommerce': window.location.href = "yshippcommerce.html"; break;
+        case 'home': default: window.location.href = "index.html"; break;
+      }
+    }
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', currentTheme);
+      localStorage.setItem('theme', currentTheme);
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      body.setAttribute('data-theme', savedTheme);
+    });
+    const menuToggles = {
+      'menu-icon': 'main-menu'
+    };
+    Object.entries(menuToggles).forEach(([toggleId, menuId]) => {
+      const toggle = document.getElementById(toggleId);
+      const menu = document.getElementById(menuId);
+      if (!toggle || !menu) {
+        console.error(`Elemento ${toggleId} ou ${menuId} não encontrado`);
+        return;
+      }
+      toggle.addEventListener('click', e => {
+        e.stopPropagation();
+        menu.classList.toggle('open');
+        toggle.classList.toggle('active');
+      });
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.menu') && !e.target.closest('.top-bar__icon')) {
+        Object.values(menuToggles).forEach(menuId => {
+          const menu = document.getElementById(menuId);
+          if (menu) menu.classList.remove('open');
+        });
+        document.querySelectorAll('.top-bar__icon').forEach(icon => {
+          if (icon) icon.classList.remove('active');
+        });
+      }
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        Object.values(menuToggles).forEach(menuId => {
+          const menu = document.getElementById(menuId);
+          if (menu) menu.classList.remove('open');
+        });
+        document.querySelectorAll('.top-bar__icon').forEach(icon => {
+          if (icon) icon.classList.remove('active');
+        });
+      }
+    });
+    document.getElementById("logout-button").addEventListener("click", () => {
+      auth.signOut().then(() => window.location.href = "cadastro.html");
+    });
+    function showCookieBannerOncePerDay() {
+      const today = new Date().toISOString().split('T')[0];
+      const lastShown = localStorage.getItem('cookieBannerLastShown');
+      if (lastShown !== today) {
+        document.getElementById('cookieBanner').classList.add('active');
+        localStorage.setItem('cookieBannerLastShown', today);
+      }
+    }
+    
+    // DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem("ipConsent") === "true") {
+        document.getElementById("cookieBanner").classList.remove('active');
+      }
+      showCookieBannerOncePerDay();
+
+      // LÓGICA DO HEADER SCROLL COLOR (MANTIDA)
+      const infoCards = document.querySelectorAll('.info-card');
+      const rootStyle = document.documentElement.style;
+      function getCssVarValue(varName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      }
+      const defaultHeaderColor = getCssVarValue('--surface');
+      function changeHeaderColor(color) {
+        rootStyle.setProperty('--header-bg', color);
+      }
+      const observerOptions = {
+        root: null,
+        rootMargin: '-60px 0px 0px 0px', 
+        threshold: [0, 0.1, 0.9, 1.0] 
+      };
+      const headerColorObserver = new IntersectionObserver((entries) => {
+        let newColor = null;
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.boundingClientRect.top < 60) {
+             let cardColor = getComputedStyle(entry.target).getPropertyValue('--info-card-color').trim();
+             if (cardColor) newColor = cardColor;
+          }
+        });
+        if (newColor) {
+            changeHeaderColor(newColor);
+        } else {
+            if (window.scrollY < 10) { 
+                changeHeaderColor(defaultHeaderColor);
+            }
+        }
+      }, observerOptions);
+      infoCards.forEach(card => headerColorObserver.observe(card));
+      window.addEventListener('scroll', () => {
+        if (window.scrollY < 10) changeHeaderColor(defaultHeaderColor);
+      }, { passive: true });
+    });
+
+    // LOAD (INICIALIZAÇÃO)
+    window.addEventListener('load', () => {
+      console.log("[DEBUG] Aguardando autenticação...");
+      const storedUID = localStorage.getItem("userUID");
+      if (storedUID && !navigator.onLine) {
+        console.log("[DEBUG] UID local detectado (offline):", storedUID);
+        updateUserStatus(storedUID);
+        updateFooterUserName(storedUID);
+        showModal('welcomeModal', 'Você está offline. Usando dados em cache.', false, 'erro');
+        document.getElementById("loadingOverlay").style.display = "none";
+        return;
+      }
+      
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          const uid = user.uid;
+          console.log("[DEBUG] Usuário logado:", uid);
+          localStorage.setItem("userUID", uid);
+          updateUserStatus(uid);
+          updateFooterUserName(uid);
+          
+          // Carrega os dados da carteira para a interface
+          db.collection('wallets').doc(uid).get().then(doc => {
+              if (doc.exists) updateInterface(doc.data());
+          });
+
+          // LÓGICA DE CARREGAMENTO (DO CÓDIGO 1)
+          const plataformas = [
+            'facebook', 'instagram', 'tiktok', 'telegram', 'discord',
+            'reddit', 'blog', 'seo', 'inscricoes', 'mobile', 'video'
+          ];
+          plataformas.forEach(plataforma => {
+            carregarServicosPlataforma(plataforma, `${plataforma}-services-carousel`);
+          });
+          
+          setupPropagandaCarousels();
+
+          if (localStorage.getItem('ipConsent') !== 'true') {
+            document.getElementById('cookieBanner').classList.add('active');
+          }
+          
+          // CORREÇÃO: Esconde o loading aqui
+          document.getElementById("loadingOverlay").style.display = "none";
+          
+        } else {
+          console.log("[DEBUG] Nenhum usuário logado. Tentando login anônimo...");
+          auth.signInAnonymously()
+            .then((cred) => {
+              console.log("✅ Login anônimo realizado com sucesso.");
+              const uid = cred.user.uid;
+              localStorage.setItem("userUID", uid);
+              updateUserStatus(uid);
+              updateFooterUserName(uid);
+              
+              // Carrega os dados da carteira (pode ser vazia)
+              db.collection('wallets').doc(uid).get().then(doc => {
+                  if (doc.exists) updateInterface(doc.data());
+              });
+
+              const plataformas = [
+                'facebook', 'instagram', 'tiktok', 'telegram', 'discord',
+                'reddit', 'blog', 'seo', 'inscricoes', 'mobile', 'video'
+              ];
+              plataformas.forEach(plataforma => {
+                carregarServicosPlataforma(plataforma, `${plataforma}-services-carousel`);
+              });
+              
+              setupPropagandaCarousels();
+              
+              if (localStorage.getItem('ipConsent') !== 'true') {
+                document.getElementById('cookieBanner').classList.add('active');
+              }
+              document.getElementById("loadingOverlay").style.display = "none";
+            })
+            .catch((error) => {
+              console.error("❌ Erro no login anônimo:", error.code, error.message);
+              showModal('welcomeModal', "Erro ao autenticar: " + error.message, true, 'erro');
+              document.getElementById("loadingOverlay").style.display = "none";
+            });
+        }
+      });
+    });
+
+    // Eventos de Online/Offline
+    window.addEventListener("offline", () => {
+      console.log("[DEBUG] Conexão perdida.");
+      showModal('welcomeModal', 'Sem conexão com a internet. Tentando reconectar...', false, 'erro');
+    });
+    window.addEventListener("online", () => {
+      console.log("[DEBUG] Conexão restabelecida.");
+      showModal('welcomeModal', 'Reconectado. Recarregando dados...', true, 'sucesso');
+      location.reload();
+    });
+  </script>
+</body>
+</html>
