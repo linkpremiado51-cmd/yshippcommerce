@@ -1,1 +1,834 @@
-
+:root {
+    --background: #f5f7fa;
+    --surface: #ffffff;
+    --text-primary: #1a202c;
+    --text-secondary: #1a202c;
+    --primary: #2d3748;
+    --primary-hover: #1a202c;
+    --secondary: #1a202c;
+    --secondary-hover: #2b6cb0;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --accent: #e53e3e;
+    --gold: #d69e2e;
+    --progress-bg: #edf2f7;
+    --reais: #10b981;
+    --gold-symbol: "";
+    --enterprise-symbol: "";
+    /* Cores de Risco */
+    --risk-low: #38a169;
+    --risk-medium: #ecc94b;
+    --risk-high: #e53e3e;
+    /* Cores de Acento por Seção */
+    --section-actions: #1a202c;
+    --section-stats: #1a202c;
+    --section-investments: #1a202c;
+    --section-transactions: #1a202c;
+}
+[data-theme="dark"] {
+    --background: #1a202c;
+    --surface: #2d3748;
+    --text-primary: #e2e8f0;
+    --text-secondary: #a0aec0;
+    --border: #4a5568;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --accent: #f56565;
+    --progress-bg: #4a5568;
+    --reais: #059669;
+    /* Cores de Risco Dark */
+    --risk-low: #68d391;
+    --risk-medium: #f6e05e;
+    --risk-high: #f56565;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--background);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding-top: 60px;
+    overflow-x: hidden;
+}
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: var(--surface);
+    border-bottom: 0px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 1001;
+    box-shadow: var(--shadow);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+.header h1 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.header h1 i {
+    color: var(--text-primary);
+}
+.top-bar__section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.top-bar__icon {
+    color: var(--text-primary);
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 0px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.top-bar__icon i {
+    font-size: 1.125rem;
+}
+.top-bar__icon:hover {
+    background: var(--primary);
+    color: white;
+}
+.menu {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 0.600px;
+    height: calc(100vh - 100px);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+}
+.menu.open {
+    transform: translateX(0);
+}
+.menu__list {
+    list-style: none;
+    padding: 12px 0;
+}
+.menu__item {
+    margin: 4px 12px;
+}
+.menu__link {
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    border-radius: 0px;
+    transition: background 0.2s ease;
+    background: transparent;
+}
+.menu__link:hover {
+    background: var(--primary);
+    color: white;
+}
+.menu__link i {
+    margin-right: 8px;
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+.menu__link:hover i {
+    color: white;
+}
+.notification {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    padding: 8px 16px;
+    background: var(--surface);
+    color: var(--text-primary);
+    border-radius: 0px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 2000;
+}
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* ===== CARROSSEL ===== */
+.balance-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    gap: 0.75rem;
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+.balance-carousel::-webkit-scrollbar {
+    display: none;
+}
+/* ===== CARDS ===== */
+.balance-card {
+    --card-width: 85vw;
+    --card-height: 140px;
+    flex: 0 0 var(--card-width);
+    height: var(--card-height);
+    scroll-snap-align: start;
+    background: #222; /* cor padrão para os demais cards */
+    color: white;
+    border-radius: 12px;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+/* ===== PRIMEIRO CARD ===== */
+.balance-card:first-child {
+    background: #ecc94b; /* cor específica para o primeiro card */
+    color: #000; /* se quiser ajustar contraste do texto */
+}
+        .balance-carousel::-webkit-scrollbar {
+            display: none;
+        }
+        .balance-card {
+            --card-width: 105.6%;
+            --card-height: 140px;
+            flex: 0 0 var(--card-width);
+            height: var(--card-height);
+            scroll-snap-align: start;
+            border-radius: 0px;
+            padding: 1rem;
+            color: white#7D90AC;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.2s ease, background 0.3s ease;
+        }
+        .balance-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        /* Cores dos Cards */
+        .balance-card.gold {
+            background: linear-gradient(135deg, var(--gold), #b7791f);
+        }
+        .balance-card.reais {
+            background: linear-gradient(135deg, var(--reais), #059669);
+        }
+        .balance-card.portfolio {
+            background: linear-gradient(135deg, #6b46c1, #805ad5);
+        }
+        .balance-card.enterprise {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        .balance-card.crypto {
+            background: linear-gradient(135deg, #C70325, #F75561);
+        }
+        .balance-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            opacity: 0.9;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
+        .balance-amount {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .balance-desc {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-top: 0.3rem;
+        }
+        .level-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+       /* ===== BASE DA SEÇÃO DA CARTEIRA ===== */
+.wallet-section {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--surface);
+    padding: 1rem;
+    border-radius: 0;                  /* cantos quadrados */
+    margin: 1rem auto;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--section-default); /* cor padrão, pode ser sobrescrita */
+    transition: border-color 0.2s ease;
+}
+/* ===== TÍTULO DA SEÇÃO ===== */
+.wallet-section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.wallet-section h2 i {
+    color: var(--secondary);
+}
+/* ===== TIPOS DE SEÇÃO ===== */
+.wallet-section.actions      { --section-color: var(--section-actions); }
+.wallet-section.stats        { --section-color: var(--section-stats); }
+.wallet-section.investments  { --section-color: var(--section-investments); }
+.wallet-section.transactions { --section-color: var(--section-transactions); }
+/* Aplica a cor personalizada da seção na borda superior */
+.wallet-section {
+    border-top-color: var(--section-color, var(--section-default));
+}
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 0.5rem;
+        }
+        .stat-item {
+            padding: 0.5rem;
+            border-radius: 0px;
+            border: 1px solid var(--border);
+            text-align: center;
+            background: var(--background);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .stat-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .action-btn {
+            padding: 0.5rem;
+            border-radius: 0px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+            position: relative;
+        }
+        .action-btn.withdraw {
+            background: var(--primary);
+            color: white;
+        }
+        .action-btn.transfer {
+            background: #3b82f6;
+            color: white;
+        }
+        .action-btn.default {
+            background: var(--secondary);
+            color: white;
+        }
+        .action-btn.invest {
+            background: #6b46c1;
+            color: white;
+        }
+        .action-btn.crypto {
+            background: #f6e05e;
+            color: var(--text-primary);
+        }
+        .action-btn.bank {
+            background: #38a169;
+            color: white;
+        }
+        .action-btn.commercial {
+            background: #4a5568;
+            color: white;
+            margin-top: 0rem;
+        }
+        .action-btn.resgate {
+            background: #8b5cf6;
+            color: white;
+        }
+        .action-btn.enterprise {
+            background: #2563eb;
+            color: white;
+        }
+        [data-theme="dark"] .action-btn.withdraw {
+            background: #4a5568;
+            color: #e2e8f0;
+        }
+        [data-theme="dark"] .action-btn.transfer {
+            background: #60a5fa;
+            color: #1a202c;
+        }
+        [data-theme="dark"] .action-btn.default {
+            background: #63b3ed;
+            color: #1a202c;
+        }
+        [data-theme="dark"] .action-btn.invest {
+            background: #805ad5;
+            color: #e2e8f0;
+        }
+        [data-theme="dark"] .action-btn.crypto {
+            background: #d4af37;
+            color: #1a202c;
+        }
+        [data-theme="dark"] .action-btn.bank {
+            background: #68d391;
+            color: #1a202c;
+        }
+        [data-theme="dark"] .action-btn.commercial {
+            background: #718096;
+            color: #e2e8f0;
+        }
+        .action-btn:hover {
+            background: var(--secondary-hover);
+        }
+        .action-btn i {
+            font-size: 0.9rem;
+        }
+        .action-btn[title] {
+            position: relative;
+        }
+        .action-btn[title]::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            margin-bottom: 0.25rem;
+        }
+        .action-btn[title]:hover::after {
+            opacity: 1;
+        }
+        .transaction-list {
+            max-height: 360px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+        .transaction-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .transaction-list::-webkit-scrollbar-track {
+            background: var(--progress-bg);
+            border-radius: 0px;
+        }
+        .transaction-list::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 0px;
+        }
+        .transaction-list::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-hover);
+        }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 0px;
+            border: 1px solid var(--border);
+            margin-bottom: 0.5rem;
+            background: var(--background);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .transaction-item:hover {
+            background: var(--border);
+        }
+        .transaction-type {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .transaction-desc {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        .transaction-date {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .transaction-amount.receive {
+            color: var(--secondary);
+        }
+        .transaction-amount.send {
+            color: var(--accent);
+        }
+        .transaction-amount.withdraw {
+            color: var(--accent);
+        }
+/* ===== MODAIS ===== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.modal-content {
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+    border-radius: 0px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.modal-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+/* Formulários */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+.form-group label {
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0px;
+    background: var(--background);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    transition: border 0.2s ease, background 0.2s ease;
+}
+.form-group input.is-invalid {
+    border-color: var(--accent);
+}
+.validation-error {
+    font-size: 0.75rem;
+    color: var(--accent);
+}
+/* Botões de Modal */
+.modal-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+.modal-buttons button {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 0px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+/* Overlay de Loading Global */
+#loadingOverlay,
+.action-loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1rem;
+    z-index: 10000;
+}
+.action-loading-overlay {
+    position: absolute;
+    background: rgba(45,55,72,0.8);
+    font-size: 0.8rem;
+    display: none;
+    border-radius: 0px;
+}
+.action-loading-overlay.active {
+    display: flex;
+}
+/* ===== FOOTER ===== */
+footer#userInfoFooter {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 0.35rem 0;
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Inter', sans-serif;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+/* ===== INVESTIMENTOS ===== */
+.investment-detail {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0px;
+    border: 1px solid var(--border);
+    background: var(--background);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.risk-indicator {
+    padding: 2px 8px;
+    border-radius: 0px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    display: inline-block;
+    text-align: center;
+}
+.risk-low    { background: var(--risk-low); }
+.risk-medium { background: var(--risk-medium); color: var(--text-primary); }
+.risk-high   { background: var(--risk-high); }
+.estimated-return {
+    font-weight: 700;
+    color: var(--secondary);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border);
+}
+/* Card de Investimento */
+.investment-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0px;
+    border: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+    background: var(--background);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.investment-card:hover {
+    background: var(--border);
+}
+.invest-name   { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+.invest-amount { font-weight: 600; font-size: 0.9rem; color: var(--gold); }
+.invest-return { font-size: 0.8rem; color: var(--reais); }
+.invest-lockin { font-size: 0.75rem; color: var(--text-secondary); }
+/* ===== HISTÓRICO DE TRANSAÇÕES ===== */
+.transaction-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+.transaction-filters select {
+    padding: 0.5rem;
+    border-radius: 0px;
+    border: 1px solid var(--border);
+    background: var(--background);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+.level-progress {
+    margin-top: 0.5rem;
+    height: 6px;
+    background: var(--progress-bg);
+    border-radius: 0px;
+    overflow: hidden;
+}
+.level-progress-bar {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.3s ease;
+}
+.value-preview {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: right;
+    margin-top: 0.25rem;
+}
+.sort-options {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.sort-btn {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0px;
+    border: 1px solid var(--border);
+    background: var(--background);
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.sort-btn:hover { background: var(--border); }
+        @media (max-width: 768px) {
+            .menu {
+                width: min(80vw, 240px);
+            }
+            .header {
+                padding: 0 12px;
+            }
+            .top-bar__icon {
+                padding: 6px;
+            }
+            .top-bar__icon i {
+                font-size: 1rem;
+            }
+            .menu__link {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+            .menu__link i {
+                font-size: 1rem;
+            }
+            .notification {
+                right: 8px;
+                bottom: 8px;
+                padding: 8px 12px;
+            }
+            .balance-carousel {
+                padding: 0.5rem;
+            }
+            .balance-card {
+                padding: 0.75rem;
+            }
+            .balance-amount {
+                font-size: 1.25rem;
+            }
+            .wallet-section {
+                padding: 0.75rem;
+            }
+            .wallet-section h2 {
+                font-size: 1.125rem;
+            }
+            .stats-grid {
+                gap: 0.5rem;
+            }
+            .stat-item {
+                padding: 0.5rem;
+            }
+            .stat-label {
+                font-size: 0.7rem;
+            }
+            .stat-value {
+                font-size: 0.8rem;
+            }
+            .action-btn {
+                font-size: 0.8rem;
+                padding: 0.5rem;
+            }
+            .action-btn i {
+                font-size: 0.8rem;
+            }
+            .transaction-item {
+                padding: 0.5rem;
+            }
+            .transaction-type,
+            .transaction-amount {
+                font-size: 0.8rem;
+            }
+            .transaction-desc,
+            .transaction-date {
+                font-size: 0.75rem;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 0.75rem;
+            }
+            .modal-content h3 {
+                font-size: 1rem;
+            }
+            .form-group label {
+                font-size: 0.8rem;
+            }
+            .form-group input,
+            .form-group select {
+                font-size: 0.8rem;
+                padding: 0.4rem;
+            }
+            .modal-buttons button {
+                font-size: 0.8rem;
+            }
+        }
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .header h1 {
+                font-size: 1.125rem;
+            }
+            .balance-carousel {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+            .wallet-section {
+                padding: 0.75rem;
+            }
+            .wallet-section h2 {
+                font-size: 1.25rem;
+            }
+  }
