@@ -1,128 +1,79 @@
 // modules/saldo.js
 
-// Supondo que as funções de regra estejam disponíveis globalmente como no arquivo anterior
-// window.RegrasYshipp
+// ================================
+// LÓGICA DE SALDO – YSHIPPBANK
+// ================================
 
-/**
- * Obtém o saldo total em Reais
- * @param {Object} walletData - Dados da carteira do usuário
- * @returns {number} Saldo em Reais
- */
+// ================================
+// GETTERS DE SALDO
+// ================================
 function getReaisBalance(walletData) {
-    if (!walletData) return 0;
-    return walletData.reaisBalance || 0;
+    return walletData?.reaisBalance || 0;
 }
 
-/**
- * Obtém o saldo total em Golds
- * @param {Object} walletData - Dados da carteira do usuário
- * @returns {number} Saldo em Golds
- */
 function getGoldsBalance(walletData) {
-    if (!walletData) return 0;
-    return walletData.goldsBalance || 0;
+    return walletData?.goldsBalance || 0;
 }
 
-/**
- * Obtém o saldo total em Golds para fins de investimento (pode incluir regras de saldo bloqueado)
- * @param {Object} walletData - Dados da carteira do usuário
- * @returns {number} Saldo disponível para investimento em Golds
- */
-function getInvestibleGoldsBalance(walletData) {
-    if (!walletData) return 0;
-    const totalGolds = getGoldsBalance(walletData);
-    // Aqui pode ser aplicada lógica de saldo bloqueado, se necessário no futuro
-    // Por exemplo, subtrair golds investidos ou bloqueados
-    // const lockedGolds = walletData.lockedGolds || 0;
-    return totalGolds;
+function getCryptoBalance(walletData) {
+    return walletData?.cryptoBalance || 0;
 }
 
-/**
- * Obtém o saldo total do portfólio (investimentos ativos)
- * @param {Object} walletData - Dados da carteira do usuário
- * @returns {number} Valor total investido
- */
+function getEnterpriseBalance(walletData) {
+    return walletData?.enterpriseBalance || 0;
+}
+
+// ================================
+// INVESTIMENTOS
+// ================================
 function getPortfolioBalance(walletData) {
-    if (!walletData) return 0;
-    // O saldo do portfólio pode ser calculado a partir dos investimentos ativos
-    const investments = walletData.investments || {};
+    if (!walletData?.investments) return 0;
+
     let total = 0;
-    for (const key in investments) {
-        if (investments[key] && typeof investments[key].amount === 'number') {
-            total += investments[key].amount;
+    Object.values(walletData.investments).forEach(inv => {
+        if (typeof inv.amount === 'number') {
+            total += inv.amount;
         }
-    }
+    });
+
     return total;
 }
 
-/**
- * Obtém o saldo total em moedas empresariais (se aplicável)
- * @param {Object} walletData - Dados da carteira do usuário
- * @returns {number} Saldo em moedas empresariais
- */
-function getEnterpriseBalance(walletData) {
-    if (!walletData) return 0;
-    return walletData.enterpriseBalance || 0;
+function getInvestibleGoldsBalance(walletData) {
+    const totalGolds = getGoldsBalance(walletData);
+    const lockedGolds = walletData?.lockedGolds || 0;
+    return totalGolds - lockedGolds;
 }
 
-/**
- * Obtém o saldo total em criptomoedas (YSC, etc)
- * @param {Object} walletData - Dados da carteira do usuário
- * @returns {number} Saldo em criptomoedas
- */
-function getCryptoBalance(walletData) {
-    if (!walletData) return 0;
-    return walletData.cryptoBalance || 0;
+// ================================
+// CONVERSÕES
+// ================================
+function convertGoldsToReais(golds) {
+    if (typeof golds !== 'number') return 0;
+    return golds / window.RegrasYshipp.GOLD_TO_REAL_RATE;
 }
 
-/**
- * Converte um valor em Golds para Reais usando a taxa interna
- * @param {number} goldsAmount - Valor em Golds
- * @returns {number} Valor equivalente em Reais
- */
-function convertGoldsToReais(goldsAmount) {
-    const rate = window.RegrasYshipp?.getInternalConversionRate() || 1000;
-    if (typeof goldsAmount !== 'number' || goldsAmount < 0) return 0;
-    return goldsAmount / rate;
+function convertReaisToGolds(reais) {
+    if (typeof reais !== 'number') return 0;
+    return reais * window.RegrasYshipp.GOLD_TO_REAL_RATE;
 }
 
-/**
- * Converte um valor em Reais para Golds usando a taxa interna
- * @param {number} reaisAmount - Valor em Reais
- * @returns {number} Valor equivalente em Golds
- */
-function convertReaisToGolds(reaisAmount) {
-    const rate = window.RegrasYshipp?.getInternalConversionRate() || 1000;
-    if (typeof reaisAmount !== 'number' || reaisAmount < 0) return 0;
-    return reaisAmount * rate;
-}
-
-/**
- * Calcula o saldo total estimado em Reais (considerando todas as moedas convertidas)
- * @param {Object} walletData - Dados da carteira do usuário
- * @returns {number} Saldo total estimado em Reais
- */
+// ================================
+// SALDO TOTAL ESTIMADO
+// ================================
 function getTotalEstimatedBalanceInReais(walletData) {
-    if (!walletData) return 0;
     const reais = getReaisBalance(walletData);
-    const goldsAsReais = convertGoldsToReais(getGoldsBalance(walletData));
-    const portfolioAsReais = convertGoldsToReais(getPortfolioBalance(walletData));
-    const enterpriseAsReais = convertGoldsToReais(getEnterpriseBalance(walletData));
-    const cryptoAsReais = convertGoldsToReais(getCryptoBalance(walletData));
+    const golds = convertGoldsToReais(getGoldsBalance(walletData));
+    const portfolio = convertGoldsToReais(getPortfolioBalance(walletData));
+    const enterprise = convertGoldsToReais(getEnterpriseBalance(walletData));
+    const crypto = convertGoldsToReais(getCryptoBalance(walletData));
 
-    return reais + goldsAsReais + portfolioAsReais + enterpriseAsReais + cryptoAsReais;
+    return reais + golds + portfolio + enterprise + crypto;
 }
 
-/**
- * Atualiza a exibição dos saldos na interface (função pura de atualização visual)
- * Esta função não faz cálculos, apenas atualiza elementos do DOM com valores fornecidos.
- * @param {Object} balances - Objeto contendo os saldos a serem exibidos
- * @param {number} balances.reais - Saldo em Reais
- * @param {number} balances.golds - Saldo em Golds
- * @param {number} balances.portfolio - Saldo do portfólio
- * @param {number} balances.enterprise - Saldo empresarial
- * @param {number} balances.crypto - Saldo em cripto
- */
+// ================================
+// ATUALIZAÇÃO VISUAL (CONTROLADA)
+// ================================
 function updateBalanceDisplay(balances) {
     const {
         reais = 0,
@@ -132,29 +83,29 @@ function updateBalanceDisplay(balances) {
         crypto = 0
     } = balances;
 
-    // Atualiza saldos na interface, se os elementos existirem
-    const goldsEl = document.getElementById('golds-balance');
     const reaisEl = document.getElementById('reais-balance');
+    const goldsEl = document.getElementById('golds-balance');
     const portfolioEl = document.getElementById('portfolio-balance');
     const enterpriseEl = document.getElementById('enterprise-balance');
     const cryptoEl = document.getElementById('crypto-balance');
 
+    if (reaisEl) reaisEl.textContent = `R$ ${reais.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (goldsEl) goldsEl.textContent = golds.toLocaleString('pt-BR');
-    if (reaisEl) reaisEl.textContent = `R$ ${reais.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     if (portfolioEl) portfolioEl.textContent = `${portfolio.toLocaleString('pt-BR')} G`;
     if (enterpriseEl) enterpriseEl.textContent = `${enterprise.toLocaleString('pt-BR')} G`;
     if (cryptoEl) cryptoEl.textContent = `${crypto.toLocaleString('pt-BR')} YSC`;
 }
 
-// Exportar funções para uso em outros módulos (padrão IIFE ou objeto global)
-// Este padrão permite que outros módulos importem as funções de saldo de forma organizada
+// ================================
+// EXPORT GLOBAL
+// ================================
 window.SaldoYshipp = {
     getReaisBalance,
     getGoldsBalance,
-    getInvestibleGoldsBalance,
-    getPortfolioBalance,
-    getEnterpriseBalance,
     getCryptoBalance,
+    getEnterpriseBalance,
+    getPortfolioBalance,
+    getInvestibleGoldsBalance,
     convertGoldsToReais,
     convertReaisToGolds,
     getTotalEstimatedBalanceInReais,
