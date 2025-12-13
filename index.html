@@ -600,6 +600,12 @@
           </button>
         </li>
         <li class="menu__item">
+          <a class="menu__link" href="https://linkpremiado51-cmd.github.io/yshippcommerce/servicespublicados.html" target="_blank" rel="noopener">
+            <i class="fas fa-user-tie"></i>
+            <span>Serviços Pessoais</span>
+          </a>
+        </li>
+        <li class="menu__item">
           <button class="menu__link" onclick="navigateTo('store')">
             <i class="fas fa-shopping-cart"></i>
             <span>Loja</span>
@@ -1124,7 +1130,6 @@
       const niveis = niveisGlobais[cardId] || [];
       let nivelAtual = niveis[0];
       let proximaMeta = niveis[0].golds;
-
       for (let i = niveis.length - 1; i >= 0; i--) {
         if (golds >= niveis[i].golds) {
           nivelAtual = niveis[i];
@@ -1132,7 +1137,6 @@
           break;
         }
       }
-
       return { nivelAtual, proximaMeta };
     }
 
@@ -1140,7 +1144,6 @@
     function atualizarProgressoDoCard(cardId, golds, metricValue) {
       const { nivelAtual, proximaMeta } = determinarNivelGlobal(cardId, golds);
       const percentual = Math.min((Number(golds) / proximaMeta) * 100, 100);
-
       const fillEl = document.getElementById(`${cardId}-progress`);
       const textEl = document.getElementById(`${cardId}-progress-text`);
       const nivelEl = document.getElementById(`${cardId}-nivel`);
@@ -1154,7 +1157,6 @@
                                                         cardId === 'blog' ? 'comentarios' : 
                                                         cardId === 'reddit' ? 'upvotes' : 
                                                         cardId === 'seo' ? 'palavras' : 'ativas'}`);
-
       if (fillEl) fillEl.style.width = `${percentual}%`;
       if (textEl) textEl.textContent = `${Number(golds).toLocaleString('pt-BR')} / ${proximaMeta.toLocaleString('pt-BR')}`;
       if (nivelEl) nivelEl.textContent = nivelAtual.nome;
@@ -1211,40 +1213,47 @@
       const title = card.querySelector('h3')?.textContent || 'card';
       showNotification(`Contratando ${title}... (simulado)`);
     }
-
     function executarMissoes(cardId) {
       const card = document.querySelector(`[data-card-id="${cardId}"]`);
       const title = card.querySelector('h3')?.textContent || 'card';
       showNotification(`Executando missões em ${title}... (simulado)`);
     }
 
-    // Controle do carrossel com toque
+    // Controle do carrossel automático
     let currentCard = 0;
     const carousel = document.getElementById('company-carousel');
     const cards = carousel.querySelectorAll('.nav-card');
     const totalCards = cards.length;
-    let touchStartX = 0;
-    let touchEndX = 0;
+    let autoSlideInterval = null;
+    let isPaused = false;
 
     function updateCarousel() {
-      const width = carousel.querySelector('.nav-card').offsetWidth + 12; // 0.75rem gap in pixels
+      const width = carousel.querySelector('.nav-card').offsetWidth + 12;
       carousel.style.transform = `translateX(-${currentCard * width}px)`;
     }
 
-    carousel.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(() => {
+        if (!isPaused) {
+          currentCard = (currentCard + 1) % totalCards;
+          updateCarousel();
+        }
+      }, 5000);
+    }
 
-    carousel.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      const swipeDistance = touchEndX - touchStartX;
-      if (swipeDistance > 50 && currentCard > 0) {
-        currentCard--;
-      } else if (swipeDistance < -50 && currentCard < totalCards - 1) {
-        currentCard++;
-      }
-      updateCarousel();
-    });
+    function pauseAutoSlide() {
+      isPaused = true;
+      clearInterval(autoSlideInterval);
+      setTimeout(() => {
+        isPaused = false;
+        startAutoSlide();
+      }, 10000);
+    }
+
+    // Eventos de toque e clique no carrossel
+    carousel.addEventListener('touchstart', pauseAutoSlide);
+    carousel.addEventListener('mousedown', pauseAutoSlide);
+    carousel.addEventListener('click', pauseAutoSlide);
 
     // Carrega dados do usuário e verifica autenticação
     function carregarDadosUsuario(user) {
@@ -1299,7 +1308,6 @@
     const cookieBanner = document.getElementById('cookieBanner');
     const cookieAccept = document.getElementById('cookie-accept');
     const cookieDecline = document.getElementById('cookie-decline');
-
     function showCookieBannerOncePerDay() {
       const today = new Date().toISOString().split('T')[0];
       const lastShown = localStorage.getItem('cookieBannerLastShown');
@@ -1385,7 +1393,10 @@
       });
 
       window.addEventListener('resize', updateCarousel);
+
+      // Inicia o carrossel automático após carregar o DOM
+      startAutoSlide();
     });
   </script>
 </body>
-</html>
+  </html>
