@@ -1,181 +1,121 @@
 // modules/transferencias.js
+import { updateSystemReserves } from './saldo.js';
+import { GOLD_TO_REAL_RATE } from './regras.js';
 
-// ================================
-// TRANSFERÊNCIAS – YSHIPPBANK
-// ================================
-// Depende de:
-// window.RegrasYshipp
-// window.SaldoYshipp
+export async function processDepositLogic(db, currentUser, walletData, data) {
+    const { netAmount, tax, method, amount, pixKey } = data;
 
-// ================================
-// VALIDAÇÕES
-// ================================
+    // Atualiza saldo
+    const newReaisBalance = (walletData.reaisBalance || 0) + netAmount;
 
-function canTransfer(walletData, amount, currency) {
-    if (!walletData) return false;
-    if (typeof amount !== 'number' || amount <= 0) return false;
+    const batch = db.batch();
+    const walletRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
 
-    const taxRate = window.RegrasYshipp.getTaxRate
-        ? window.RegrasYshipp.getTaxRate('transfer', currency)
-        : 0;
-
-    const tax = amount * taxRate;
-    const totalRequired = amount + tax;
-
-    if (currency === 'reais') {
-        return (walletData.reaisBalance || 0) >= totalRequired;
-    }
-
-    if (currency === 'golds') {
-        return (walletData.goldsBalance || 0) >= totalRequired;
-    }
-
-    return false;
-}
-
-// ================================
-// PREPARAÇÃO DA TRANSFERÊNCIA
-// ================================
-
-function prepareTransfer(senderId, recipientId, walletData, amount, currency) {
-    if (!senderId || !recipientId || !walletData) {
-        return { success: false, message: 'Dados insuficientes.' };
-    }
-
-    if (!canTransfer(walletData, amount, currency)) {
-        return { success: false, message: 'Saldo insuficiente.' };
-    }
-
-    const taxRate = window.RegrasYshipp.getTaxRate
-        ? window.RegrasYshipp.getTaxRate('transfer', currency)
-        : 0;
-
-    const tax = amount * taxRate;
-    const netAmount = amount - tax;
-
-    const senderTransaction = {
-        type: 'send',
-        currency,
-        amount,
-        tax,
-        netAmount,
-        date: new Date().toISOString(),
-        from: senderId,
-        to: recipientId,
-        description: `Transferência enviada`
-    };
-
-    const recipientTransaction = {
-        type: 'receive',
-        currency,
+    batch.update(walletRef, { reaisBalance: newReaisBalance });
+    
+    // Transação
+    const transaction = {
+        type: 'deposit',
         amount: netAmount,
+        currency: 'reais',
+        description: `Depósito via ${method.toUpperCase()}`,
         date: new Date().toISOString(),
-        from: senderId,
-        to: recipientId,
-        description: `Transferência recebida`
+        metadata: { method, fullAmount: amount, tax, pixKey: method === 'pix' ? pixKey : undefined, canUndo: true, undoTimeout: Date.now() + 300000 }
     };
-
-    return {
-        success: true,
-        tax,
-        netAmount,
-        senderTransaction,
-        recipientTransaction
-    };
-}
-
-// ================================
-// PROCESSAMENTO DE SALDO
-// ================================
-
-function processTransferBalance(senderWallet, recipientWallet, amount, tax, currency) {
-    if (!senderWallet || !recipientWallet) {
-        throw new Error('Carteiras inválidas.');
-    }
-
-    const newSenderWallet = { ...senderWallet };
-    const newRecipientWallet = { ...recipientWallet };
-
-    const totalDebit = amount + tax;
-
-    if (currency === 'reais') {
-        newSenderWallet.reaisBalance -= totalDebit;
-        newRecipientWallet.reaisBalance =
-            (newRecipientWallet.reaisBalance || 0) + amount;
-    }
-
-    if (currency === 'golds') {
-        newSenderWallet.goldsBalance -= totalDebit;
-        newRecipientWallet.goldsBalance =
-            (newRecipientWallet.goldsBalance || 0) + amount;
-    }
-
-    return {
-        newSenderWallet,
-        newRecipientWallet,
-        systemRevenue: tax
+    
+    // Adiciona arrayUnion via lógica auxiliar ou direta (aqui simplificado para batch direto se possível, mas o arrayUnion é do firebase)
+    // Nota: Como estamos em módulos puros JS, precisamos passar o objeto firebase ou usar a sintaxe compat
+    // Assumindo que 'firebase' está global ou passado. Vamos simplificar assumindo que o orquestrador lida com a chamada específica do firebase se for complexo,
+    // mas aqui faremos a lógica de update.
+    
+    return { 
+        transaction, 
+        taxEntry: { type: 'deposit', amount: tax, currency: 'reais', date: new Date().toISOString() },
+        newBalance: { reaisBalance: newReaisBalance }
     };
 }
 
-// ================================
-// EXECUÇÃO COMPLETA
-// ================================
-
-function executeTransfer(data) {
-    const {
-        senderId,
-        recipientId,
-        senderWallet,
-        recipientWallet,
-        amount,
-        currency
-    } = data;
-
-    const prepared = prepareTransfer(
-        senderId,
-        recipientId,
-        senderWallet,
-        amount,
-        currency
-    );
-
-    if (!prepared.success) return prepared;
-
+export async function validateUserId(db, userId, currentUserId) {
+    if (!userId || userId === currentUserId) return false;
     try {
-        const balanceResult = processTransferBalance(
-            senderWallet,
-            recipientWallet,
-            amount,
-            prepared.tax,
-            currency
-        );
-
-        return {
-            success: true,
-            message: 'Transferência realizada com sucesso.',
-            newSenderWallet: balanceResult.newSenderWallet,
-            newRecipientWallet: balanceResult.newRecipientWallet,
-            systemRevenue: balanceResult.systemRevenue,
-            transactions: {
-                sender: prepared.senderTransaction,
-                recipient: prepared.recipientTransaction
-            }
-        };
+        const userDoc = await db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(userId).get();
+        return userDoc.exists;
     } catch (err) {
-        return {
-            success: false,
-            message: err.message
-        };
+        return false;
     }
 }
 
-// ================================
-// EXPORT GLOBAL
-// ================================
+export async function executeTransfer(db, firebase, currentUser, walletData, data) {
+    const { recipientId, currency, amount, tax } = data;
+    
+    const batch = db.batch();
+    const senderRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
+    const recipientRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(recipientId);
 
-window.TransferenciasYshipp = {
-    canTransfer,
-    prepareTransfer,
-    processTransferBalance,
-    executeTransfer
-};
+    // Sender Updates
+    batch.update(senderRef, {
+        [`${currency}Balance`]: firebase.firestore.FieldValue.increment(-(amount + tax)),
+        transactions: firebase.firestore.FieldValue.arrayUnion({
+            type: 'send',
+            amount: amount,
+            currency,
+            description: `Transferência para ${recipientId}`,
+            date: new Date().toISOString(),
+            to: recipientId,
+            metadata: { tax, netAmount: amount - tax, canUndo: true, undoTimeout: Date.now() + 300000, originalBalances: { reais: walletData.reaisBalance, golds: walletData.goldsBalance } }
+        }),
+        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'transfer', amount: tax, currency, date: new Date().toISOString() })
+    });
+
+    // Recipient Updates
+    batch.update(recipientRef, {
+        [`${currency}Balance`]: firebase.firestore.FieldValue.increment(amount),
+        transactions: firebase.firestore.FieldValue.arrayUnion({
+            type: 'receive',
+            amount,
+            currency,
+            description: `Recebido de ${currentUser.uid}`,
+            date: new Date().toISOString(),
+            from: currentUser.uid,
+            metadata: { canUndo: false }
+        })
+    });
+
+    await batch.commit();
+    await updateSystemReserves(db, tax, currency);
+}
+
+export async function executeConversion(db, firebase, currentUser, walletData, data) {
+    const { from, to, amount, tax, convertedAmount } = data;
+    
+    const updates = {
+        [`${from}Balance`]: (walletData[`${from}Balance`] || 0) - (amount + tax),
+        [`${to}Balance`]: (walletData[`${to}Balance`] || 0) + convertedAmount
+    };
+
+    const walletRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
+    const batch = db.batch();
+
+    batch.update(walletRef, updates);
+    
+    const fromSymbol = from === 'golds' ? '🪙' : 'R$';
+    const toSymbol = to === 'golds' ? '' : 'R$';
+
+    batch.update(walletRef, {
+        transactions: firebase.firestore.FieldValue.arrayUnion({
+            type: 'conversion',
+            amount,
+            from,
+            to,
+            convertedAmount,
+            currency: from,
+            description: `Conversão de ${amount.toLocaleString('pt-BR')} ${fromSymbol} para ${convertedAmount.toLocaleString('pt-BR')} ${toSymbol}`,
+            date: new Date().toISOString(),
+            metadata: { tax, canUndo: true, undoTimeout: Date.now() + 300000, originalBalances: { reais: walletData.reaisBalance, golds: walletData.goldsBalance } }
+        }),
+        taxes: firebase.firestore.FieldValue.arrayUnion({ type: 'conversion', amount: tax, currency: from, date: new Date().toISOString() })
+    });
+
+    await batch.commit();
+}
+
