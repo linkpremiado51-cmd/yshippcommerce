@@ -1,227 +1,109 @@
 // modules/historico.js
+import { formatCurrency } from './regras.js';
+import { loadWalletData } from './saldo.js';
 
-// ================================
-// HISTÓRICO DE TRANSAÇÕES – YSHIPPBANK
-// ================================
+export async function executeUndo(db, firebase, currentUser, walletData, lastTx) {
+    const batch = db.batch();
+    const walletRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(currentUser.uid);
 
-// ================================
-// FORMATAÇÕES
-// ================================
-function formatDate(isoDate) {
-    if (!isoDate) return 'Data inválida';
-    const date = new Date(isoDate);
-    return date.toLocaleString('pt-BR');
-}
+    if (lastTx.type === 'send') {
+        const recipientRef = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(lastTx.to);
+        
+        batch.update(walletRef, {
+            [`${lastTx.currency}Balance`]: lastTx.metadata.originalBalances[lastTx.currency],
+            transactions: firebase.firestore.FieldValue.arrayRemove(lastTx)
+        });
 
-function formatCurrency(amount, currency) {
-    if (typeof amount !== 'number') amount = 0;
+        // Simula objeto para remover do destinatário
+        const recipientTxToRemove = {
+            type: 'receive',
+            amount: lastTx.amount,
+            currency: lastTx.currency,
+            description: `Recebido de ${currentUser.uid}`,
+            date: lastTx.date,
+            from: currentUser.uid,
+            metadata: { canUndo: false }
+        };
 
-    switch (currency) {
-        case 'reais':
-            return `R$ ${amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-        case 'crypto':
-            return `${amount.toLocaleString('pt-BR')} YSC`;
-        default:
-            return `${amount.toLocaleString('pt-BR')} G`;
-    }
-}
+        batch.update(recipientRef, {
+            [`${lastTx.currency}Balance`]: firebase.firestore.FieldValue.increment(-lastTx.amount),
+            transactions: firebase.firestore.FieldValue.arrayRemove(recipientTxToRemove)
+        });
+    } 
+    else if (['deposit', 'conversion', 'invest'].includes(lastTx.type)) {
+        batch.update(walletRef, {
+            reaisBalance: lastTx.metadata.originalBalances.reais,
+            goldsBalance: lastTx.metadata.originalBalances.golds,
+            transactions: firebase.firestore.FieldValue.arrayRemove(lastTx)
+        });
 
-function getCurrencySymbol(currency) {
-    switch (currency) {
-        case 'reais': return 'R$';
-        case 'golds': return 'G';
-        case 'crypto': return 'YSC';
-        default: return currency?.toUpperCase() || '';
-    }
-}
-
-// ================================
-// RESUMO DE TRANSAÇÃO
-// ================================
-function generateTransactionSummary(tx) {
-    if (!tx) return 'Transação inválida';
-
-    if (tx.description) return tx.description;
-
-    const symbol = getCurrencySymbol(tx.currency);
-
-    switch (tx.type) {
-        case 'send':
-            return `Enviado ${symbol} ${formatCurrency(tx.amount, tx.currency)} para ${tx.to}`;
-        case 'receive':
-            return `Recebido ${symbol} ${formatCurrency(tx.amount, tx.currency)} de ${tx.from}`;
-        case 'withdraw':
-            return `Saque ${symbol} ${formatCurrency(tx.amount, tx.currency)}`;
-        case 'deposit':
-            return `Depósito ${symbol} ${formatCurrency(tx.amount, tx.currency)}`;
-        case 'invest':
-            return `Investimento ${symbol} ${formatCurrency(tx.amount, tx.currency)}`;
-        case 'withdraw_invest':
-            return `Resgate de investimento ${symbol} ${formatCurrency(tx.amount, tx.currency)}`;
-        case 'conversion':
-            return `Conversão ${symbol} ${formatCurrency(tx.amount, tx.currency)}`;
-        case 'tax':
-            return `Taxa ${symbol} ${formatCurrency(tx.amount, tx.currency)}`;
-        default:
-            return `${tx.type} ${symbol} ${formatCurrency(tx.amount, tx.currency)}`;
-    }
-}
-
-// ================================
-// FILTROS
-// ================================
-function filterTransactions(transactions, filters = {}) {
-    if (!Array.isArray(transactions)) return [];
-
-    let list = [...transactions];
-
-    if (filters.type) {
-        list = list.filter(tx => tx.type === filters.type);
-    }
-
-    if (filters.currency) {
-        list = list.filter(tx => tx.currency === filters.currency);
-    }
-
-    if (filters.startDate) {
-        const start = new Date(filters.startDate);
-        list = list.filter(tx => new Date(tx.date) >= start);
-    }
-
-    if (filters.endDate) {
-        const end = new Date(filters.endDate);
-        end.setHours(23, 59, 59, 999);
-        list = list.filter(tx => new Date(tx.date) <= end);
-    }
-
-    if (filters.search) {
-        const term = filters.search.toLowerCase();
-        list = list.filter(tx =>
-            tx.description?.toLowerCase().includes(term) ||
-            tx.from?.toLowerCase().includes(term) ||
-            tx.to?.toLowerCase().includes(term)
-        );
-    }
-
-    return list;
-}
-
-// ================================
-// ORDENAÇÃO
-// ================================
-function sortTransactions(transactions, field = 'date', direction = 'desc') {
-    if (!Array.isArray(transactions)) return [];
-
-    return [...transactions].sort((a, b) => {
-        let A = a[field];
-        let B = b[field];
-
-        if (field === 'date') {
-            A = new Date(A);
-            B = new Date(B);
+        if (lastTx.type === 'invest') {
+            batch.update(walletRef, {
+                [`investments.${lastTx.metadata.company}.amount`]: firebase.firestore.FieldValue.increment(-lastTx.amount)
+            });
         }
+    } else {
+        throw new Error("Tipo de transação não suportada para desfazer.");
+    }
 
-        if (A < B) return direction === 'asc' ? -1 : 1;
-        if (A > B) return direction === 'asc' ? 1 : -1;
-        return 0;
-    });
+    await batch.commit();
 }
 
-// ================================
-// AGRUPAMENTO POR DATA
-// ================================
-function groupTransactionsByDate(transactions) {
-    const grouped = {};
+export function renderTransactions(containerId, walletData, sortOrder, filters) {
+    const listEl = document.getElementById(containerId);
+    if (!listEl) return;
 
-    transactions.forEach(tx => {
-        const dateKey = new Date(tx.date).toLocaleDateString('pt-BR');
-        if (!grouped[dateKey]) grouped[dateKey] = [];
-        grouped[dateKey].push(tx);
+    let txs = (walletData?.transactions || []).slice();
+    const { filterType, filterCurrency } = filters;
+
+    txs = txs.filter(tx => {
+        const matchesType = !filterType || tx.type === filterType;
+        const matchesCurrency = !filterCurrency || tx.currency === filterCurrency;
+        return matchesType && matchesCurrency;
     });
 
-    return grouped;
-}
+    txs.sort((a, b) => {
+        const dateA = a.date ? new Date(a.date) : new Date(0);
+        const dateB = b.date ? new Date(b.date) : new Date(0);
+        if (sortOrder.field === 'date') return sortOrder.direction === 'asc' ? dateA - dateB : dateB - dateA;
+        return sortOrder.direction === 'asc' ? (a.amount - b.amount) : (b.amount - a.amount);
+    });
 
-// ================================
-// RENDERIZAÇÃO
-// ================================
-function renderTransactionList(transactions, container, limit = null) {
-    if (!container || !Array.isArray(transactions)) return;
+    if (txs.length === 0) {
+        listEl.innerHTML = `<div style="text-align:center; padding:1rem;">Nenhuma transação encontrada.</div>`;
+        return;
+    }
 
-    container.innerHTML = '';
+    const typeMap = {
+        receive: { label: 'Recebido', icon: 'fa-arrow-down', color: 'receive' },
+        send: { label: 'Enviado', icon: 'fa-arrow-up', color: 'send' },
+        withdraw: { label: 'Saque', icon: 'fa-arrow-up', color: 'withdraw' },
+        deposit: { label: 'Depósito', icon: 'fa-arrow-down', color: 'receive' },
+        conversion: { label: 'Conversão', icon: 'fa-exchange-alt', color: 'send' },
+        invest: { label: 'Investimento', icon: 'fa-chart-line', color: 'send' },
+        withdraw_invest: { label: 'Resgate', icon: 'fa-coins', color: 'receive' },
+        profit_withdrawal: { label: 'Resgate Lucro', icon: 'fa-hand-holding-usd', color: 'receive' }
+    };
 
-    const list = limit ? transactions.slice(0, limit) : transactions;
-
-    list.forEach(tx => {
-        const div = document.createElement('div');
-        div.className = `transaction-item transaction-${tx.type}`;
-
-        div.innerHTML = `
-            <div class="transaction-main">
-                <span class="transaction-summary">${generateTransactionSummary(tx)}</span>
-                <span class="transaction-amount">${formatCurrency(tx.amount, tx.currency)}</span>
-            </div>
-            <div class="transaction-details">
-                <span class="transaction-date">${formatDate(tx.date)}</span>
-                <span class="transaction-type">${tx.type}</span>
+    listEl.innerHTML = txs.map((tx, index) => {
+        const txType = typeMap[tx.type] || { label: tx.type, icon: 'fa-question', color: 'send' };
+        const amountLabel = tx.currency === 'golds' ? `${(tx.amount).toLocaleString('pt-BR')} ` : `R$ ${formatCurrency(tx.amount)}`;
+        const sign = (['receive', 'deposit', 'withdraw_invest', 'profit_withdrawal'].includes(tx.type)) ? '+' : '-';
+        
+        return `
+            <div class="transaction-item" onclick="window.openTransactionDetails(${txs.length - 1 - index})">
+                <div style="flex:1;">
+                    <div class="transaction-type">${txType.label}</div>
+                    <div class="transaction-desc">${tx.description || '-'}</div>
+                    <div class="transaction-date">${new Date(tx.date).toLocaleString('pt-BR')}</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="transaction-amount ${txType.color}">
+                        <i class="fas ${txType.icon}"></i> ${sign} ${amountLabel}
+                    </div>
+                </div>
             </div>
         `;
-
-        container.appendChild(div);
-    });
+    }).join('');
 }
 
-// ================================
-// EXPORTAÇÃO CSV
-// ================================
-function prepareCSVExport(transactions) {
-    if (!transactions?.length) return '';
-
-    const headers = ['Data', 'Tipo', 'Moeda', 'Valor', 'Descrição', 'Origem/Destino'];
-    let csv = headers.join(';') + '\n';
-
-    transactions.forEach(tx => {
-        csv += [
-            formatDate(tx.date),
-            tx.type,
-            tx.currency,
-            tx.amount,
-            tx.description || '',
-            tx.from || tx.to || ''
-        ].join(';') + '\n';
-    });
-
-    return csv;
-}
-
-function triggerCSVDownload(csvContent, filename) {
-    if (!csvContent) return;
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    URL.revokeObjectURL(url);
-}
-
-// ================================
-// EXPORT GLOBAL
-// ================================
-window.HistoricoYshipp = {
-    formatDate,
-    formatCurrency,
-    getCurrencySymbol,
-    generateTransactionSummary,
-    filterTransactions,
-    sortTransactions,
-    groupTransactionsByDate,
-    renderTransactionList,
-    prepareCSVExport,
-    triggerCSVDownload
-};
