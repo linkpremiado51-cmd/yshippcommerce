@@ -1,113 +1,65 @@
 // modules/saldo.js
+import { GOLD_TO_REAL_RATE } from './regras.js';
 
-// ================================
-// LÓGICA DE SALDO – YSHIPPBANK
-// ================================
+export async function saveWallet(db, userId, updatedData, walletData) {
+    if (!userId) {
+        console.error("Usuário não autenticado. Salvando apenas localmente.");
+        localStorage.setItem(`wallet_${userId || 'anonymous'}`, JSON.stringify(updatedData));
+        return { ...walletData, ...updatedData };
+    }
 
-// ================================
-// GETTERS DE SALDO
-// ================================
-function getReaisBalance(walletData) {
-    return walletData?.reaisBalance || 0;
+    try {
+        await db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(userId).set(updatedData, { merge: true });
+        localStorage.setItem(`wallet_${userId}`, JSON.stringify(updatedData));
+        return { ...walletData, ...updatedData };
+    } catch (err) {
+        console.error("Erro ao salvar no Firebase:", err);
+        localStorage.setItem(`wallet_${userId}`, JSON.stringify(updatedData));
+        throw new Error('Erro de sincronização. Dados salvos localmente.');
+    }
 }
 
-function getGoldsBalance(walletData) {
-    return walletData?.goldsBalance || 0;
+export async function loadWalletData(db, auth, userId) {
+    console.log(`Carregando carteira para ${userId}`);
+    const ref = db.collection('bankCentral').doc('wallets_usuarios').collection('usuarios').doc(userId);
+    const snap = await ref.get();
+
+    if (!snap.exists) {
+        const initialData = {
+            userId: userId,
+            name: auth.currentUser?.displayName || 'Usuário',
+            goldsBalance: 0,
+            reaisBalance: 0,
+            portfolioBalance: 0,
+            enterpriseBalance: 0,
+            cryptoBalance: 0,
+            investments: {},
+            transactions: [],
+            taxes: [],
+            createdAt: new Date().toISOString(), // Usando string ISO para compatibilidade
+            lastUpdated: new Date().toISOString()
+        };
+        await ref.set(initialData);
+        return initialData;
+    }
+    return snap.data();
 }
 
-function getCryptoBalance(walletData) {
-    return walletData?.cryptoBalance || 0;
-}
+export async function updateSystemReserves(db, amount, currency) {
+    try {
+        const reserveRef = db.collection('system').doc('reserves');
+        const reserveSnap = await reserveRef.get();
+        let newReserves = reserveSnap.exists ? reserveSnap.data() : { reais: 0 };
 
-function getEnterpriseBalance(walletData) {
-    return walletData?.enterpriseBalance || 0;
-}
-
-// ================================
-// INVESTIMENTOS
-// ================================
-function getPortfolioBalance(walletData) {
-    if (!walletData?.investments) return 0;
-
-    let total = 0;
-    Object.values(walletData.investments).forEach(inv => {
-        if (typeof inv.amount === 'number') {
-            total += inv.amount;
+        if (currency === 'reais') {
+            newReserves.reais = (newReserves.reais || 0) + amount;
+        } else if (currency === 'golds') {
+            newReserves.reais = (newReserves.reais || 0) + (amount / GOLD_TO_REAL_RATE);
         }
-    });
 
-    return total;
+        await reserveRef.set(newReserves, { merge: true });
+    } catch (err) {
+        console.error('Erro ao atualizar reservas:', err);
+    }
 }
 
-function getInvestibleGoldsBalance(walletData) {
-    const totalGolds = getGoldsBalance(walletData);
-    const lockedGolds = walletData?.lockedGolds || 0;
-    return totalGolds - lockedGolds;
-}
-
-// ================================
-// CONVERSÕES
-// ================================
-function convertGoldsToReais(golds) {
-    if (typeof golds !== 'number') return 0;
-    return golds / window.RegrasYshipp.GOLD_TO_REAL_RATE;
-}
-
-function convertReaisToGolds(reais) {
-    if (typeof reais !== 'number') return 0;
-    return reais * window.RegrasYshipp.GOLD_TO_REAL_RATE;
-}
-
-// ================================
-// SALDO TOTAL ESTIMADO
-// ================================
-function getTotalEstimatedBalanceInReais(walletData) {
-    const reais = getReaisBalance(walletData);
-    const golds = convertGoldsToReais(getGoldsBalance(walletData));
-    const portfolio = convertGoldsToReais(getPortfolioBalance(walletData));
-    const enterprise = convertGoldsToReais(getEnterpriseBalance(walletData));
-    const crypto = convertGoldsToReais(getCryptoBalance(walletData));
-
-    return reais + golds + portfolio + enterprise + crypto;
-}
-
-// ================================
-// ATUALIZAÇÃO VISUAL (CONTROLADA)
-// ================================
-function updateBalanceDisplay(balances) {
-    const {
-        reais = 0,
-        golds = 0,
-        portfolio = 0,
-        enterprise = 0,
-        crypto = 0
-    } = balances;
-
-    const reaisEl = document.getElementById('reais-balance');
-    const goldsEl = document.getElementById('golds-balance');
-    const portfolioEl = document.getElementById('portfolio-balance');
-    const enterpriseEl = document.getElementById('enterprise-balance');
-    const cryptoEl = document.getElementById('crypto-balance');
-
-    if (reaisEl) reaisEl.textContent = `R$ ${reais.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    if (goldsEl) goldsEl.textContent = golds.toLocaleString('pt-BR');
-    if (portfolioEl) portfolioEl.textContent = `${portfolio.toLocaleString('pt-BR')} G`;
-    if (enterpriseEl) enterpriseEl.textContent = `${enterprise.toLocaleString('pt-BR')} G`;
-    if (cryptoEl) cryptoEl.textContent = `${crypto.toLocaleString('pt-BR')} YSC`;
-}
-
-// ================================
-// EXPORT GLOBAL
-// ================================
-window.SaldoYshipp = {
-    getReaisBalance,
-    getGoldsBalance,
-    getCryptoBalance,
-    getEnterpriseBalance,
-    getPortfolioBalance,
-    getInvestibleGoldsBalance,
-    convertGoldsToReais,
-    convertReaisToGolds,
-    getTotalEstimatedBalanceInReais,
-    updateBalanceDisplay
-};
